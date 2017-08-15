@@ -1,0 +1,7 @@
+---
+  pkgs_osspec:
+    - python-pip
+    - python-dev
+    - redis-server
+    - libgeoip-dev
+    - libsqlite3-dev

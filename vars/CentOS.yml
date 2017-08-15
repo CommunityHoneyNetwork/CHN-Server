@@ -1,0 +1,5 @@
+---
+  pkgs_osspec:
+    - epel-release # Already in from Dockerfile
+    - GeoIP-devel
+    - redis

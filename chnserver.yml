@@ -1,0 +1,19 @@
+---
+  - hosts: all
+
+    tasks:
+      - name: Gather | print os info
+        debug:
+          msg: "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}"
+
+#      - name: Gather | os info
+#        include_vars: "{{ item }}"
+#        with_first_found:
+#          - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+#          - "{{ ansible_distribution }}.yml"
+#        tags: vars
+
+      - name: Gather | default info
+        include_vars:
+          file: default.yml
+        tags: vars
