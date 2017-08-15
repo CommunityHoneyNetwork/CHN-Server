@@ -35,7 +35,7 @@ if [ -f $deploy_file ]; then
 fi
 
 
-if [ $http_code -ne 200 ] || [ -z "uuid" ]; then
+if [ $http_code -ne 200 ] || [ -z "$uuid" ]; then
 
     curl -s -X POST -H "Content-Type: application/json" -d "{
         \"name\": \"${hostname}-${honeypot}\",
