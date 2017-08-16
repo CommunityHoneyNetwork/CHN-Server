@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -o errexit
+
+/usr/bin/rm -f /run/nginx.pid
+/usr/sbin/nginx -t
+
+exec /usr/sbin/nginx

@@ -1,4 +1,14 @@
 ---
   pkgs:
+    - gcc
     - git
     - nginx
+
+  pip_executable: pip2
+
+  runit_service_directories:
+    - /etc/service/nginx
+    - /etc/service/uwsgi
+    - /etc/service/celery_worker
+    - /etc/service/celery_beat
+    - /etc/service/collector

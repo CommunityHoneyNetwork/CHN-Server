@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cd /opt
+exec chpst -u{{nginx_user}}:{{nginx_user}} \
+            celery worker --app=mhn.tasks \
+                          --loglevel=INFO

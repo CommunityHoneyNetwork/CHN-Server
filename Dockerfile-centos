@@ -19,4 +19,3 @@ ADD . /opt/
 RUN ansible-playbook /opt/${playbook}
 
 ENTRYPOINT ["/sbin/runsvdir", "-P", "/etc/service"]
-

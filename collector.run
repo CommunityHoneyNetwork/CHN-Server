@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [[ ! -f /conf/collector.json ]]
+then
+  echo "/conf/collector.json doesn't exist yet"
+  echo "Has the collector been registered with HPFeeds?"
+  exit 1
+fi
+
+cd /opt
+exec python collector_v2.py collector.json
