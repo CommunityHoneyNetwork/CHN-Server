@@ -2,7 +2,7 @@ import json
 from StringIO import StringIO
 import csv
 
-from uuid import uuid1
+from uuid import uuid4
 
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
@@ -34,7 +34,7 @@ def create_sensor():
                 errors.API_FIELDS_MISSING.format(missing), 400)
     else:
         sensor = Sensor(**request.json)
-        sensor.uuid = str(uuid1())
+        sensor.uuid = str(uuid4())
         sensor.ip = request.remote_addr
         Clio().authkey.new(**sensor.new_auth_dict()).post()
         try:
@@ -46,15 +46,27 @@ def create_sensor():
         else:
             return jsonify(sensor.to_dict())
 
+
 @api.route('/sensor/', methods=['GET'])
 @token_auth
 def get_sensors():
     req = request.args.to_dict()
     if 'api_key' in req:
         del req['api_key']
-    resp = make_response(json.dumps([s.to_dict() for s in Sensor.query.filter_by(**req)]))
+    resp = make_response(json.dumps([s.to_dict()
+                                     for s in Sensor.query.filter_by(**req)]))
     resp.headers['Content-Type'] = "application/json"
     return resp
+
+
+@api.route('/sensor/<uuid>/', methods=['GET'])
+@csrf.exempt
+def get_sensor(uuid):
+    sensor = Sensor.query.filter_by(uuid=uuid).first_or_404()
+    resp = make_response(json.dumps(sensor.to_dict()))
+    resp.headers['Content-Type'] = "application/json"
+    return resp
+
 
 @api.route('/sensor/<uuid>/', methods=['PUT'])
 @csrf.exempt
@@ -151,10 +163,12 @@ def get_url(url_id):
 def get_file(file_id):
     return _get_one_resource(Clio().file, file_id)
 
+
 @api.route('/dork/<dork_id>/', methods=['GET'])
 @token_auth
 def get_dork(dork_id):
     return _get_one_resource(Clio().dork, dork_id)
+
 
 @api.route('/metadata/<metadata_id>/', methods=['GET'])
 @token_auth
@@ -179,15 +193,18 @@ def get_sessions():
 def get_urls():
     return _get_query_resource(Clio().url, request.args.to_dict())
 
+
 @api.route('/file/', methods=['GET'])
 @token_auth
 def get_files():
     return _get_query_resource(Clio().file, request.args.to_dict())
 
+
 @api.route('/dork/', methods=['GET'])
 @token_auth
 def get_dorks():
     return _get_query_resource(Clio().dork, request.args.to_dict())
+
 
 @api.route('/metadata/', methods=['GET'])
 @token_auth
@@ -203,14 +220,15 @@ def top_attackers():
     hours_ago = int(options.get('hours_ago', '4'))
 
     extra = dict(options)
-    for name in  ('hours_ago', 'limit', 'api_key',):
+    for name in ('hours_ago', 'limit', 'api_key',):
         if name in extra:
             del extra[name]
 
     for name in options.keys():
         if name not in ('hours_ago', 'limit',):
             del options[name]
-    results = Clio().session._tops(['source_ip', 'honeypot'], top=limit, hours_ago=hours_ago, **extra)
+    results = Clio().session._tops(['source_ip', 'honeypot'], top=limit,
+                                   hours_ago=hours_ago, **extra)
     return jsonify(
         data=results,
         meta={
@@ -220,11 +238,12 @@ def top_attackers():
         }
     )
 
+
 @api.route('/attacker_stats/<ip>/', methods=['GET'])
 @token_auth
 def attacker_stats(ip):
     options = request.args.to_dict()
-    hours_ago = int(options.get('hours_ago', '720')) # 30 days
+    hours_ago = int(options.get('hours_ago', '720'))  # 30 days
 
     for name in options.keys():
         if name not in ('hours_ago', 'limit',):
@@ -238,8 +257,10 @@ def attacker_stats(ip):
         }
     )
 
+
 def get_tags(rec):
-    tags = [rec['honeypot'], rec['protocol'], 'port-{}'.format(rec['destination_port']),]
+    tags = [rec['honeypot'], rec['protocol'],
+            'port-{}'.format(rec['destination_port']), ]
 
     meta = rec['meta']
     if len(meta) > 0:
@@ -253,13 +274,15 @@ def get_tags(rec):
             tags.append(value.replace(',', '').replace('\t', ' '))
     return tags
 
+
 @api.route('/intel_feed.csv/', methods=['GET'])
 @token_auth
 def intel_feed_csv():
     fieldnames = ['source_ip', 'count', 'tags', ]
     results = get_intel_feed()
     outf = StringIO()
-    wr = csv.DictWriter(outf, fieldnames=fieldnames, delimiter='\t', lineterminator='\n')
+    wr = csv.DictWriter(outf, fieldnames=fieldnames,
+                        delimiter='\t', lineterminator='\n')
     wr.writeheader()
     for rec in results['data']:
         wr.writerow({
@@ -274,11 +297,13 @@ def intel_feed_csv():
     response.headers['Content-type'] = 'text/plain'
     return response
 
+
 @api.route('/intel_feed/', methods=['GET'])
 @token_auth
 def intel_feed():
     results = get_intel_feed()
     return jsonify(**results)
+
 
 def get_intel_feed():
     options = request.args.to_dict()
@@ -286,7 +311,7 @@ def get_intel_feed():
     hours_ago = int(options.get('hours_ago', '4'))
 
     extra = dict(options)
-    for name in  ('hours_ago', 'limit', 'api_key',):
+    for name in ('hours_ago', 'limit', 'api_key',):
         if name in extra:
             del extra[name]
 
@@ -295,7 +320,9 @@ def get_intel_feed():
             del options[name]
 
     extra['ne__protocol'] = 'pcap'
-    results = Clio().session._tops(['source_ip', 'honeypot', 'protocol', 'destination_port'], top=limit, hours_ago=hours_ago, **extra)
+    results = Clio().session._tops(['source_ip', 'honeypot',
+                                    'protocol', 'destination_port'],
+                                   top=limit, hours_ago=hours_ago, **extra)
     results = [r for r in results if r['protocol'] != 'ftpdatalisten']
 
     cache = {}
@@ -303,12 +330,13 @@ def get_intel_feed():
         source_ip = r['source_ip']
         if source_ip not in cache:
             # TODO: may want to make one big query to mongo here...
-            cache[source_ip] = [m.to_dict() for m in Clio().metadata.get(ip=r['source_ip'], honeypot='p0f')]
+            cache[source_ip] = [m.to_dict() for m in Clio().metadata.get(
+                ip=r['source_ip'], honeypot='p0f')]
         r['meta'] = cache[source_ip]
 
     return {
-        'data':results,
-        'meta':{
+        'data': results,
+        'meta': {
             'size': len(results),
             'query': 'intel_feed',
             'options': options
