@@ -42,7 +42,7 @@
           path: "{{ item }}"
           state: directory
           mode: 0755
-        with_items: nginx_dirs
+        with_items: "{{ nginx_dirs }}"
         when: ansible_distribution|lower == 'ubuntu'
 
       - name: CHN Server | sites-enable link
@@ -92,7 +92,7 @@
 
       - name: CHN Server | create celery worker runit conf
         template:
-          src: celery-worker.run.j2 
+          src: celery-worker.run.j2
           dest: /etc/service/celery_worker/run
           mode: 0755
 
