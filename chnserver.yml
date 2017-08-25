@@ -112,4 +112,5 @@
         file:
           path: /var/log/mhn
           state: directory
+          owner: "{{ nginx_user }}"
           mode: 0755
