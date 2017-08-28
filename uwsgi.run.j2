@@ -1,0 +1,25 @@
+#!/bin/bash
+
+cd /opt
+
+source {{ sysconfig_dir }}/chnerver
+
+if [[ ! -f ./config.py ]]
+then
+  python generateconfig.py unattended debug=${DEBUG} \
+                                      email=${EMAIL} \
+                                      server_base_url=${SERVER_BASE_URL} \
+                                      honeymap_url=${HONEYMAP_URL} \
+                                      mail_server=${MAIL_SERVER} \
+                                      mail_port=${MAIL_PORT} \
+                                      mail_tls=${MAIL_TLS} \
+                                      mail_ssl=${MAIL_SSL} \
+                                      mail_username=${MAIL_USERNAME} \
+                                      mail_password=${MAIL_PASSWORD} \
+                                      default_mail_sender=${DEFAULT_MAIL_SENDER}
+fi
+
+exec uwsgi --socket /tmp/uwsgi.sock \
+           --module mhn:mhn \
+           --chmod-socket=666 \
+           --buffer-size 04960

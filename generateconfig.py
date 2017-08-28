@@ -31,6 +31,7 @@ def generate_config():
     localconfig = {}
     localconfig['SECRET_KEY'] = rand_str(32)
     localconfig['DEPLOY_KEY'] = rand_str(8)
+    localconfig['SUPERUSER_PASSWORD'] = rand_str(32)
 
     is_unattended = False
 
@@ -154,7 +155,6 @@ def generate_config():
 
     localconfig['DEBUG'] = debug
     localconfig['SUPERUSER_EMAIL'] = email
-    localconfig['SUPERUSER_PASSWORD'] = password
     localconfig['SERVER_BASE_URL'] = server_base_url
     localconfig['HONEYMAP_URL'] = honeymap_url
     localconfig['MAIL_SERVER'] = mail_server if mail_server else "localhost"

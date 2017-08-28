@@ -84,10 +84,16 @@
           dest: /etc/service/nginx/run
           mode: 0755
 
-      - name: CHN Server | create uwsgi runit conf
+      - name: CHN Server | create chnserver sysconfig file
         copy:
+          src: chnserver.sysconfig
+          dest: "{{ sysconfig_dir }}/chnserver"
+          mode: 0644
+
+      - name: CHN Server | create uwsgi runit conf
+        template:
           src: uwsgi.run
-          dest: /etc/service/uwsgi/run
+          dest: /etc/service/uwsgi/run.j2
           mode: 0755
 
       - name: CHN Server | create celery worker runit conf

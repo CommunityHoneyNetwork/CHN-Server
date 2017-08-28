@@ -1,7 +1,0 @@
-#!/bin/bash
-
-cd /opt/mhn
-exec uwsgi --socket /tmp/uwsgi.sock \
-           --module mhn:mhn \
-           --chmod-socket=666 \
-           --buffer-size 04960
