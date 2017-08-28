@@ -92,8 +92,8 @@
 
       - name: CHN Server | create uwsgi runit conf
         template:
-          src: uwsgi.run
-          dest: /etc/service/uwsgi/run.j2
+          src: uwsgi.run.j2
+          dest: /etc/service/uwsgi/run
           mode: 0755
 
       - name: CHN Server | create celery worker runit conf
