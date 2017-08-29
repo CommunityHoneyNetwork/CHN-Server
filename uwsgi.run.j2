@@ -12,7 +12,7 @@ then
     echo "Admin email is required"
     exit 1
   else
-    EMAIL="-e ${EMAIL}"
+    EMAIL="--email ${EMAIL}"
   fi
 
   if [[ -z ${SERVER_BASE_URL} ]]
@@ -20,19 +20,19 @@ then
     echo "Base url is required"
     exit 1
   else
-    SERVER_BASE_URL="-b ${SERVER_BASE_URL}"
+    SERVER_BASE_URL="--base_url ${SERVER_BASE_URL}"
   fi
 
   if [[ ! -z "${HONEYMAP_URL}" ]]
   then
-    HONEYMAP_URL="-y ${HONEYMAP_URL}"
+    HONEYMAP_URL="--honeymap_url ${HONEYMAP_URL}"
   else
     HONEYMAP_URL=""
   fi
 
   if [[ ! -z "${REDIS_URL}" ]]
   then
-    REDIS_URL="-r ${REDIS_URL}"
+    REDIS_URL="--redis_url ${REDIS_URL}"
   else
     REDIS_URL=""
   fi
@@ -42,7 +42,7 @@ then
     echo "Mail server is required"
     exit 1
   else
-    MAIL_SERVER="-m ${MAIL_SERVER}"
+    MAIL_SERVER="--mail_server ${MAIL_SERVER}"
   fi
 
   if [[ -z ${MAIL_PORT} ]]
@@ -50,7 +50,7 @@ then
     echo "Mail port is required"
     exit 1
   else
-    MAIL_PORT="-m ${MAIL_PORT}"
+    MAIL_PORT="--mail_port ${MAIL_PORT}"
   fi
 
   if [[ "${MAIL_TLS}" == "y" ]]
@@ -88,6 +88,20 @@ then
     DEFAULT_MAIL_SENDER=""
   fi
 
+  if [[ ! -z "${LOG_FILE_PATH}" ]]
+  then
+    LOG_FILE_PATH="--log_file_path ${LOG_FILE_PATH}"
+  else
+    LOG_FILE_PATH=""
+  fi
+
+  if [[ ! -z "${DEBUG}" ]]
+  then
+    DEBUG="--debug ${DEBUG}"
+  else
+    DEBUG=""
+  fi
+
   python generateconfig.py unattended ${EMAIL} \
                                       ${SERVER_BASE_URL} \
                                       ${HONEYMAP_URL} \
@@ -98,7 +112,8 @@ then
                                       ${MAIL_TLS} \
                                       ${MAIL_USER} \
                                       ${MAIL_PASSWORD} \
-                                      ${DEFAULT_MAIL_SENDER}
+                                      ${DEFAULT_MAIL_SENDER} \
+                                      ${LOG_FILE_PATH}
 fi
 
 LOG_FILE_PATH=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
