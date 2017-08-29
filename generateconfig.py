@@ -31,11 +31,11 @@ def generate_config():
     localconfig = {}
     localconfig['SECRET_KEY'] = rand_str(32)
     localconfig['DEPLOY_KEY'] = rand_str(8)
-    localconfig['SUPERUSER_PASSWORD'] = rand_str(32)
+    default_superuser_password = rand_str(32)
 
     is_unattended = False
 
-     # Get and parse args for command unattended install
+    # Get and parse args for command unattended install
     parser_description = 'This is a help script to generate a working config.py file from the config template.'
     parser = argparse.ArgumentParser(description=parser_description)
 
@@ -48,7 +48,7 @@ def generate_config():
     parser_unatt.set_defaults(which='unattended')
     parser_unatt.add_argument('-e', '--email', type=str, required=True,
                               help='Superuser email address')
-    parser_unatt.add_argument('-p', '--password', type=str, required=True,
+    parser_unatt.add_argument('-p', '--password', type=str,
                               help='Superuser password')
     parser_unatt.add_argument('-b', '--base_url', type=str, default=default_base_url,
                               help='Server base url')
@@ -87,7 +87,7 @@ def generate_config():
         debug = args.debug
         email = args.email
         password = args.password
-        server_base_url= args.base_url
+        server_base_url = args.base_url
         honeymap_url = args.honeymap_url
         mail_server = args.mail_server
         mail_port = args.mail_port
@@ -152,9 +152,11 @@ def generate_config():
     server_base_url = server_base_url if server_base_url.strip() else default_base_url
     honeymap_url = honeymap_url if honeymap_url.strip() else default_honeymap_url
     log_file_path = log_file_path if log_file_path else default_log_path
+    password = password if password else default_superuser_password
 
     localconfig['DEBUG'] = debug
     localconfig['SUPERUSER_EMAIL'] = email
+    localconfig['SUPERUSER_PASSWORD'] = password
     localconfig['SERVER_BASE_URL'] = server_base_url
     localconfig['HONEYMAP_URL'] = honeymap_url
     localconfig['MAIL_SERVER'] = mail_server if mail_server else "localhost"

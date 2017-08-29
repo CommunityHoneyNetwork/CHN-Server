@@ -2,21 +2,96 @@
 
 cd /opt
 
-source {{ sysconfig_dir }}/chnerver
+source {{ sysconfig_dir }}/chnserver
 
 if [[ ! -f ./config.py ]]
 then
-  python generateconfig.py unattended debug=${DEBUG} \
-                                      email=${EMAIL} \
-                                      server_base_url=${SERVER_BASE_URL} \
-                                      honeymap_url=${HONEYMAP_URL} \
-                                      mail_server=${MAIL_SERVER} \
-                                      mail_port=${MAIL_PORT} \
-                                      mail_tls=${MAIL_TLS} \
-                                      mail_ssl=${MAIL_SSL} \
-                                      mail_username=${MAIL_USERNAME} \
-                                      mail_password=${MAIL_PASSWORD} \
-                                      default_mail_sender=${DEFAULT_MAIL_SENDER}
+
+  if [[ -z ${EMAIL} ]]
+  then
+    echo "Admin email is required"
+    exit 1
+  else
+    EMAIL="-e ${EMAIL}"
+  fi
+
+  if [[ -z ${SERVER_BASE_URL} ]]
+  then
+    echo "Base url is required"
+    exit 1
+  else
+    SERVER_BASE_URL="-b ${SERVER_BASE_URL}"
+  fi
+
+  if [[ -z ${HONEYMAP_URL} ]]
+  then
+    echo "Honeymap url email is required"
+    exit 1
+  else
+    HONEYMAP_URL="-y ${HONEYMAP_URL}"
+  fi
+
+  if [[ -z ${MAIL_SERVER} ]]
+  then
+    echo "Mail server is required"
+    exit 1
+  else
+    MAIL_SERVER="-m ${MAIL_SERVER}"
+  fi
+
+  if [[ -z ${MAIL_PORT} ]]
+  then
+    echo "Mail port is required"
+    exit 1
+  else
+    MAIL_PORT="-m ${MAIL_PORT}"
+  fi
+
+  if [[ "${MAIL_TLS}" == "y" ]]
+  then
+    MAIL_TLS="--mail_tls"
+  else
+    MAIL_TLS=""
+  fi
+
+  if [[ "${MAIL_SSL}" == "y" ]]
+  then
+    MAIL_SSL="--mail_ssl"
+  else
+    MAIL_SSL=""
+  fi
+
+  if [[ ! -z "${MAIL_USER}" ]]
+  then
+    MAIL_USER="--mail_user ${MAIL_USER}"
+  else
+    MAIL_USER=""
+  fi
+
+  if [[ ! -z "${MAIL_PASSWORD}" ]]
+  then
+    MAIL_PASSWORD="--mail_pass ${MAIL_PASSWORD}"
+  else
+    MAIL_PASSWORD=""
+  fi
+
+  if [[ ! -z "${DEFAULT_MAIL_SENDER}" ]]
+  then
+    DEFAULT_MAIL_SENDER="--mail_sender ${DEFAULT_MAIL_SENDER}"
+  else
+    DEFAULT_MAIL_SENDER=""
+  fi
+
+  python generateconfig.py unattended ${EMAIL} \
+                                      ${SERVER_BASE_URL} \
+                                      ${HONEYMAP_URL} \
+                                      ${MAIL_SERVER} \
+                                      ${MAIL_PORT} \
+                                      ${MAIL_SSL} \
+                                      ${MAIL_TLS} \
+                                      ${MAIL_USER} \
+                                      ${MAIL_PASSWORD} \
+                                      ${DEFAULT_MAIL_SENDER}
 fi
 
 exec uwsgi --socket /tmp/uwsgi.sock \
