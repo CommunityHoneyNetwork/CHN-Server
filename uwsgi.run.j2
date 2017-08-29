@@ -23,12 +23,18 @@ then
     SERVER_BASE_URL="-b ${SERVER_BASE_URL}"
   fi
 
-  if [[ -z ${HONEYMAP_URL} ]]
+  if [[ ! -z "${HONEYMAP_URL}" ]]
   then
-    echo "Honeymap url email is required"
-    exit 1
-  else
     HONEYMAP_URL="-y ${HONEYMAP_URL}"
+  else
+    HONEYMAP_URL=""
+  fi
+
+  if [[ ! -z "${REDIS_URL}" ]]
+  then
+    REDIS_URL="-r ${REDIS_URL}"
+  else
+    REDIS_URL=""
   fi
 
   if [[ -z ${MAIL_SERVER} ]]
@@ -85,6 +91,7 @@ then
   python generateconfig.py unattended ${EMAIL} \
                                       ${SERVER_BASE_URL} \
                                       ${HONEYMAP_URL} \
+                                      ${REDIS_URL} \
                                       ${MAIL_SERVER} \
                                       ${MAIL_PORT} \
                                       ${MAIL_SSL} \
@@ -93,6 +100,14 @@ then
                                       ${MAIL_PASSWORD} \
                                       ${DEFAULT_MAIL_SENDER}
 fi
+
+LOG_FILE_PATH=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
+LOG_DIR=$(awk -F/ 'BEGIN{FS=OFS="/"}{NF--; print}' <<< ${LOG_FILE_PATH})
+
+mkdir -p ${LOG_DIR}
+touch ${LOG_FILE_PATH}
+
+chown -R {{ nginx_user}}.root ${LOG_FILE_PATH}
 
 exec uwsgi --socket /tmp/uwsgi.sock \
            --module mhn:mhn \
