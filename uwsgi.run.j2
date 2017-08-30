@@ -113,7 +113,10 @@ then
                                       ${MAIL_USER} \
                                       ${MAIL_PASSWORD} \
                                       ${DEFAULT_MAIL_SENDER} \
-                                      ${LOG_FILE_PATH}
+                                      ${LOG_FILE_PATH} \
+                                      ${MONGODB_HOST} \
+                                      ${MONGODB_PORT}
+
 fi
 
 LOG_FILE_PATH=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
