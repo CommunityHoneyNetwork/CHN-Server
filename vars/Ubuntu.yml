@@ -7,7 +7,7 @@
     - libsqlite3-dev
     - runit
 
-  sysconfig_dir: /etc/sysconfig
+  sysconfig_dir: /etc/default
 
   nginx_user: 'www-data'
   nginx_server_conf_file: nginx.conf-ubuntu
