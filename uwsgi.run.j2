@@ -102,6 +102,20 @@ then
     DEBUG=""
   fi
 
+  if [[ ! -z "${MONGODB_HOST}" ]]
+  then
+    MONGODB_HOST="--mongo_host ${MONGODB_HOST}"
+  else
+    MONGODB_HOST=""
+  fi
+
+  if [[ ! -z "${MONGODB_PORT}" ]]
+  then
+    MONGODB_PORT="--mongo_port ${MONGODB_PORT}"
+  else
+    MONGODB_PORT=""
+  fi
+
   python generateconfig.py unattended ${EMAIL} \
                                       ${SERVER_BASE_URL} \
                                       ${HONEYMAP_URL} \
