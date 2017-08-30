@@ -27,14 +27,16 @@ def generate_config():
     pub_ip = json.load(urlopen('http://httpbin.org/ip'))['origin']
     default_base_url = 'http://{}'.format(pub_ip)
     default_honeymap_url = '{}:3000'.format(default_base_url)
+    default_redis_url = 'redis://localhost:6379'
     default_log_path = '/var/log/mhn/mhn.log'
+    default_superuser_password = rand_str(32)
     localconfig = {}
     localconfig['SECRET_KEY'] = rand_str(32)
     localconfig['DEPLOY_KEY'] = rand_str(8)
 
     is_unattended = False
 
-     # Get and parse args for command unattended install
+    # Get and parse args for command unattended install
     parser_description = 'This is a help script to generate a working config.py file from the config template.'
     parser = argparse.ArgumentParser(description=parser_description)
 
@@ -47,12 +49,14 @@ def generate_config():
     parser_unatt.set_defaults(which='unattended')
     parser_unatt.add_argument('-e', '--email', type=str, required=True,
                               help='Superuser email address')
-    parser_unatt.add_argument('-p', '--password', type=str, required=True,
+    parser_unatt.add_argument('-p', '--password', type=str,
                               help='Superuser password')
     parser_unatt.add_argument('-b', '--base_url', type=str, default=default_base_url,
                               help='Server base url')
     parser_unatt.add_argument('-y', '--honeymap_url', type=str, default=default_honeymap_url,
                               help='Honeymap url')
+    parser_unatt.add_argument('-r', '--redis_url', type=str, default=default_redis_url,
+                              help='Redis url')
     parser_unatt.add_argument('-m', '--mail_server', type=str, default='localhost',
                               help='Mail server address')
     parser_unatt.add_argument('-s', '--mail_port', type=int, default=25,
@@ -86,8 +90,9 @@ def generate_config():
         debug = args.debug
         email = args.email
         password = args.password
-        server_base_url= args.base_url
+        server_base_url = args.base_url
         honeymap_url = args.honeymap_url
+        redis_url = args.redis_url
         mail_server = args.mail_server
         mail_port = args.mail_port
         mail_tls = args.mail_tls
@@ -130,6 +135,11 @@ def generate_config():
         if honeymap_url.endswith('/'):
             honeymap_url = honeymap_url[:-1]
 
+        default_redis_url = 'redis://localhost:6379'
+        redis_url = raw_input('Redis url ["{}"]: '.format(default_redis_url))
+        if redis_url.endswith('/'):
+            redis_url = redis_url[:-1]
+
         mail_server = raw_input('Mail server address ["localhost"]: ')
         mail_port = raw_input('Mail server port [25]: ')
 
@@ -150,13 +160,16 @@ def generate_config():
 
     server_base_url = server_base_url if server_base_url.strip() else default_base_url
     honeymap_url = honeymap_url if honeymap_url.strip() else default_honeymap_url
+    redis_url = redis_url if redis_url.strip() else default_redis_url
     log_file_path = log_file_path if log_file_path else default_log_path
+    password = password if password else default_superuser_password
 
     localconfig['DEBUG'] = debug
     localconfig['SUPERUSER_EMAIL'] = email
     localconfig['SUPERUSER_PASSWORD'] = password
     localconfig['SERVER_BASE_URL'] = server_base_url
     localconfig['HONEYMAP_URL'] = honeymap_url
+    localconfig['REDIS_URL'] = redis_url
     localconfig['MAIL_SERVER'] = mail_server if mail_server else "localhost"
     localconfig['MAIL_PORT'] = mail_port if mail_port else 25
     localconfig['MAIL_USE_TLS'] = 'y' == mail_tls
