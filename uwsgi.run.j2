@@ -141,6 +141,8 @@ touch ${LOG_FILE_PATH}
 
 chown -R {{ nginx_user}}.root ${LOG_FILE_PATH}
 
+python initdatabase.py
+
 exec uwsgi --socket /tmp/uwsgi.sock \
            --module mhn:mhn \
            --chmod-socket=666 \
