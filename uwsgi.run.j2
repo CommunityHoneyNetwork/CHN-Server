@@ -132,16 +132,16 @@ then
                                       ${MONGODB_HOST} \
                                       ${MONGODB_PORT}
 
-  LOG_FILE_PATH=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
-  LOG_DIR=$(awk -F/ 'BEGIN{FS=OFS="/"}{NF--; print}' <<< ${LOG_FILE_PATH})
-
-  mkdir -p ${LOG_DIR}
-  touch ${LOG_FILE_PATH}
-
-  chown -R {{ nginx_user}}.root ${LOG_FILE_PATH}
-
-  exec python initdatabase.py
+  python initdatabase.py
 fi
+
+LOG_FILE_PATH=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
+LOG_DIR=$(awk -F/ 'BEGIN{FS=OFS="/"}{NF--; print}' <<< ${LOG_FILE_PATH})
+
+mkdir -p ${LOG_DIR}
+touch ${LOG_FILE_PATH}
+
+chown -R {{ nginx_user}}.root ${LOG_FILE_PATH}
 
 exec uwsgi --socket /tmp/uwsgi.sock \
            --module mhn:mhn \
