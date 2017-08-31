@@ -131,7 +131,7 @@ then
                                       ${LOG_FILE_PATH} \
                                       ${MONGODB_HOST} \
                                       ${MONGODB_PORT}
-  exec python initdatabase.py
+  python initdatabase.py
 fi
 
 LOG_FILE_PATH=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
