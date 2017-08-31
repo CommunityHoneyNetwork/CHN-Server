@@ -109,11 +109,12 @@ then
     MONGODB_HOST=""
   fi
 
-  if [[ ! -z "${MONGODB_PORT}" ]]
+  if [[ -z ${MONGODB_PORT} ]]
   then
-    MONGODB_PORT="--mongo_port ${MONGODB_PORT}"
+    echo "MongoDB port is required"
+    exit 1
   else
-    MONGODB_PORT=""
+    MONGODB_PORT="--mongo_port ${MONGODB_PORT}"
   fi
 
   python generateconfig.py unattended ${EMAIL} \
@@ -130,7 +131,7 @@ then
                                       ${LOG_FILE_PATH} \
                                       ${MONGODB_HOST} \
                                       ${MONGODB_PORT}
-
+  exec python initdatabase.py
 fi
 
 LOG_FILE_PATH=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
@@ -140,8 +141,6 @@ mkdir -p ${LOG_DIR}
 touch ${LOG_FILE_PATH}
 
 chown -R {{ nginx_user}}.root ${LOG_FILE_PATH}
-
-python initdatabase.py
 
 exec uwsgi --socket /tmp/uwsgi.sock \
            --module mhn:mhn \
