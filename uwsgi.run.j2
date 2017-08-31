@@ -102,6 +102,21 @@ then
     DEBUG=""
   fi
 
+  if [[ ! -z "${MONGODB_HOST}" ]]
+  then
+    MONGODB_HOST="--mongo_host ${MONGODB_HOST}"
+  else
+    MONGODB_HOST=""
+  fi
+
+  if [[ -z ${MONGODB_PORT} ]]
+  then
+    echo "MongoDB port is required"
+    exit 1
+  else
+    MONGODB_PORT="--mongo_port ${MONGODB_PORT}"
+  fi
+
   python generateconfig.py unattended ${EMAIL} \
                                       ${SERVER_BASE_URL} \
                                       ${HONEYMAP_URL} \
@@ -113,7 +128,11 @@ then
                                       ${MAIL_USER} \
                                       ${MAIL_PASSWORD} \
                                       ${DEFAULT_MAIL_SENDER} \
-                                      ${LOG_FILE_PATH}
+                                      ${LOG_FILE_PATH} \
+                                      ${MONGODB_HOST} \
+                                      ${MONGODB_PORT}
+
+  python initdatabase.py
 fi
 
 LOG_FILE_PATH=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
