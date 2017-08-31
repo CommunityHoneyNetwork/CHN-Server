@@ -34,6 +34,9 @@ MAIL_DEBUG = DEBUG
 MONGODB_HOST = '{{MONGODB_HOST}}'
 MONGODB_PORT = {{MONGODB_PORT}}
 
+HPFEEDS_HOST = '{{HPFEEDS_HOST}}'
+HPFEEDS_PORT = {{HPFEEDS_PORT}}
+
 # Other settings.
 FEED_AUTH_REQUIRED = False
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'mhn.db')
