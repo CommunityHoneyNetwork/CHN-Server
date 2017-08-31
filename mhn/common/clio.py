@@ -11,6 +11,8 @@ from bson import ObjectId, son
 import json
 import datetime
 
+import config
+
 
 class Clio():
     """
@@ -23,8 +25,8 @@ class Clio():
 
     """
 
-    def __init__(self):
-        self.client = pymongo.MongoClient()
+    def __init__(self, host=config.MONGODB_HOST, port=config.MONGODB_PORT):
+        self.client = pymongo.MongoClient(host=host, port=port)
 
     @property
     def session(self):
