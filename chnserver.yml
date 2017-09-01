@@ -134,3 +134,15 @@
           state: link
           src: "{{ hpfeeds_dir }}/hpfeeds"
           dest: "{{ server_dir }}/hpfeeds"
+
+      - name: CHN Server | add Geolite city database
+        get_url:
+          url: "{{ geolite_city_db }}"
+          dest: "{{ server_dir }}"
+          checksum: "{{ geolite_city_db_sum }}"
+
+      - name: CHN Server | add Geolite ASN database
+        get_url:
+          url: "{{ geolite_asn_db }}"
+          dest: "{{ server_dir }}"
+          checksum: "{{ geolite_asn_db_sum }}"
