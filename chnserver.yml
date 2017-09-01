@@ -142,10 +142,9 @@
           checksum: "{{ geolite_city_db_sum }}"
 
       - name: CHN Server | extract Geolite city database
-        unarchive:
-          src: "{{ server_dir }}/GeoLiteCity.dat.gz"
-          dest: "{{ server_dir }}"
-          remote_src: True
+        command: "gunzip {{ server_dir }}/GeoLiteCity.dat.gz"
+        args:
+          creates: "{{ server_dir }}/GeoLiteCity.dat"
 
       - name: CHN Server | add Geolite ASN database
         get_url:
@@ -154,7 +153,6 @@
           checksum: "{{ geolite_asn_db_sum }}"
 
       - name: CHN Server | extract Geolite ASN database
-        unarchive:
-          src: "{{ server_dir }}/GeoIPASNum.dat.gz"
-          dest: "{{ server_dir }}"
-          remote_src: True
+        command: "gunzip {{ server_dir }}/GeoIPASNum.dat.gz"
+        args:
+          creates: "{{ server_dir }}/GeoIPASNum.dat"
