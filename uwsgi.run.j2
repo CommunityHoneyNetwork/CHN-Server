@@ -1,6 +1,8 @@
 #!/bin/bash
 
-
+trap "exit 130" SIGINT
+trap "exit 137" SIGKILL
+trap "exit 143" SIGTERM
 
 generate_config () {
   source {{ sysconfig_dir }}/chnserver

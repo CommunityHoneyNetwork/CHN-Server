@@ -2,6 +2,10 @@
 
 set -o errexit
 
+trap "exit 130" SIGINT
+trap "exit 137" SIGKILL
+trap "exit 143" SIGTERM
+
 /usr/bin/rm -f /run/nginx.pid
 /usr/sbin/nginx -t
 
