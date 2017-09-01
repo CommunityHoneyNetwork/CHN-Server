@@ -1,149 +1,184 @@
 #!/bin/bash
 
-cd /opt
 
-source {{ sysconfig_dir }}/chnserver
 
-if [[ ! -f ./config.py ]]
-then
+generate_config () {
+  source {{ sysconfig_dir }}/chnserver
 
-  if [[ -z ${EMAIL} ]]
+  cd {{ server_dir }}
+
+  if [[ ! -f ./config.py ]]
   then
-    echo "Admin email is required"
-    exit 1
-  else
-    EMAIL="--email ${EMAIL}"
-  fi
 
-  if [[ -z ${SERVER_BASE_URL} ]]
+    if [[ -z ${EMAIL} ]]
+    then
+      echo "Admin email is required"
+      exit 1
+    else
+      EMAIL="--email ${EMAIL}"
+    fi
+
+    if [[ -z ${SERVER_BASE_URL} ]]
+    then
+      echo "Base url is required"
+      exit 1
+    else
+      SERVER_BASE_URL="--base_url ${SERVER_BASE_URL}"
+    fi
+
+    if [[ ! -z "${HONEYMAP_URL}" ]]
+    then
+      HONEYMAP_URL="--honeymap_url ${HONEYMAP_URL}"
+    else
+      HONEYMAP_URL=""
+    fi
+
+    if [[ ! -z "${REDIS_URL}" ]]
+    then
+      REDIS_URL="--redis_url ${REDIS_URL}"
+    else
+      REDIS_URL=""
+    fi
+
+    if [[ -z ${MAIL_SERVER} ]]
+    then
+      echo "Mail server is required"
+      exit 1
+    else
+      MAIL_SERVER="--mail_server ${MAIL_SERVER}"
+    fi
+
+    if [[ -z ${MAIL_PORT} ]]
+    then
+      echo "Mail port is required"
+      exit 1
+    else
+      MAIL_PORT="--mail_port ${MAIL_PORT}"
+    fi
+
+    if [[ "${MAIL_TLS}" == "y" ]]
+    then
+      MAIL_TLS="--mail_tls"
+    else
+      MAIL_TLS=""
+    fi
+
+    if [[ "${MAIL_SSL}" == "y" ]]
+    then
+      MAIL_SSL="--mail_ssl"
+    else
+      MAIL_SSL=""
+    fi
+
+    if [[ ! -z "${MAIL_USER}" ]]
+    then
+      MAIL_USER="--mail_user ${MAIL_USER}"
+    else
+      MAIL_USER=""
+    fi
+
+    if [[ ! -z "${MAIL_PASSWORD}" ]]
+    then
+      MAIL_PASSWORD="--mail_pass ${MAIL_PASSWORD}"
+    else
+      MAIL_PASSWORD=""
+    fi
+
+    if [[ ! -z "${DEFAULT_MAIL_SENDER}" ]]
+    then
+      DEFAULT_MAIL_SENDER="--mail_sender ${DEFAULT_MAIL_SENDER}"
+    else
+      DEFAULT_MAIL_SENDER=""
+    fi
+
+    if [[ ! -z "${LOG_FILE_PATH}" ]]
+    then
+      LOG_FILE_PATH="--log_file_path ${LOG_FILE_PATH}"
+    else
+      LOG_FILE_PATH=""
+    fi
+
+    if [[ ! -z "${DEBUG}" ]]
+    then
+      DEBUG="--debug ${DEBUG}"
+    else
+      DEBUG=""
+    fi
+
+    if [[ ! -z "${MONGODB_HOST}" ]]
+    then
+      MONGODB_HOST="--mongo_host ${MONGODB_HOST}"
+    else
+      MONGODB_HOST=""
+    fi
+
+    if [[ -z ${MONGODB_PORT} ]]
+    then
+      echo "MongoDB port is required"
+      exit 1
+    else
+      MONGODB_PORT="--mongo_port ${MONGODB_PORT}"
+    fi
+
+    python generateconfig.py unattended ${EMAIL} \
+                                        ${SERVER_BASE_URL} \
+                                        ${HONEYMAP_URL} \
+                                        ${REDIS_URL} \
+                                        ${MAIL_SERVER} \
+                                        ${MAIL_PORT} \
+                                        ${MAIL_SSL} \
+                                        ${MAIL_TLS} \
+                                        ${MAIL_USER} \
+                                        ${MAIL_PASSWORD} \
+                                        ${DEFAULT_MAIL_SENDER} \
+                                        ${LOG_FILE_PATH} \
+                                        ${MONGODB_HOST} \
+                                        ${MONGODB_PORT}
+
+    if [[ "${1}" == "--no-db-init" ]]
+    then
+      return
+    else
+      python initdatabase.py
+      return $?
+    fi
+  fi
+}
+
+make_logdir () {
+
+  cd {{ server_dir }}
+
+  local log_file_path=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
+  local logdir=$(awk -F/ 'BEGIN{FS=OFS="/"}{NF--; print}' <<< ${log_file_path})
+
+  mkdir -p ${logdir}
+  touch ${log_file_path}
+
+  chown -R {{ nginx_user}}.root ${log_file_path}
+}
+
+startup () {
+
+  cd {{ server_dir }}
+
+  exec uwsgi --socket /tmp/uwsgi.sock \
+             --module mhn:mhn \
+             --chmod-socket=666 \
+             --buffer-size 04960
+}
+
+main () {
+  local opts="${@}"
+
+  if [[ "${opts[0]}" == "--config-only" ]] || [[ "${opts[0]}" == "-c" ]]
   then
-    echo "Base url is required"
-    exit 1
+    generate_config --no-db-init
   else
-    SERVER_BASE_URL="--base_url ${SERVER_BASE_URL}"
+    generate_config
+    make_logdir
+    startup
   fi
+}
 
-  if [[ ! -z "${HONEYMAP_URL}" ]]
-  then
-    HONEYMAP_URL="--honeymap_url ${HONEYMAP_URL}"
-  else
-    HONEYMAP_URL=""
-  fi
-
-  if [[ ! -z "${REDIS_URL}" ]]
-  then
-    REDIS_URL="--redis_url ${REDIS_URL}"
-  else
-    REDIS_URL=""
-  fi
-
-  if [[ -z ${MAIL_SERVER} ]]
-  then
-    echo "Mail server is required"
-    exit 1
-  else
-    MAIL_SERVER="--mail_server ${MAIL_SERVER}"
-  fi
-
-  if [[ -z ${MAIL_PORT} ]]
-  then
-    echo "Mail port is required"
-    exit 1
-  else
-    MAIL_PORT="--mail_port ${MAIL_PORT}"
-  fi
-
-  if [[ "${MAIL_TLS}" == "y" ]]
-  then
-    MAIL_TLS="--mail_tls"
-  else
-    MAIL_TLS=""
-  fi
-
-  if [[ "${MAIL_SSL}" == "y" ]]
-  then
-    MAIL_SSL="--mail_ssl"
-  else
-    MAIL_SSL=""
-  fi
-
-  if [[ ! -z "${MAIL_USER}" ]]
-  then
-    MAIL_USER="--mail_user ${MAIL_USER}"
-  else
-    MAIL_USER=""
-  fi
-
-  if [[ ! -z "${MAIL_PASSWORD}" ]]
-  then
-    MAIL_PASSWORD="--mail_pass ${MAIL_PASSWORD}"
-  else
-    MAIL_PASSWORD=""
-  fi
-
-  if [[ ! -z "${DEFAULT_MAIL_SENDER}" ]]
-  then
-    DEFAULT_MAIL_SENDER="--mail_sender ${DEFAULT_MAIL_SENDER}"
-  else
-    DEFAULT_MAIL_SENDER=""
-  fi
-
-  if [[ ! -z "${LOG_FILE_PATH}" ]]
-  then
-    LOG_FILE_PATH="--log_file_path ${LOG_FILE_PATH}"
-  else
-    LOG_FILE_PATH=""
-  fi
-
-  if [[ ! -z "${DEBUG}" ]]
-  then
-    DEBUG="--debug ${DEBUG}"
-  else
-    DEBUG=""
-  fi
-
-  if [[ ! -z "${MONGODB_HOST}" ]]
-  then
-    MONGODB_HOST="--mongo_host ${MONGODB_HOST}"
-  else
-    MONGODB_HOST=""
-  fi
-
-  if [[ -z ${MONGODB_PORT} ]]
-  then
-    echo "MongoDB port is required"
-    exit 1
-  else
-    MONGODB_PORT="--mongo_port ${MONGODB_PORT}"
-  fi
-
-  python generateconfig.py unattended ${EMAIL} \
-                                      ${SERVER_BASE_URL} \
-                                      ${HONEYMAP_URL} \
-                                      ${REDIS_URL} \
-                                      ${MAIL_SERVER} \
-                                      ${MAIL_PORT} \
-                                      ${MAIL_SSL} \
-                                      ${MAIL_TLS} \
-                                      ${MAIL_USER} \
-                                      ${MAIL_PASSWORD} \
-                                      ${DEFAULT_MAIL_SENDER} \
-                                      ${LOG_FILE_PATH} \
-                                      ${MONGODB_HOST} \
-                                      ${MONGODB_PORT}
-
-  python initdatabase.py
-fi
-
-LOG_FILE_PATH=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
-LOG_DIR=$(awk -F/ 'BEGIN{FS=OFS="/"}{NF--; print}' <<< ${LOG_FILE_PATH})
-
-mkdir -p ${LOG_DIR}
-touch ${LOG_FILE_PATH}
-
-chown -R {{ nginx_user}}.root ${LOG_FILE_PATH}
-
-exec uwsgi --socket /tmp/uwsgi.sock \
-           --module mhn:mhn \
-           --chmod-socket=666 \
-           --buffer-size 04960
+main "${@}"
