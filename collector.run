@@ -1,14 +1,21 @@
 #!/bin/bash
 
+set -o errexit
+set -o nounset
+set -o pipefail
+
+if [[ "${1:-}" == "--debug" ]]
+then
+  set -o xtrace
+fi
+
 COLLECTOR_JSON='/etc/collector.json'
 
 if [[ ! -f ${COLLECTOR_JSON} ]]
 then
-  echo "${COLLECTOR_JSON} doesn't exist; attepting registration with HPFEEDS"
-
   MHN_UUID=`python -c 'import uuid;print str(uuid.uuid4())'`
   SECRET=`python -c 'import uuid;print str(uuid.uuid4()).replace("-","")'`
-  /python /opt/hpfeeds/broker/add_user.py "collector" "$SECRET" "" "geoloc.events"
+  python /opt/hpfeeds/broker/add_user.py "collector" "$SECRET" "" "geoloc.events" || echo "Collector failed to register with HPFeeds" && exit 1
 
 cat > ${COLLECTOR_JSON} <<EOF
 {
@@ -22,4 +29,5 @@ fi
 cp ${COLLECTOR_JSON} /opt
 
 cd /opt
+
 exec python collector_v2.py collector.json
