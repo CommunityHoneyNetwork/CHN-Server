@@ -116,7 +116,7 @@ def create_clean_db():
         # Creating superuser entry.
         superuser = user_datastore.create_user(
                 email=mhn.config.get('SUPERUSER_EMAIL'),
-                password=encrypt(mhn.config.get('SUPERUSER_PASSWORD')))
+                password=encrypt(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
         adminrole = user_datastore.create_role(name='admin', description='')
         user_datastore.add_role_to_user(superuser, adminrole)
         user_datastore.create_role(name='user', description='')

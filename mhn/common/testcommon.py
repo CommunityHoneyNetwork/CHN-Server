@@ -32,7 +32,7 @@ class MHNTestCase(TestCase):
     def setUp(self):
         create_clean_db()
         self.email = self.app.config['SUPERUSER_EMAIL']
-        self.passwd = self.app.config['SUPERUSER_PASSWORD']
+        self.passwd = self.app.config['SUPERUSER_ONETIME_PASSWORD']
 
     def tearDown(self):
         db.session.remove()
