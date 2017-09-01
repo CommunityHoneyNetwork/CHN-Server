@@ -12,3 +12,11 @@
     - /etc/service/celery_worker
     - /etc/service/celery_beat
     - /etc/service/collector
+
+  server_dir: /opt
+
+  hpfeeds_repo: https://github.com/CommunityHoneyNetwork/hpfeeds.git
+  ### NEED TO UPDATE THIS TO MASTER 
+  ### ONCE MASTER HAS THE FORK MERGED
+  hpfeeds_version: staging
+  hpfeeds_dir: /srv

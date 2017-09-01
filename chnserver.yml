@@ -120,3 +120,17 @@
           state: directory
           owner: "{{ nginx_user }}"
           mode: 0755
+
+      - name: CHN Server | clone hpfeeds for utils
+        git:
+          repo: "{{ hpfeeds_repo }}"
+          version: "{{ hpfeeds_version }}"
+          dest: "{{ hpfeeds_dir }}"
+          accept_hostkey: yes
+          depth: 1
+
+      - name: CHN Server | link to hpfeeds in chnserver
+        file:
+          state: link
+          src: "{{ hpfeeds_dir }}/hpfeeds"
+          dest: "{{ server_dir }}/hpfeeds"
