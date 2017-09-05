@@ -139,9 +139,12 @@ generate_config () {
 
     if [[ "${1}" == "--no-db-init" ]]
     then
+      echo 'null'
       return
     else
-      python initdatabase.py
+      # Kick this off, but don't wait
+      python initdatabase.py &
+      echo $!
       return $?
     fi
   fi
@@ -177,8 +180,8 @@ main () {
   then
     generate_config --no-db-init
   else
-    make_logdir
     generate_config
+    make_logdir
     startup
   fi
 }
