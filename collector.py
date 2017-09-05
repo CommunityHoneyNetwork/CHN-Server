@@ -4,6 +4,8 @@ import json
 import hpfeeds
 import logging
 
+import config
+
 root = logging.getLogger()
 root.setLevel(logging.ERROR)
 
@@ -14,6 +16,7 @@ ch.setFormatter(formatter)
 root.addHandler(ch)
 logger = logging.getLogger("collector")
 
+
 def hpfeeds_connect(host, port, ident, secret):
     try:
         connection = hpfeeds.new(host, port, ident, secret)
@@ -23,18 +26,19 @@ def hpfeeds_connect(host, port, ident, secret):
     logger.info('connected to %s (%s:%s)'%(connection.brokername, host, port))
     return connection
 
+
 def main():
     cfg = dict(
-        HOST = 'localhost',
-        PORT = 10000,
-        GEOLOC_CHAN = 'geoloc.events',
-        IDENT = '',
-        SECRET = '',
-        RHOST = 'mhnbroker.threatstream.com',
-        RPORT = 10000,
-        RCHANNEL = 'mhn-community.events',
-        RIDENT  = 'mhn-server',
-        RSECRET = 'mhn-secret'
+        HOST=config.HPFEEDS_HOST,
+        PORT=config.HPFEEDS_PORT,
+        GEOLOC_CHAN='geoloc.events',
+        IDENT='',
+        SECRET='',
+        RHOST='mhnbroker.threatstream.com',
+        RPORT=10000,
+        RCHANNEL='mhn-community.events',
+        RIDENT='mhn-server',
+        RSECRET='mhn-secret'
     )
 
     if len(sys.argv) > 1:

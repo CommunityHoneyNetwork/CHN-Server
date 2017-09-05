@@ -79,6 +79,10 @@ def generate_config():
                               help='MongoDB address')
     parser_unatt.add_argument('--mongo_port', type=int, default=27017,
                               help='MongoDB port')
+    parser_unatt.add_argument('--hpfeeds_host', type=str, default="localhost",
+                              help='HPFeeds address')
+    parser_unatt.add_argument('--hpfeeds_port', type=int, default=10000,
+                              help='HPFeeds port')
 
     if (len(sys.argv) < 2):
         args = parser.parse_args(['generate'])
@@ -107,6 +111,8 @@ def generate_config():
         log_file_path = args.log_file_path
         mongo_host = args.mongo_host
         mongo_port = args.mongo_port
+        hpfeeds_host = args.hpfeeds_host
+        hpfeeds_port = args.hpfeeds_port
     else:
         # Collect values from user
         debug = raw_input('Do you wish to run in Debug mode?: y/n ')
@@ -166,6 +172,8 @@ def generate_config():
 
         mongo_host = raw_input('MongoDB hostname ["localhost"]: ')
         mongo_port = raw_input('MongoDB port[27017]: ')
+        hpfeeds_host = raw_input('HPFeeds hostname ["localhost"]: ')
+        hpfeeds_port = raw_input('HPFeeds port[10000]: ')
 
     server_base_url = server_base_url if server_base_url.strip() else default_base_url
     honeymap_url = honeymap_url if honeymap_url.strip() else default_honeymap_url
@@ -189,6 +197,8 @@ def generate_config():
     localconfig['LOG_FILE_PATH'] = log_file_path
     localconfig['MONGODB_HOST'] = mongo_host if mongo_host else "localhost"
     localconfig['MONGODB_PORT'] = mongo_port if mongo_port else 27017
+    localconfig['HPFEEDS_HOST'] = hpfeeds_host if hpfeeds_host else "localhost"
+    localconfig['HPFEEDS_PORT'] = hpfeeds_port if hpfeeds_port else 10000
 
     with open('config.py.template', 'r') as templfile,\
          open('config.py', 'w') as confile:
