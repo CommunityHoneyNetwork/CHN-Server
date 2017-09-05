@@ -120,3 +120,39 @@
           state: directory
           owner: "{{ nginx_user }}"
           mode: 0755
+
+      - name: CHN Server | clone hpfeeds for utils
+        git:
+          repo: "{{ hpfeeds_repo }}"
+          version: "{{ hpfeeds_version }}"
+          dest: "{{ hpfeeds_dir }}"
+          accept_hostkey: yes
+          depth: 1
+
+      - name: CHN Server | link to hpfeeds in chnserver
+        file:
+          state: link
+          src: "{{ hpfeeds_dir }}/hpfeeds"
+          dest: "{{ server_dir }}/hpfeeds"
+
+      - name: CHN Server | add Geolite city database
+        get_url:
+          url: "{{ geolite_city_db }}"
+          dest: "{{ server_dir }}/GeoLiteCity.dat.gz"
+          checksum: "{{ geolite_city_db_sum }}"
+
+      - name: CHN Server | extract Geolite city database
+        command: "gunzip {{ server_dir }}/GeoLiteCity.dat.gz"
+        args:
+          creates: "{{ server_dir }}/GeoLiteCity.dat"
+
+      - name: CHN Server | add Geolite ASN database
+        get_url:
+          url: "{{ geolite_asn_db }}"
+          dest: "{{ server_dir }}/GeoIPASNum.dat.gz"
+          checksum: "{{ geolite_asn_db_sum }}"
+
+      - name: CHN Server | extract Geolite ASN database
+        command: "gunzip {{ server_dir }}/GeoIPASNum.dat.gz"
+        args:
+          creates: "{{ server_dir }}/GeoIPASNum.dat"

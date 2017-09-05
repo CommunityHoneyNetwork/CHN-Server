@@ -183,7 +183,7 @@ def generate_config():
 
     localconfig['DEBUG'] = debug
     localconfig['SUPERUSER_EMAIL'] = email
-    localconfig['SUPERUSER_PASSWORD'] = password
+    localconfig['SUPERUSER_ONETIME_PASSWORD'] = password
     localconfig['SERVER_BASE_URL'] = server_base_url
     localconfig['HONEYMAP_URL'] = honeymap_url
     localconfig['REDIS_URL'] = redis_url
