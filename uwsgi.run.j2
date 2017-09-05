@@ -177,8 +177,8 @@ main () {
   then
     generate_config --no-db-init
   else
-    generate_config
     make_logdir
+    generate_config
     startup
   fi
 }
