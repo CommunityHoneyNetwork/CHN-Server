@@ -1,0 +1,17 @@
+---
+  pkgs_osspec:
+    - epel-release # Already in from Dockerfile
+    - GeoIP-devel
+    - redis
+    - python2-devel
+    - python2-pip
+    - sqlite-devel
+
+  runit_rpm_src: https://github.com/CommunityHoneyNetwork/rpmbuilder-runit/releases/download/2.1.2-1/runit-2.1.2-1.el7.centos.x86_64.rpm
+
+  sysconfig_dir: /etc/sysconfig
+
+  nginx_user: nginx
+  nginx_server_conf_file: nginx.conf-centos
+  nginx_vhost_conf_file: nginx_vhost.conf
+  nginx_vhost_conf: /etc/nginx/conf.d/default.conf

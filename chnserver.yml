@@ -1,0 +1,158 @@
+---
+  - hosts: all
+
+    tasks:
+      - name: Gather | print os info
+        debug:
+          msg: "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}"
+
+      - name: Gather | os info
+        include_vars: "{{ item }}"
+        with_first_found:
+          - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+          - "{{ ansible_distribution }}.yml"
+        tags: vars
+
+      - name: Gather | default info
+        include_vars:
+          file: default.yml
+        tags: vars
+
+      - name: CHN Server | install dependency packages
+        package:
+          name: "{{ item }}"
+        with_items: "{{ pkgs }}"
+
+      - name: CHN Server | install os-specific dependency packages
+        package:
+          name: "{{ item }}"
+        with_items: "{{ pkgs_osspec }}"
+
+      - name: CHN Server | update pip
+        pip:
+          name: pip
+          version: 9.0.1
+
+      - name: CHN Server | install python requirements
+        pip:
+          requirements: /opt/requirements.txt
+
+      - name: CHN Server | create nginx dirs
+        file:
+          path: "{{ item }}"
+          state: directory
+          mode: 0755
+        with_items: "{{ nginx_dirs }}"
+        when: ansible_distribution|lower == 'ubuntu'
+
+      - name: CHN Server | sites-enable link
+        file:
+          state: link
+          src: "{{ nginx_vhost_conf }}"
+          dest: "{{ nginx_vhost_enabled }}"
+          force: yes
+        when: ansible_distribution|lower == 'ubuntu'
+
+      - name: CHN Server | create vhost conf
+        copy:
+          src: "{{ nginx_vhost_conf_file }}"
+          dest: "{{ nginx_vhost_conf }}"
+          mode: 0644
+
+      - name: CHN Server | create nginx server conf
+        copy:
+          src: "{{ nginx_server_conf_file }}"
+          dest: /etc/nginx/nginx.conf
+          mode: 0644
+
+      - name: CHN Server | install Runit
+        yum:
+          name: "{{ runit_rpm_src }}"
+          state: present
+        when: ansible_distribution|lower == 'centos'
+
+      - name: CHN Server | create runit directories
+        file:
+          state: directory
+          path: "{{ item }}"
+          mode: 0755
+        with_items: "{{ runit_service_directories }}"
+
+      - name: CHN Server | create nginx runit conf
+        copy:
+          src: nginx.run
+          dest: /etc/service/nginx/run
+          mode: 0755
+
+      - name: CHN Server | create chnserver sysconfig file
+        copy:
+          src: chnserver.sysconfig
+          dest: "{{ sysconfig_dir }}/chnserver"
+          mode: 0644
+
+      - name: CHN Server | create uwsgi runit conf
+        template:
+          src: uwsgi.run.j2
+          dest: /etc/service/uwsgi/run
+          mode: 0755
+
+      - name: CHN Server | create celery worker runit conf
+        template:
+          src: celery-worker.run.j2
+          dest: /etc/service/celery_worker/run
+          mode: 0755
+
+      - name: CHN Server | create celery beat runit conf
+        copy:
+          src: celery-beat.run
+          dest: /etc/service/celery_beat/run
+          mode: 0755
+
+      - name: CHN Server | create collector runit conf
+        copy:
+          src: collector.run
+          dest: /etc/service/collector/run
+          mode: 0755
+
+      - name: CHN Server | create log file for uwsgi
+        file:
+          path: /var/log/mhn
+          state: directory
+          owner: "{{ nginx_user }}"
+          mode: 0755
+
+      - name: CHN Server | clone hpfeeds for utils
+        git:
+          repo: "{{ hpfeeds_repo }}"
+          version: "{{ hpfeeds_version }}"
+          dest: "{{ hpfeeds_dir }}"
+          accept_hostkey: yes
+          depth: 1
+
+      - name: CHN Server | link to hpfeeds in chnserver
+        file:
+          state: link
+          src: "{{ hpfeeds_dir }}/hpfeeds"
+          dest: "{{ server_dir }}/hpfeeds"
+
+      - name: CHN Server | add Geolite city database
+        get_url:
+          url: "{{ geolite_city_db }}"
+          dest: "{{ server_dir }}/GeoLiteCity.dat.gz"
+          checksum: "{{ geolite_city_db_sum }}"
+
+      - name: CHN Server | extract Geolite city database
+        command: "gunzip {{ server_dir }}/GeoLiteCity.dat.gz"
+        args:
+          creates: "{{ server_dir }}/GeoLiteCity.dat"
+
+      - name: CHN Server | add Geolite ASN database
+        get_url:
+          url: "{{ geolite_asn_db }}"
+          dest: "{{ server_dir }}/GeoIPASNum.dat.gz"
+          checksum: "{{ geolite_asn_db_sum }}"
+
+      - name: CHN Server | extract Geolite ASN database
+        command: "gunzip {{ server_dir }}/GeoIPASNum.dat.gz"
+        args:
+          creates: "{{ server_dir }}/GeoIPASNum.dat"

@@ -1,0 +1,22 @@
+version: '2'
+services:
+  centos:
+    build:
+      context: .
+      dockerfile: Dockerfile-centos
+    image: chnserver:centos
+    ports:
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
+    env_file:
+      - .development.env
+  ubuntu:
+    build:
+      context: .
+      dockerfile: Dockerfile-ubuntu
+    image: chnserver:ubuntu
+    ports:
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
+    env_file:
+      - .development.env

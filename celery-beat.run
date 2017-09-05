@@ -1,0 +1,9 @@
+#!/bin/bash
+
+trap "exit 130" SIGINT
+trap "exit 137" SIGKILL
+trap "exit 143" SIGTERM
+
+cd /opt
+exec celery beat --app=mhn.tasks \
+                 --loglevel=INFO

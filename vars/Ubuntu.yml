@@ -1,0 +1,22 @@
+---
+  pkgs_osspec:
+    - python-pip
+    - python-dev
+    - redis-server
+    - libgeoip-dev
+    - libsqlite3-dev
+    - runit
+
+  sysconfig_dir: /etc/default
+
+  nginx_user: 'www-data'
+  nginx_server_conf_file: nginx.conf-ubuntu
+  nginx_vhost_conf_file: nginx_vhost.conf
+  nginx_vhost_conf: /etc/nginx/sites-available/default
+  nginx_vhost_enabled: /etc/nginx/sites-enabled/default
+
+  nginx_dirs:
+    - /opt/www
+    - /etc/nginx
+    - /etc/nginx/sites-available
+    - /etc/nginx/sites-enabled

@@ -1,0 +1,15 @@
+language: generic
+
+sudo: required
+
+services:
+  - docker
+
+script:
+  - "docker-compose build"
+  # Add tests here
+  #- "docker-compose up" 
+
+notifications:
+  email:
+    - collins.christopher@gmail.com
