@@ -121,7 +121,22 @@ generate_config () {
     else
       MONGODB_PORT="--mongo_port ${MONGODB_PORT}"
     fi
+    
+    if [[ ! -z "${HPFEEDS_HOST}" ]]
+    then
+      HPFEEDS_HOST="--hpfeeds_host ${HPFEEDS_HOST}"
+    else
+      HPFEEDS_HOST=""
+    fi
 
+    if [[ -z ${HPFEEDS_PORT} ]]
+    then
+      echo "HPFeeds port is required"
+      exit 1
+    else
+      HPFEEDS_PORT="--hpfeeds_port ${HPFEEDS_PORT}"
+    fi
+    
     python generateconfig.py unattended ${EMAIL} \
                                         ${SERVER_BASE_URL} \
                                         ${HONEYMAP_URL} \
@@ -135,8 +150,11 @@ generate_config () {
                                         ${DEFAULT_MAIL_SENDER} \
                                         ${LOG_FILE_PATH} \
                                         ${MONGODB_HOST} \
-                                        ${MONGODB_PORT}
-
+                                        ${MONGODB_PORT} \
+                                        ${HPFEEDS_HOST} \
+                                        ${HPFEEDS_PORT}
+                                        
+ 
     if [[ "${1}" == "--no-db-init" ]]
     then
       return

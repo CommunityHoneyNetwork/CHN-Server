@@ -6,6 +6,8 @@ from hpfeedslogger import processors
 import pymongo
 import requests
 
+import config
+
 ch = logging.StreamHandler(sys.stdout)
 ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -30,6 +32,7 @@ DEFAULT_CHANNELS = [
     "wordpot.events",
 ]
 
+
 def ensure_user_permissions(ident, secret, publish, subscribe):
     rec = {
         "identifier": ident,
@@ -43,6 +46,7 @@ def ensure_user_permissions(ident, secret, publish, subscribe):
     client.fsync()
     client.close()
 
+
 def hpfeeds_connect(host, port, ident, secret):
     logger.info('Connecting to %s@%s:%s ...', ident, host, port)
     try:
@@ -53,10 +57,11 @@ def hpfeeds_connect(host, port, ident, secret):
     logger.info('connected to %s (%s:%s)'%(connection.brokername, host, port))
     return connection
 
+
 def main():
     cfg = dict(
-        HOST='localhost',
-        PORT=10000,
+        HOST=config.HPFEEDS_HOST,
+        PORT=config.HPFEEDS_PORT,
         CHANNELS=DEFAULT_CHANNELS,
         IDENT='collector',
         RHOST='mhnbroker.threatstream.com',
