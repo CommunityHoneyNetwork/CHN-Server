@@ -19,7 +19,15 @@ if [[ ! -f ${COLLECTOR_JSON} ]]
 then
   MHN_UUID=`python -c 'import uuid;print str(uuid.uuid4())'`
   SECRET=`python -c 'import uuid;print str(uuid.uuid4()).replace("-","")'`
-  python /opt/hpfeeds/broker/add_user.py "collector" "$SECRET" "" "geoloc.events" || echo "Collector failed to register with HPFeeds" && exit 1
+  python /opt/hpfeeds/broker/add_user.py "collector" "$SECRET" "" "geoloc.events"
+
+  return=$?
+
+  if [[ ${return} -ne 0 ]]
+  then 
+    echo "Failed to register collector with HPFEEDS"
+    exit 1
+  fi
 
 cat > ${COLLECTOR_JSON} <<EOF
 {
