@@ -157,7 +157,8 @@ generate_config () {
     # Generate config file for hpfeeds broker
     cd {{ hpfeeds_dir }}/hpfeeds/broker
     python generateconfig.py unattended ${MONGODB_HOST} ${MONGODB_PORT}
- 
+
+    cd {{ server_dir }}
     if [[ "${1}" == "--no-db-init" ]]
     then
       echo 'null'
