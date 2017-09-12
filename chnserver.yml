@@ -139,7 +139,9 @@
         get_url:
           url: "{{ geolite_city_db }}"
           dest: "{{ server_dir }}/GeoLiteCity.dat.gz"
-          checksum: "{{ geolite_city_db_sum }}"
+          # This is changing too frequently
+          # how do we fix this to be more secure?
+          # checksum: "{{ geolite_city_db_sum }}"
 
       - name: CHN Server | extract Geolite city database
         command: "gunzip {{ server_dir }}/GeoLiteCity.dat.gz"
@@ -150,7 +152,9 @@
         get_url:
           url: "{{ geolite_asn_db }}"
           dest: "{{ server_dir }}/GeoIPASNum.dat.gz"
-          checksum: "{{ geolite_asn_db_sum }}"
+          # This is changing too frequently
+          # how do we fix this to be more secure?
+          # checksum: "{{ geolite_asn_db_sum }}"
 
       - name: CHN Server | extract Geolite ASN database
         command: "gunzip {{ server_dir }}/GeoIPASNum.dat.gz"
