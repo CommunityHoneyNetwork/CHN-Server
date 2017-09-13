@@ -41,7 +41,8 @@ def ensure_user_permissions(ident, secret, publish, subscribe):
         "subscribe":subscribe
     }
 
-    client = pymongo.MongoClient()
+    client = pymongo.MongoClient(host=config.MONGODB_HOST,
+                                 port=config.MONGODB_PORT)
     res = client.hpfeeds.auth_key.update({"identifier": ident}, {"$set": rec}, upsert=True)
     client.fsync()
     client.close()

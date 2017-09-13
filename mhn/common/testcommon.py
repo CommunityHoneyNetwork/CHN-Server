@@ -8,6 +8,7 @@ import pymongo
 import mhn.common.clio as clio
 from mhn import create_clean_db, mhn, db
 
+import config
 
 # Patching clio to use different database than production.
 clio_res = (clio.AuthKey, clio.ResourceMixin,)
@@ -39,7 +40,8 @@ class MHNTestCase(TestCase):
         db.drop_all()
 
         # Removing test collections from mongo.
-        cli = pymongo.MongoClient()
+        cli = pymongo.MongoClient(host=config.MONGODB_HOST,
+                                  port=config.MONGODB_PORT)
         for dbname in cli.database_names():
             if dbname.startswith('test_'):
                 cli.drop_database(dbname)
