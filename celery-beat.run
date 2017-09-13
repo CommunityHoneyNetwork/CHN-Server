@@ -1,9 +1,20 @@
 #!/bin/bash
 
-trap "exit 130" SIGINT
-trap "exit 137" SIGKILL
-trap "exit 143" SIGTERM
+set -o nounset
+set -o errexit
 
-cd /opt
+WORKDIR='/opt'
+PIDFILE='/var/run/celerybeat.pid'
+
+trap "rm ${PIDFILE} ; exit 130" SIGINT
+trap "rm ${PIDFILE} ; exit 137" SIGKILL
+trap "rm ${PIDFILE} ; exit 143" SIGTERM
+
+# Should we be doing this this way?
+# What should we do to cleanup in a container?
+rm $PIDFILE
+
+cd $WORKDIR
 exec celery beat --app=mhn.tasks \
+                 --pidfile=${PIDFILE} \
                  --loglevel=INFO
