@@ -12,7 +12,10 @@ trap "rm ${PIDFILE} ; exit 143" SIGTERM
 
 # Should we be doing this this way?
 # What should we do to cleanup in a container?
-rm $PIDFILE
+if [[ -f $PIDFILE ]]
+then
+  rm $PIDFILE
+fi
 
 cd $WORKDIR
 exec chpst -u{{nginx_user}}:{{nginx_user}} \

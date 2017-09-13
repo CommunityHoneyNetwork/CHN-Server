@@ -11,7 +11,10 @@ PIDFILE=/var/run/nginx.pid
 
 # Should we be doing this this way?
 # What should we do to cleanup in a container?
-rm $PIDFILE
+if [[ -f $PIDFILE ]]
+then
+  rm $PIDFILE
+fi
 
 /usr/sbin/nginx -t
 exec /usr/sbin/nginx
