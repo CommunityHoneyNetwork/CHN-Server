@@ -1,6 +1,15 @@
 #!/bin/bash
 
-cd /opt
+set -o nounset
+set -o errexit
+
+WORKDIR='/opt'
+
+trap "exit 130" SIGINT
+trap "exit 137" SIGKILL
+trap "exit 143" SIGTERM
+
+cd $WORKDIR
 exec chpst -u{{nginx_user}}:{{nginx_user}} \
             celery worker --app=mhn.tasks \
                           --loglevel=INFO

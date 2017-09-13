@@ -1,12 +1,20 @@
 #!/bin/bash
 
 set -o errexit
+set -o nounset
 
 trap "exit 130" SIGINT
 trap "exit 137" SIGKILL
 trap "exit 143" SIGTERM
 
-/usr/bin/rm -f /run/nginx.pid
-/usr/sbin/nginx -t
+PIDFILE=/var/run/nginx.pid
 
+# Should we be doing this this way?
+# What should we do to cleanup in a container?
+if [[ -f $PIDFILE ]]
+then
+  rm $PIDFILE
+fi
+
+/usr/sbin/nginx -t
 exec /usr/sbin/nginx
