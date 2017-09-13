@@ -181,7 +181,9 @@ make_logdir () {
   chown -R {{ nginx_user}}.root ${log_file_path}
 }
 
-startup () {
+main () {
+  generate_config
+  make_logdir
 
   cd {{ server_dir }}
 
@@ -189,38 +191,6 @@ startup () {
              --module mhn:mhn \
              --chmod-socket=666 \
              --buffer-size 04960
-}
-
-# Temporary Fix:
-# BEGIN
-setup_mongo_conn () {
-  local dbhost=$(awk '/MONGODB_HOST/ {print $3}' /opt/config.py)
-  local dbport=$(awk '/MONGODB_PORT/ {print $3}' /opt/config.py)
-
-  if [[ ! -z ${dbhost} ]]
-  then
-    sed -i "s/pymongo.MongoClient()/pymongo.MongoClient(${dbhost})/" \
-      /opt/mhn/common/testcommon.py \
-      /opt/collector_v2.py \
-      /srv/hpfeeds/broker/add_user.py \
-      /srv/hpfeeds/broker/dump_users.py \
-      /srv/hpfeeds/broker/get_secret.py
-  fi
-}
-# END
-
-main () {
-  local opts="${@}"
-
-  if [[ "${opts[0]}" == "--config-only" ]] || [[ "${opts[0]}" == "-c" ]]
-  then
-    generate_config --no-db-init
-  else
-    generate_config
-    setup_mongo_conn # Temporary fix
-    make_logdir
-    startup
-  fi
 }
 
 main "${@}"
