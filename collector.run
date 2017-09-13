@@ -44,6 +44,11 @@ cat > ${COLLECTOR_JSON} <<EOF
 EOF
 fi
 
+if [[ -e /opt/collector.json ]]
+then
+  rm /opt/collector.json
+fi
+
 ln -s ${COLLECTOR_JSON} /opt/collector.json
 
 cd /opt
