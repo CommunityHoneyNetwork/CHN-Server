@@ -13,7 +13,13 @@ trap "exit 130" SIGINT
 trap "exit 137" SIGKILL
 trap "exit 143" SIGTERM
 
-COLLECTOR_JSON='/etc/collector.json'
+COLLECTOR_DIR='/etc/collector'
+COLLECTOR_JSON="${COLLECTOR_DIR}/collector.json"
+
+if [[ ! -d ${COLLECTOR_DIR} ]]
+then
+  mkdir -p ${COLLECTOR_DIR}
+fi
 
 if [[ ! -f ${COLLECTOR_JSON} ]]
 then
@@ -38,8 +44,7 @@ cat > ${COLLECTOR_JSON} <<EOF
 EOF
 fi
 
-cp ${COLLECTOR_JSON} /opt
+ln -s ${COLLECTOR_JSON} /opt/collector.json
 
 cd /opt
-
 exec python collector_v2.py collector.json
