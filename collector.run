@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+if [[ "${1:-}" == "--debug" ]]
+then
+  set -o xtrace
+fi
+
+trap "exit 130" SIGINT
+trap "exit 137" SIGKILL
+trap "exit 143" SIGTERM
+
+COLLECTOR_JSON='/etc/collector.json'
+
+if [[ ! -f ${COLLECTOR_JSON} ]]
+then
+  MHN_UUID=`python -c 'import uuid;print str(uuid.uuid4())'`
+  SECRET=`python -c 'import uuid;print str(uuid.uuid4()).replace("-","")'`
+  python /opt/hpfeeds/broker/add_user.py "collector" "$SECRET" "" "geoloc.events"
+
+  return=$?
+
+  if [[ ${return} -ne 0 ]]
+  then 
+    echo "Failed to register collector with HPFEEDS"
+    exit 1
+  fi
+
+cat > ${COLLECTOR_JSON} <<EOF
+{
+  "IDENT": "collector",
+  "SECRET": "$SECRET",
+  "MHN_UUID": "$MHN_UUID"
+}
+EOF
+fi
+
+cp ${COLLECTOR_JSON} /opt
+
+cd /opt
+
+exec python collector_v2.py collector.json

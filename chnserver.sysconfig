@@ -1,0 +1,22 @@
+# This file is read from /etc/sysconfig/chnserver or /etc/default/chnserver
+# depending on the base distro
+#
+# This can be modified to change the default setup of the chnserver unattended installation
+
+DEBUG=false
+
+EMAIL=admin@localhost
+SERVER_BASE_URL='http://127.0.0.1'
+HONEYMAP_URL=''
+REDIS_URL='redis://redis:6379'
+MAIL_SERVER='127.0.0.1'
+MAIL_PORT=25
+MAIL_TLS='y'
+MAIL_SSL='y'
+MAIL_USERNAME=''
+MAIL_PASSWORD=''
+DEFAULT_MAIL_SENDER=''
+MONGODB_HOST='mongodb'
+MONGODB_PORT=27017
+HPFEEDS_HOST='hpfeeds'
+HPFEEDS_PORT=10000
