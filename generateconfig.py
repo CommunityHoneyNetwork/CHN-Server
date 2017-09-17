@@ -83,6 +83,10 @@ def generate_config():
                               help='HPFeeds address')
     parser_unatt.add_argument('--hpfeeds_port', type=int, default=10000,
                               help='HPFeeds port')
+    parser_unatt.add_argument('--hpdb_user', type=str, help='HPFeeds database default user')
+    parser_unatt.add_argument('--hpdb_pass', type=str, help='HPFeeds database default password')
+    parser_unatt.add_argument('--mnemodb_user', type=str, help='Mnemosyne database default user')
+    parser_unatt.add_argument('--mnemodb_pass', type=str, help='Mnemosyne database default password')
 
     if (len(sys.argv) < 2):
         args = parser.parse_args(['generate'])
@@ -113,6 +117,10 @@ def generate_config():
         mongo_port = args.mongo_port
         hpfeeds_host = args.hpfeeds_host
         hpfeeds_port = args.hpfeeds_port
+        hpdb_user = args.hpdb_user
+        hpdb_pass = args.hpdb_pass
+        mnemodb_user = args.mnemodb_user
+        mnemodb_pass = args.mnemodb_pass
     else:
         # Collect values from user
         debug = raw_input('Do you wish to run in Debug mode?: y/n ')
@@ -172,6 +180,10 @@ def generate_config():
 
         mongo_host = raw_input('MongoDB hostname ["localhost"]: ')
         mongo_port = raw_input('MongoDB port[27017]: ')
+        hpdb_user = raw_input('HPFeeds database username: ')
+        hpdb_pass = getpass('HPFeeds database password: ')
+        mnemodb_user = raw_input('Mnemosyne database username: ')
+        mnemodb_pass = getpass('Mnemosyne database password: ')
         hpfeeds_host = raw_input('HPFeeds hostname ["localhost"]: ')
         hpfeeds_port = raw_input('HPFeeds port[10000]: ')
 
@@ -199,6 +211,10 @@ def generate_config():
     localconfig['MONGODB_PORT'] = mongo_port if mongo_port else 27017
     localconfig['HPFEEDS_HOST'] = hpfeeds_host if hpfeeds_host else "localhost"
     localconfig['HPFEEDS_PORT'] = hpfeeds_port if hpfeeds_port else 10000
+    localconfig['HPDB_USER'] = hpdb_user if hpdb_user else ""
+    localconfig['HPDB_PASS'] = hpdb_pass if hpdb_pass else ""
+    localconfig['MNEMODB_USER'] = mnemodb_user if mnemodb_user else ""
+    localconfig['MNEMODB_PASS'] = mnemodb_pass if mnemodb_pass else ""
 
     with open('config.py.template', 'r') as templfile,\
          open('config.py', 'w') as confile:

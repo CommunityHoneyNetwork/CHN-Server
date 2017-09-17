@@ -136,6 +136,35 @@ generate_config () {
     else
       HPFEEDS_PORT="--hpfeeds_port ${HPFEEDS_PORT}"
     fi
+
+    if [[ ! -z "${HPDB_USER}" ]]
+    then
+      HPDB_USER="--hpdb_user ${HPDB_USER}"
+    else
+      HPDB_USER=""
+    fi
+
+    if [[ ! -z "${HPDB_PASS}" ]]
+    then
+      HPDB_PASS="--hpdb_pass ${HPDB_PASS}"
+    else
+      HPDB_PASS=""
+    fi
+
+    if [[ ! -z "${MNEMODB_USER}" ]]
+    then
+      MNEMODB_USER="--mnemodb_user ${MNEMODB_USER}"
+    else
+      MNEMODB_USER=""
+    fi
+
+    if [[ ! -z "${MNEMODB_PASS}" ]]
+    then
+      MNEMODB_PASS="--mnemodb_pass ${MNEMODB_PASS}"
+    else
+      MNEMODB_PASS=""
+    fi
+
     
     python generateconfig.py unattended ${EMAIL} \
                                         ${SERVER_BASE_URL} \
@@ -152,11 +181,15 @@ generate_config () {
                                         ${MONGODB_HOST} \
                                         ${MONGODB_PORT} \
                                         ${HPFEEDS_HOST} \
-                                        ${HPFEEDS_PORT}
+                                        ${HPFEEDS_PORT} \
+                                        ${HPDB_USER} \
+                                        ${HPDB_PASS} \
+                                        ${MNEMODB_USER} \
+                                        ${MNEMODB_PASS}
 
     # Generate config file for hpfeeds broker
     cd {{ hpfeeds_dir }}/hpfeeds/broker
-    python generateconfig.py unattended ${MONGODB_HOST} ${MONGODB_PORT}
+    python generateconfig.py unattended ${MONGODB_HOST} ${MONGODB_PORT} ${HPDB_USER} ${HPDB_PASS}
 
     cd {{ server_dir }}
     if [[ "${1}" == "--no-db-init" ]]

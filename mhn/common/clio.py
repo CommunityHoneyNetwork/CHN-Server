@@ -25,44 +25,50 @@ class Clio():
 
     """
 
-    def __init__(self, host=config.MONGODB_HOST, port=config.MONGODB_PORT):
+    def __init__(self, host=config.MONGODB_HOST, port=config.MONGODB_PORT,
+                 hpdb_creds=(config.HPDB_USER, config.HPDB_PASS),
+                 mnemodb_creds=(config.MNEMODB_USER, config.MNEMODB_PASS)):
+        self.hpdb_creds = hpdb_creds
+        self.mnemodb_creds = mnemodb_creds
+        print "HPDB Creds:", hpdb_creds
+        print "MNEMO Creds:", mnemodb_creds
         self.client = pymongo.MongoClient(host=host, port=port)
 
     @property
     def session(self):
-        return Session(self.client)
+        return Session(client=self.client, creds=self.mnemodb_creds)
 
     @property
     def counts(self):
-        return Counts(self.client)
+        return Counts(client=self.client, creds=self.mnemodb_creds)
 
     @property
     def session_protocol(self):
-        return SessionProtocol(self.client)
+        return SessionProtocol(client=self.client, creds=self.mnemodb_creds)
 
     @property
     def hpfeed(self):
-        return HpFeed(self.client)
+        return HpFeed(client=self.client, creds=self.mnemodb_creds)
 
     @property
     def authkey(self):
-        return AuthKey(self.client)
+        return AuthKey(client=self.client, creds=self.hpdb_creds)
 
     @property
     def url(self):
-        return Url(self.client)
+        return Url(client=self.client, creds=self.mnemodb_creds)
 
     @property
     def file(self):
-        return File(self.client)
+        return File(client=self.client, creds=self.mnemodb_creds)
 
     @property
     def dork(self):
-        return Dork(self.client)
+        return Dork(client=self.client, creds=self.mnemodb_creds)
 
     @property
     def metadata(self):
-        return Metadata(self.client)
+        return Metadata(client=self.client, creds=self.mnemodb_creds)
 
 
 class ResourceMixin(object):
@@ -70,8 +76,13 @@ class ResourceMixin(object):
     db_name = 'mnemosyne'
     expected_filters = ('_id',)
 
-    def __init__(self, client=None, **kwargs):
+    def __init__(self, client=None, creds=(None, None), **kwargs):
+        cls = self.__class__
         self.client = client
+        self.creds = creds
+        print "Creds:", creds
+        print "DB Name:", cls.db_name
+        self.client[cls.db_name].authenticate(name=self.creds[0], password=self.creds[1])
         for attr in self.__class__.expected_filters:
             setattr(self, attr, kwargs.get(attr))
 
@@ -128,7 +139,7 @@ class ResourceMixin(object):
         return skip, limit, order_by
 
     def new(self, **kwargs):
-        return self.__class__.from_dict(kwargs, self.client)
+        return self.__class__.from_dict(kwargs, self.client, self.creds)
 
     def to_dict(self):
         todict = {}
@@ -150,7 +161,7 @@ class ResourceMixin(object):
             if '_id' in kwargs:
                 kwargs['_id'] = ObjectId(kwargs['_id'])
                 return self.__class__.from_dict(
-                        self.collection.find_one(kwargs), self.client)
+                        self.collection.find_one(kwargs), self.client, self.creds)
 
             query = self.__class__._clean_query(kwargs)
             queryset = self.collection.find(query)
@@ -162,7 +173,7 @@ class ResourceMixin(object):
                     queryset = queryset.limit(limit)
                 if order_by:
                     queryset = queryset.sort(*order_by)
-            return (self.__class__.from_dict(f, self.client) for f in queryset)
+            return (self.__class__.from_dict(f, self.client, self.creds) for f in queryset)
 
     def delete(self, **kwargs):
         query = dict()
@@ -188,7 +199,7 @@ class ResourceMixin(object):
         return self.client[cls.db_name][cls.collection_name]
 
     @classmethod
-    def from_dict(cls, dict_, client=None):
+    def from_dict(cls, dict_, client=None, creds=(None, None)):
         """
         Returns an object from a dictionary, most likely
         to come from pymongo results.
@@ -196,12 +207,13 @@ class ResourceMixin(object):
         if dict_ is None:
             # Invalid dict incoming.
             return None
-        doc = cls(client)
+        doc = cls(client, creds)
         attrs = dict_.keys()
         for at in attrs:
             # Set every key in dict_ as attribute in the object.
             setattr(doc, at, dict_.get(at))
         return doc
+
 
 class Counts(ResourceMixin):
     collection_name = 'counts'
@@ -212,6 +224,7 @@ class Counts(ResourceMixin):
         if date:
             query['date'] = date
         return int(sum([rec['event_count'] for rec in self.collection.find(query)]))
+
 
 class Session(ResourceMixin):
 
@@ -265,9 +278,9 @@ class Session(ResourceMixin):
 
     def _tops(self, fields, top=5, hours_ago=None, **kwargs):
         if isinstance(fields, basestring):
-            fields = [fields,]
+            fields = [fields, ]
 
-        match_query = dict([ (field, {'$ne': None}) for field in fields ])
+        match_query = dict([(field, {'$ne': None}) for field in fields])
 
         for name, value in kwargs.items():
             if name.startswith('ne__'):
@@ -294,7 +307,7 @@ class Session(ResourceMixin):
             },
             {
                 '$group': {
-                    '_id': dict( [(field, '${}'.format(field)) for field in fields] ),
+                    '_id': dict([(field, '${}'.format(field)) for field in fields]),
                     'count': {'$sum': 1}
                 }
             },
@@ -304,9 +317,10 @@ class Session(ResourceMixin):
         ]
 
         res = self.collection.aggregate(query)
-        def format_result(r):
-            result = dict(r['_id'])
-            result['count'] = r['count']
+
+        def format_result(ur):
+            result = dict(ur['_id'])
+            result['count'] = ur['count']
             return result
 
         if 'ok' in res:
@@ -327,7 +341,7 @@ class Session(ResourceMixin):
         return self._tops('identifier', top, hours_ago)
     
     def attacker_stats(self, ip, hours_ago=None):
-        match_query = { 'source_ip': ip }
+        match_query = {'source_ip': ip}
 
         if hours_ago:
             match_query['timestamp'] = {
@@ -341,8 +355,8 @@ class Session(ResourceMixin):
             {
                 '$group': {
                     '_id': "source_ip",
-                    'count': {'$sum' : 1},
-                    'ports': { '$addToSet': "$destination_port"},
+                    'count': {'$sum': 1},
+                    'ports': {'$addToSet': "$destination_port"},
                     'honeypots': {'$addToSet': "$honeypot"},
                     'sensor_ids': {'$addToSet': "$identifier"},
                     'first_seen': {'$min': '$timestamp'},
@@ -351,11 +365,11 @@ class Session(ResourceMixin):
             },
             {
                 '$project': {
-                    "count":1,
+                    "count": 1,
                     'ports': 1,
-                    'honeypots':1,
-                    'first_seen':1,
-                    'last_seen':1,
+                    'honeypots': 1,
+                    'first_seen': 1,
+                    'last_seen': 1,
                     'num_sensors': {'$size': "$sensor_ids"}
                 }
             }
@@ -379,6 +393,7 @@ class Session(ResourceMixin):
             'last_seen': None,
         }
 
+
 class SessionProtocol(ResourceMixin):
 
     collection_name = 'session_protocol'
@@ -393,11 +408,12 @@ class HpFeed(ResourceMixin):
     expected_filters = ('ident', 'channel', 'payload', '_id', 'timestamp', )
 
     channel_map = {
-        'snort.alerts':['date', 'sensor', 'source_ip', 'destination_port', 'priority', 'classification', 'signature'],
-        'dionaea.capture':['url', 'daddr', 'saddr', 'dport', 'sport', 'sha512', 'md5'],
-        'glastopf.events':['time', 'pattern', 'filename', 'source', 'request_url'],
-        'suricata.events':['timestamp', 'sensor', 'source_ip', 'destination_port', 'proto', 'signature'],
+        'snort.alerts': ['date', 'sensor', 'source_ip', 'destination_port', 'priority', 'classification', 'signature'],
+        'dionaea.capture': ['url', 'daddr', 'saddr', 'dport', 'sport', 'sha512', 'md5'],
+        'glastopf.events': ['time', 'pattern', 'filename', 'source', 'request_url'],
+        'suricata.events': ['timestamp', 'sensor', 'source_ip', 'destination_port', 'proto', 'signature'],
     }
+
     def json_payload(self, data):
         if type(data) is dict:
              o_data = data
@@ -418,7 +434,6 @@ class HpFeed(ResourceMixin):
 
         return count,columns,(self.json_payload(fr.payload) for fr in self.get(options=options, **req_args))
 
-
     def count_passwords(self,payloads):
         passwords=[]
         for creds in payloads:
@@ -426,7 +441,6 @@ class HpFeed(ResourceMixin):
                 for cred in (creds['credentials']):
                     passwords.append(cred[1])
         return Counter(passwords).most_common(10)
-
 
     def count_users(self,payloads):
         users=[]
@@ -436,7 +450,6 @@ class HpFeed(ResourceMixin):
                     users.append(cred[0])
         return Counter(users).most_common(10)
 
-
     def count_combos(self,payloads):
         combos_count=[]
         for combos in payloads:
@@ -444,7 +457,6 @@ class HpFeed(ResourceMixin):
                 for combo in combos['credentials']:
                     combos_count.append(combo[0]+": "+combo[1])
         return Counter(combos_count).most_common(10)
-
 
     def _tops(self, field, chan, top=5, hours_ago=None):
         query = {'channel': chan}
@@ -457,7 +469,7 @@ class HpFeed(ResourceMixin):
         cnt = Counter()
         for val in val_list:
             cnt[val] += 1
-        results = [dict({field:val, 'count':num}) for val,num in cnt.most_common(top)]
+        results = [dict({field:val, 'count': num}) for val,num in cnt.most_common(top)]
 
         return results
 
@@ -466,6 +478,7 @@ class HpFeed(ResourceMixin):
 
     def top_files(self, top=5, hours_ago=24):
         return self._tops('destination_port', top, hours_ago)
+
 
 class Url(ResourceMixin):
 
@@ -486,6 +499,7 @@ class Dork(ResourceMixin):
     collection_name = 'dork'
     expected_filters = ('_id', 'content', 'inurl', 'lasttime', 'count',)
 
+
 class Metadata(ResourceMixin):
 
     collection_name = 'metadata'
@@ -501,15 +515,14 @@ class AuthKey(ResourceMixin):
     def get(self, options={}, **kwargs):
         if 'identifier' in kwargs:
             return AuthKey.from_dict(
-                    self.collection.find_one(kwargs), self.client)
+                    self.collection.find_one(kwargs), self.client, self.creds)
         else:
             return super(AuthKey, self).get(options, **kwargs)
 
     def post(self):
         objectid = self.collection.insert(dict(
                 identifier=self.identifier, secret=self.secret,
-                publish=self.publish, subscribe=self.subscribe))
-        self.client.fsync()
+                publish=self.publish, subscribe=self.subscribe), fsync=True)
         return objectid
 
     def put(self, **kwargs):

@@ -38,13 +38,13 @@ def ensure_user_permissions(ident, secret, publish, subscribe):
         "identifier": ident,
         "secret": secret,
         "publish": publish,
-        "subscribe":subscribe
+        "subscribe": subscribe
     }
 
     client = pymongo.MongoClient(host=config.MONGODB_HOST,
                                  port=config.MONGODB_PORT)
-    res = client.hpfeeds.auth_key.update({"identifier": ident}, {"$set": rec}, upsert=True)
-    client.fsync()
+    client.hpfeeds.authenticate(name=config.HPDB_USER, password=config.HPDB_PASS)
+    res = client.hpfeeds.auth_key.update({"identifier": ident}, {"$set": rec}, upsert=True, fsync=True)
     client.close()
 
 
@@ -134,6 +134,7 @@ def main():
         subscriber.close()
         publisher.close()
     return 0
+
 
 if __name__ == '__main__':
     try:
