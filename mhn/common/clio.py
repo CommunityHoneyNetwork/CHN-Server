@@ -30,8 +30,6 @@ class Clio():
                  mnemodb_creds=(config.MNEMODB_USER, config.MNEMODB_PASS)):
         self.hpdb_creds = hpdb_creds
         self.mnemodb_creds = mnemodb_creds
-        print "HPDB Creds:", hpdb_creds
-        print "MNEMO Creds:", mnemodb_creds
         self.client = pymongo.MongoClient(host=host, port=port)
 
     @property
@@ -80,8 +78,6 @@ class ResourceMixin(object):
         cls = self.__class__
         self.client = client
         self.creds = creds
-        print "Creds:", creds
-        print "DB Name:", cls.db_name
         self.client[cls.db_name].authenticate(name=self.creds[0], password=self.creds[1])
         for attr in self.__class__.expected_filters:
             setattr(self, attr, kwargs.get(attr))
@@ -469,7 +465,7 @@ class HpFeed(ResourceMixin):
         cnt = Counter()
         for val in val_list:
             cnt[val] += 1
-        results = [dict({field:val, 'count': num}) for val,num in cnt.most_common(top)]
+        results = [dict({field: val, 'count': num}) for val, num in cnt.most_common(top)]
 
         return results
 
