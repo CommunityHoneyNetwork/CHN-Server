@@ -16,5 +16,9 @@ then
   rm $PIDFILE
 fi
 
+# In case the log dir is not there
+mkdir -p /var/log/nginx
+touch /var/log/nginx/error.log
+
 /usr/sbin/nginx -t
 exec /usr/sbin/nginx
