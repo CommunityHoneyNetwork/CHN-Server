@@ -160,3 +160,12 @@
         command: "gunzip {{ server_dir }}/GeoIPASNum.dat.gz"
         args:
           creates: "{{ server_dir }}/GeoIPASNum.dat"
+
+      - name: CHN Server | link chnctl.py to bindir
+        file:
+          src: /opt/chnctl.py
+          dest: /usr/local/bin/chnctl
+          owner: root
+          group: root
+          state: link
+
