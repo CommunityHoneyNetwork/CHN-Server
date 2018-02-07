@@ -9,6 +9,7 @@ from flask_security.utils import encrypt_password
 from mhn.auth.models import User
 from mhn import mhn, db
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(description="CHN Server CLI Tool")
 parser.add_argument('-u',
@@ -19,8 +20,10 @@ parser.add_argument('-p',
                     dest='password',
                     required=True,
                     help='password')
-
-args = parser.parse_args()
+if len(sys.argv)==1:
+    parser.print_help()
+    sys.exit(1)
+args=parser.parse_args()
 
 with mhn.test_request_context():
     try:
