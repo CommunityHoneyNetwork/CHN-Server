@@ -77,4 +77,5 @@ HONEYPOT_CHANNELS = {
     'p0f': ['p0f.events'],
     'suricata': ['suricata.events'],
     'elastichoney': ['elastichoney.events'],
+    'rdphoney': ['rdphoney.sessions']
 }
