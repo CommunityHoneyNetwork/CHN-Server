@@ -108,12 +108,6 @@
           dest: /etc/service/celery_beat/run
           mode: 0755
 
-      - name: CHN Server | create collector runit conf
-        copy:
-          src: collector.run
-          dest: /etc/service/collector/run
-          mode: 0755
-
       - name: CHN Server | create log file for uwsgi
         file:
           path: /var/log/mhn
