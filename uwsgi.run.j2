@@ -136,6 +136,35 @@ generate_config () {
     else
       HPFEEDS_PORT="--hpfeeds_port ${HPFEEDS_PORT}"
     fi
+
+    if [[ ! -z ${SUPERUSER_EMAIL} ]]
+    then
+        SUPERUSER_EMAIL="--email ${SUPERUSER_EMAIL}"
+    else
+        SUPERUSER_EMAIL=""
+    fi
+
+    if [[ ! -z ${SUPERUSER_PASSWORD} ]]
+    then
+        SUPERUSER_PASSWORD="--password ${SUPERUSER_PASSWORD}"
+    else
+        SUPERUSER_PASSWORD=""
+    fi
+
+    if [[ ! -z ${SECRET_KEY} ]]
+    then
+        SECRET_KEY="--secret_key ${SECRET_KEY}"
+    else
+        SECRET_KEY=""
+    fi
+
+    if [[ ! -z ${DEPLOY_KEY} ]]
+    then
+        DEPLOY_KEY="--deploy_key ${DEPLOY_KEY}"
+    else
+        DEPLOY_KEY=""
+    fi
+
     
     python generateconfig.py unattended ${EMAIL} \
                                         ${SERVER_BASE_URL} \
@@ -152,7 +181,11 @@ generate_config () {
                                         ${MONGODB_HOST} \
                                         ${MONGODB_PORT} \
                                         ${HPFEEDS_HOST} \
-                                        ${HPFEEDS_PORT}
+                                        ${HPFEEDS_PORT} \
+                                        ${SUPERUSER_EMAIL} \
+                                        ${SUPERUSER_PASSWORD} \
+                                        ${SECRET_KEY} \
+                                        ${DEPLOY_KEY}
 
     # Generate config file for hpfeeds broker
     cd {{ hpfeeds_dir }}/hpfeeds/broker
