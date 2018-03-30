@@ -30,9 +30,9 @@ def generate_config():
     default_redis_url = 'redis://localhost:6379'
     default_log_path = '/var/log/mhn/mhn.log'
     default_superuser_password = rand_str(32)
-    localconfig = {}
-    localconfig['SECRET_KEY'] = rand_str(32)
-    localconfig['DEPLOY_KEY'] = rand_str(8)
+    default_secret_key = rand_str(32)
+    default_deploy_key = rand_str(8)
+    localconfig = dict()
 
     is_unattended = False
 
@@ -83,6 +83,10 @@ def generate_config():
                               help='HPFeeds address')
     parser_unatt.add_argument('--hpfeeds_port', type=int, default=10000,
                               help='HPFeeds port')
+    parser_unatt.add_argument('--secret_key', type=str,
+                              help='CHN Server secret key')
+    parser_unatt.add_argument('--deploy_key', type=str,
+                              help='CHN Server honeypot deploy key')
 
     if (len(sys.argv) < 2):
         args = parser.parse_args(['generate'])
@@ -113,6 +117,8 @@ def generate_config():
         mongo_port = args.mongo_port
         hpfeeds_host = args.hpfeeds_host
         hpfeeds_port = args.hpfeeds_port
+        secret_key = args.secret_key
+        deploy_key = args.deploy_key
     else:
         # Collect values from user
         debug = raw_input('Do you wish to run in Debug mode?: y/n ')
@@ -137,6 +143,9 @@ def generate_config():
                 break
             else:
                 print "Passwords did not match. Try again"
+
+        secret_key = raw_input('CHN Server secret key [""]: ')
+        deploy_key = raw_input('CHN Server honeypot deployment key [""]: ')
 
         server_base_url = raw_input('Server base url ["{}"]: '.format(default_base_url))
         if server_base_url.endswith('/'):
@@ -180,10 +189,14 @@ def generate_config():
     redis_url = redis_url if redis_url.strip() else default_redis_url
     log_file_path = log_file_path if log_file_path else default_log_path
     password = password if password else default_superuser_password
+    secret_key = secret_key if secret_key else default_secret_key
+    deploy_key = deploy_key if deploy_key else default_deploy_key
 
     localconfig['DEBUG'] = debug
     localconfig['SUPERUSER_EMAIL'] = email
     localconfig['SUPERUSER_ONETIME_PASSWORD'] = password
+    localconfig['SECRET_KEY'] = secret_key
+    localconfig['DEPLOY_KEY'] = deploy_key
     localconfig['SERVER_BASE_URL'] = server_base_url
     localconfig['HONEYMAP_URL'] = honeymap_url
     localconfig['REDIS_URL'] = redis_url
@@ -200,8 +213,7 @@ def generate_config():
     localconfig['HPFEEDS_HOST'] = hpfeeds_host if hpfeeds_host else "localhost"
     localconfig['HPFEEDS_PORT'] = hpfeeds_port if hpfeeds_port else 10000
 
-    with open('config.py.template', 'r') as templfile,\
-         open('config.py', 'w') as confile:
+    with open('config.py.template', 'r') as templfile, open('config.py', 'w') as confile:
         templ = templfile.read()
         for key, setting in localconfig.iteritems():
             templ = templ.replace('{{' + key + '}}', str(setting))
