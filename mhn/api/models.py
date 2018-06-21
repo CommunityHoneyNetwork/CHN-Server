@@ -20,7 +20,7 @@ class Sensor(db.Model, APIModel):
         'uuid': {'required': False, 'editable': False},
         'name': {'required': True, 'editable': True},
         'created_date': {'required': False, 'editable': False},
-        'ip': {'required': False, 'editable': False},
+        'ip': {'required': False, 'editable': True},
         'hostname': {'required': True, 'editable': True},
         'honeypot': {'required': True, 'editable': False}
     }
