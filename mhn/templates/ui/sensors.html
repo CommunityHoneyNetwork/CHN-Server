@@ -25,7 +25,7 @@
                     <tr>
                         <td>{{ pag.skip + loop.index  }}- <img class="del-sensor" data-sensor-id="{{ sr.uuid }}" src="/static/img/trash-24.png"/> </td>
                         <td>
-                            <input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                            <input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}"/>
                             <input data-sensor-id="{{ sr.uuid }}"
                                    type="text"
                                    data-field-name="name"
@@ -33,8 +33,25 @@
                                    value="{{ sr.name }}"
                             />
                         </td>
-                        <td>{{ sr.hostname }}</td>
-                        <td>{{ sr.ip}}</td>
+                        <td>
+                            <input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                            <input data-sensor-id="{{ sr.uuid }}"
+                                   type="text"
+                                   data-field-name="hostname"
+                                   class="text-edit"
+                                   value="{{ sr.hostname }}"
+                            />
+                        </td>
+                        <td>
+                            <input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                            <input data-sensor-id="{{ sr.uuid }}"
+                                   type="text"
+                                   size="10"
+                                   data-field-name="ip"
+                                   class="text-edit"
+                                   value="{{ sr.ip }}"
+                            />
+                        </td>
                         <td>{{ sr.honeypot}}</td>
                         <td>{{ sr.uuid}}</td>
                         <td><a href="{{ url_for('ui.get_attacks', identifier=sr.uuid) }}">{{ sr.attacks_count }}</a></td>
