@@ -115,6 +115,11 @@
           owner: "{{ nginx_user }}"
           mode: 0755
 
+      - name: CHN Server | create sqlite directory
+        file:
+          path: "{{ sqlite_dir }}"
+          state: directory
+
       - name: CHN Server | clone hpfeeds for utils
         git:
           repo: "{{ hpfeeds_repo }}"

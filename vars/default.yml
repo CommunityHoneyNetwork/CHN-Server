@@ -14,6 +14,8 @@
 
   server_dir: /opt
 
+  sqlite_dir: /opt/sqlite
+
   hpfeeds_repo: https://github.com/CommunityHoneyNetwork/hpfeeds.git
   ### NEED TO UPDATE THIS TO MASTER 
   ### ONCE MASTER HAS THE FORK MERGED
