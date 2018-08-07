@@ -35,7 +35,8 @@ def create_sensor():
     else:
         sensor = Sensor(**request.json)
         sensor.uuid = str(uuid4())
-        sensor.ip = request.remote_addr
+        if not sensor.ip:
+            sensor.ip = request.remote_addr
         Clio().authkey.new(**sensor.new_auth_dict()).post()
         try:
             db.session.add(sensor)
@@ -150,6 +151,14 @@ def get_feed(feed_id):
 @token_auth
 def get_session(session_id):
     return _get_one_resource(Clio().session, session_id)
+
+
+@api.route('/session/<uuid>/', methods=['DELETE'])
+@login_required
+def delete_sessions(uuid):
+    Clio().session.delete(identifier=uuid)
+    Clio().counts.reset_count(identifier=uuid)
+    return jsonify({})
 
 
 @api.route('/url/<url_id>/', methods=['GET'])

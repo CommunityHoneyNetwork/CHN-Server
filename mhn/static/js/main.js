@@ -243,6 +243,22 @@ $(document).ready(function() {
                 }
             });
         });
+
+        $('.del-session').click(function() {
+            var sensorId = $(this).attr('data-sensor-id');
+
+            $.ajax({
+                type: 'DELETE',
+                url: '/api/session/' + sensorId + '/',
+                headers: {'X-CSRFToken': $('#_csrf_token').val()},
+                success: function() {
+                    window.location.reload();
+                },
+                error: function(resp) {
+                    alert('There was an error clearing these sessions.');
+                }
+            });
+        });
     }
 
     if ($('#user-form').length >= 1) {

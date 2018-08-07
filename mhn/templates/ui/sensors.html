@@ -18,12 +18,13 @@
                         <th>Honeypot</th>
                         <th>UUID</th>
                         <th>Attacks</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for sr in sensors.items %}
                     <tr>
-                        <td>{{ pag.skip + loop.index  }}- <img class="del-sensor" data-sensor-id="{{ sr.uuid }}" src="/static/img/trash-24.png"/> </td>
+                        <td>{{ pag.skip + loop.index }}- <img class="del-sensor" data-sensor-id="{{ sr.uuid }}" src="/static/img/trash-24.png"/> </td>
                         <td>
                             <input id="_csrf_token" name="_csrf_token" type="hidden" value="{{ csrf_token() }}"/>
                             <input data-sensor-id="{{ sr.uuid }}"
@@ -52,9 +53,10 @@
                                    value="{{ sr.ip }}"
                             />
                         </td>
-                        <td>{{ sr.honeypot}}</td>
-                        <td>{{ sr.uuid}}</td>
+                        <td>{{ sr.honeypot }}</td>
+                        <td>{{ sr.uuid }}</td>
                         <td><a href="{{ url_for('ui.get_attacks', identifier=sr.uuid) }}">{{ sr.attacks_count }}</a></td>
+                        <td><input class="tiny button del-session" data-sensor-id="{{ sr.uuid }}" type="button" value="Clear"/></td>
                     </tr>
                     {% endfor %}
                 </tbody>
