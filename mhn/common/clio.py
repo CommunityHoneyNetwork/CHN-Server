@@ -203,6 +203,7 @@ class ResourceMixin(object):
             setattr(doc, at, dict_.get(at))
         return doc
 
+
 class Counts(ResourceMixin):
     collection_name = 'counts'
     expected_filters = ('identifier', 'date', 'event_count',)
@@ -212,6 +213,11 @@ class Counts(ResourceMixin):
         if date:
             query['date'] = date
         return int(sum([rec['event_count'] for rec in self.collection.find(query)]))
+
+    def reset_count(self, identifier):
+        query = {'identifier': identifier}
+        self.collection.update(query, {'$set': {'event_count': 0}})
+
 
 class Session(ResourceMixin):
 
@@ -265,9 +271,9 @@ class Session(ResourceMixin):
 
     def _tops(self, fields, top=5, hours_ago=None, **kwargs):
         if isinstance(fields, basestring):
-            fields = [fields,]
+            fields = [fields, ]
 
-        match_query = dict([ (field, {'$ne': None}) for field in fields ])
+        match_query = dict([(field, {'$ne': None}) for field in fields])
 
         for name, value in kwargs.items():
             if name.startswith('ne__'):
@@ -294,7 +300,7 @@ class Session(ResourceMixin):
             },
             {
                 '$group': {
-                    '_id': dict( [(field, '${}'.format(field)) for field in fields] ),
+                    '_id': dict([(field, '${}'.format(field)) for field in fields]),
                     'count': {'$sum': 1}
                 }
             },
@@ -304,6 +310,7 @@ class Session(ResourceMixin):
         ]
 
         res = self.collection.aggregate(query)
+
         def format_result(r):
             result = dict(r['_id'])
             result['count'] = r['count']
@@ -341,8 +348,8 @@ class Session(ResourceMixin):
             {
                 '$group': {
                     '_id': "source_ip",
-                    'count': {'$sum' : 1},
-                    'ports': { '$addToSet': "$destination_port"},
+                    'count': {'$sum': 1},
+                    'ports': {'$addToSet': "$destination_port"},
                     'honeypots': {'$addToSet': "$honeypot"},
                     'sensor_ids': {'$addToSet': "$identifier"},
                     'first_seen': {'$min': '$timestamp'},
@@ -351,11 +358,11 @@ class Session(ResourceMixin):
             },
             {
                 '$project': {
-                    "count":1,
+                    "count": 1,
                     'ports': 1,
-                    'honeypots':1,
-                    'first_seen':1,
-                    'last_seen':1,
+                    'honeypots': 1,
+                    'first_seen': 1,
+                    'last_seen': 1,
                     'num_sensors': {'$size': "$sensor_ids"}
                 }
             }
@@ -379,6 +386,7 @@ class Session(ResourceMixin):
             'last_seen': None,
         }
 
+
 class SessionProtocol(ResourceMixin):
 
     collection_name = 'session_protocol'
@@ -393,58 +401,55 @@ class HpFeed(ResourceMixin):
     expected_filters = ('ident', 'channel', 'payload', '_id', 'timestamp', )
 
     channel_map = {
-        'snort.alerts':['date', 'sensor', 'source_ip', 'destination_port', 'priority', 'classification', 'signature'],
-        'dionaea.capture':['url', 'daddr', 'saddr', 'dport', 'sport', 'sha512', 'md5'],
-        'glastopf.events':['time', 'pattern', 'filename', 'source', 'request_url'],
-        'suricata.events':['timestamp', 'sensor', 'source_ip', 'destination_port', 'proto', 'signature'],
+        'snort.alerts': ['date', 'sensor', 'source_ip', 'destination_port', 'priority', 'classification', 'signature'],
+        'dionaea.capture': ['url', 'daddr', 'saddr', 'dport', 'sport', 'sha512', 'md5'],
+        'glastopf.events': ['time', 'pattern', 'filename', 'source', 'request_url'],
+        'suricata.events': ['timestamp', 'sensor', 'source_ip', 'destination_port', 'proto', 'signature'],
     }
+
     def json_payload(self, data):
         if type(data) is dict:
-             o_data = data
+            o_data = data
         else:
-             o_data = json.loads(data)
+            o_data = json.loads(data)
         return o_data
         
     def get_payloads(self, options, req_args):
         payloads = []
         columns = []
-        if len(req_args.get('payload','')) > 1:
-            req_args['payload'] = {'$regex':req_args['payload']}
+        if len(req_args.get('payload', '')) > 1:
+            req_args['payload'] = {'$regex': req_args['payload']}
 
         cnt_query = super(HpFeed, self)._clean_query(req_args)
         count = self.collection.find(cnt_query).count()
 
         columns = self.channel_map.get(req_args['channel'])
 
-        return count,columns,(self.json_payload(fr.payload) for fr in self.get(options=options, **req_args))
-
+        return count, columns,(self.json_payload(fr.payload) for fr in self.get(options=options, **req_args))
 
     def count_passwords(self,payloads):
-        passwords=[]
+        passwords = []
         for creds in payloads:
-            if creds['credentials']!= None:
+            if creds['credentials']:
                 for cred in (creds['credentials']):
                     passwords.append(cred[1])
         return Counter(passwords).most_common(10)
 
-
-    def count_users(self,payloads):
-        users=[]
+    def count_users(self, payloads):
+        users = []
         for creds in payloads:
-            if creds['credentials']!= None:
+            if creds['credentials']:
                 for cred in (creds['credentials']):
                     users.append(cred[0])
         return Counter(users).most_common(10)
 
-
-    def count_combos(self,payloads):
-        combos_count=[]
+    def count_combos(self, payloads):
+        combos_count = []
         for combos in payloads:
-            if combos['credentials']!= None:
+            if combos['credentials']:
                 for combo in combos['credentials']:
-                    combos_count.append(combo[0]+": "+combo[1])
+                    combos_count.append(combo[0] + ": " + combo[1])
         return Counter(combos_count).most_common(10)
-
 
     def _tops(self, field, chan, top=5, hours_ago=None):
         query = {'channel': chan}
@@ -457,7 +462,7 @@ class HpFeed(ResourceMixin):
         cnt = Counter()
         for val in val_list:
             cnt[val] += 1
-        results = [dict({field:val, 'count':num}) for val,num in cnt.most_common(top)]
+        results = [dict({field: val, 'count': num}) for val, num in cnt.most_common(top)]
 
         return results
 
@@ -466,6 +471,7 @@ class HpFeed(ResourceMixin):
 
     def top_files(self, top=5, hours_ago=24):
         return self._tops('destination_port', top, hours_ago)
+
 
 class Url(ResourceMixin):
 
@@ -485,6 +491,7 @@ class Dork(ResourceMixin):
 
     collection_name = 'dork'
     expected_filters = ('_id', 'content', 'inurl', 'lasttime', 'count',)
+
 
 class Metadata(ResourceMixin):
 

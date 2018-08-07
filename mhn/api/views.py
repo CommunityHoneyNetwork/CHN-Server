@@ -153,6 +153,14 @@ def get_session(session_id):
     return _get_one_resource(Clio().session, session_id)
 
 
+@api.route('/session/<uuid>/', methods=['DELETE'])
+@login_required
+def delete_sessions(uuid):
+    Clio().session.delete(identifier=uuid)
+    Clio().counts.reset_count(identifier=uuid)
+    return jsonify({})
+
+
 @api.route('/url/<url_id>/', methods=['GET'])
 @token_auth
 def get_url(url_id):
