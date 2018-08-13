@@ -157,7 +157,8 @@ def get_session(session_id):
 @login_required
 def delete_sessions(uuid):
     Clio().session.delete(identifier=uuid)
-    Clio().counts.reset_count(identifier=uuid)
+    Clio().counts.delete(identifier=uuid)
+    Clio().hpfeed.delete(identifier=uuid)
     return jsonify({})
 
 

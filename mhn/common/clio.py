@@ -214,10 +214,6 @@ class Counts(ResourceMixin):
             query['date'] = date
         return int(sum([rec['event_count'] for rec in self.collection.find(query)]))
 
-    def reset_count(self, identifier):
-        query = {'identifier': identifier}
-        self.collection.update(query, {'$set': {'event_count': 0}})
-
 
 class Session(ResourceMixin):
 
