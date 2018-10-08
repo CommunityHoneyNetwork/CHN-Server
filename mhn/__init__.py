@@ -136,34 +136,23 @@ def create_clean_db():
         #|-- deploy_dionaea.sh
         #|-- deploy_snort.sh
         #|-- deploy_kippo.sh
-        # deployscripts = {
-        #     'Ubuntu - Conpot': path.abspath('../scripts/deploy_conpot.sh'),
-        #     'Ubuntu - Dionaea': path.abspath('../scripts/deploy_dionaea.sh'),
-        #     'Ubuntu - Snort': path.abspath('../scripts/deploy_snort.sh'),
-        #     'Ubuntu - cowrie': path.abspath('../scripts/deploy_cowrie.sh'),
-        #     'Ubuntu/Raspberry Pi - Kippo': path.abspath('../scripts/deploy_kippo.sh'),
-        #     'Ubuntu - Amun': path.abspath('../scripts/deploy_amun.sh'),
-        #     'Ubuntu - Glastopf': path.abspath('../scripts/deploy_glastopf.sh'),
-        #     'Ubuntu - Wordpot': path.abspath('../scripts/deploy_wordpot.sh'),
-        #     'Ubuntu - Shockpot': path.abspath('../scripts/deploy_shockpot.sh'),
-        #     'Ubuntu - p0f': path.abspath('../scripts/deploy_p0f.sh'),
-        #     'Ubuntu - Suricata': path.abspath('../scripts/deploy_suricata.sh'),
-        #     'Ubuntu - ElasticHoney': path.abspath('../scripts/deploy_elastichoney.sh'),
-        #     'Raspberry Pi - Dionaea': path.abspath('../scripts/deploy_raspberrypi.sh'),
-        #     'Ubuntu - Dionaea with HTTP': path.abspath('../scripts/deploy_dionaea_http.sh'),
-        #     'Ubuntu - Kippo as vulnerable Juniper Netscreen': path.abspath('../scripts/deploy_kippo_as_juniper.sh'),
-        #     'Ubuntu - Shockpot Sinkhole': path.abspath('../scripts/deploy_shockpot_sinkhole.sh'),
-        #     'Redhat/Centos - Kippo': path.abspath('../scripts/deploy_kippo-centos.sh'),
-        # }
-        # for honeypot, deploypath in deployscripts.iteritems():
-        #
-        #     with open(deploypath, 'r') as deployfile:
-        #         initdeploy = DeployScript()
-        #         initdeploy.script = deployfile.read()
-        #         initdeploy.notes = 'Initial deploy script for {}'.format(honeypot)
-        #         initdeploy.user = superuser
-        #         initdeploy.name = honeypot
-        #         db.session.add(initdeploy)
+        deployscripts = {
+            'Ubuntu - Conpot': path.abspath('../scripts/deploy_conpot.sh'),
+            'Ubuntu - Dionaea': path.abspath('../scripts/deploy_dionaea.sh'),
+            'Ubuntu - Cowrie': path.abspath('../scripts/deploy_cowrie.sh'),
+            'Ubuntu - Amun': path.abspath('../scripts/deploy_amun.sh'),
+            'Ubuntu - Glastopf': path.abspath('../scripts/deploy_glastopf.sh'),
+            'Ubuntu - Wordpot': path.abspath('../scripts/deploy_wordpot.sh'),
+            'Ubuntu - RDPHoney': path.abspath('../scripts/deploy_rdphoney.sh'),
+        }
+        for honeypot, deploypath in deployscripts.iteritems():
+            with open(deploypath, 'r') as deployfile:
+                initdeploy = DeployScript()
+                initdeploy.script = deployfile.read()
+                initdeploy.notes = 'Initial deploy script for {}'.format(honeypot)
+                initdeploy.user = superuser
+                initdeploy.name = honeypot
+                db.session.add(initdeploy)
 
         # Creating an initial rule source.
         rules_source = mhn.config.get('SNORT_RULES_SOURCE')
