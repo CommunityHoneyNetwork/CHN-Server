@@ -6,7 +6,7 @@
 DEBUG=false
 
 EMAIL=admin@localhost
-SERVER_BASE_URL='http://127.0.0.1'
+SERVER_BASE_URL=''
 HONEYMAP_URL=''
 REDIS_URL='redis://redis:6379'
 MAIL_SERVER='127.0.0.1'

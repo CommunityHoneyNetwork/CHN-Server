@@ -20,12 +20,11 @@ generate_config () {
       EMAIL="--email ${EMAIL}"
     fi
 
-    if [[ -z ${SERVER_BASE_URL} ]]
+    if [[ ! -z ${SERVER_BASE_URL} ]]
     then
-      echo "Base url is required"
-      exit 1
-    else
       SERVER_BASE_URL="--base_url ${SERVER_BASE_URL}"
+    else
+      SERVER_BASE_URL=""
     fi
 
     if [[ ! -z "${HONEYMAP_URL}" ]]
