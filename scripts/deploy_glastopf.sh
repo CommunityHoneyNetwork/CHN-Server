@@ -17,8 +17,8 @@ services:
             - "8080:8080"
 EOF
 echo 'Done!'
-echo 'Creating glastop.sysconfig...'
-cat << EOF > glastop.sysconfig
+echo 'Creating glastopf.sysconfig...'
+cat << EOF > glastopf.sysconfig
 # This file is read from /etc/default/glastopf
 # depending on the base distro
 #
