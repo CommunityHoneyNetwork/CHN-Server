@@ -10,26 +10,22 @@ test:
   script:
     - flake8 .
 
-code_quality:
+dependency_scanning:
   image: docker:stable
-  tags:
-    - code_quality
   variables:
     DOCKER_DRIVER: overlay2
-    CONTAINER_TIMEOUT_SECONDS: 120
-    CODECLIMATE_DEBUG: 1
   allow_failure: true
   services:
     - docker:stable-dind
-  before_script:
-    - hostname
-    - whoami
+  tags:
+    - dependency_scanning
   script:
     - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
-    - sudo docker run
-        --env SOURCE_CODE="$PWD"
-        --volume "$PWD":/code:z
-        --volume /var/run/docker.sock:/var/run/docker.sock:z
-        "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
+    - docker run
+        --env DEP_SCAN_DISABLE_REMOTE_CHECKS="${DEP_SCAN_DISABLE_REMOTE_CHECKS:-false}"
+        --volume "$PWD:/code"
+        --volume /var/run/docker.sock:/var/run/docker.sock
+        "registry.gitlab.com/gitlab-org/security-products/dependency-scanning:$SP_VERSION" /code
   artifacts:
-    paths: [gl-code-quality-report.json]
+    paths: [gl-dependency-scanning-report.json]
+
