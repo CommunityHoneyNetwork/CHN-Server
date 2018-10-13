@@ -19,9 +19,11 @@ code_quality:
   allow_failure: true
   services:
     - docker:stable-dind
+  before_script:
+    - hostname
+    - whoami
   script:
     - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
-    - whoami
     - sudo docker run
         --env SOURCE_CODE="$PWD"
         --volume "$PWD":/code:z
