@@ -12,6 +12,8 @@ test:
 
 code_quality:
   image: docker:stable
+  tags:
+    - code_quality
   variables:
     DOCKER_DRIVER: overlay2
     CONTAINER_TIMEOUT_SECONDS: 120
