@@ -33,6 +33,8 @@ sast:
   image: docker:stable
   variables:
     DOCKER_DRIVER: overlay2
+  tags:
+    - sast
   allow_failure: true
   services:
     - docker:stable-dind
