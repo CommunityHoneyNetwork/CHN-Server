@@ -1,6 +1,15 @@
 from urlparse import urljoin
+from mhn.auth.models import User, Role, ApiKey
+from mhn.api.views import api
+from mhn.ui.views import ui
+from mhn.auth.views import auth
+from mhn.common.templatetags import format_date
+from mhn.auth.contextprocessors import user_ctx
+from mhn.common.contextprocessors import config_ctx
+import logging
+from logging.handlers import RotatingFileHandler
 
-from flask import Flask, request, jsonify, abort, url_for, session
+from flask import Flask, request, jsonify, abort, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.security.utils import encrypt_password as encrypt
@@ -8,15 +17,12 @@ from flask.ext.mail import Mail
 from werkzeug.contrib.atom import AtomFeed
 import xmltodict
 import uuid
-import random
-import string
 from flask_wtf.csrf import CsrfProtect
 csrf = CsrfProtect()
 
 db = SQLAlchemy()
 # After defining `db`, import auth models due to
 # circular dependency.
-from mhn.auth.models import User, Role, ApiKey
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 
 
@@ -35,27 +41,19 @@ db.init_app(mhn)
 Security(mhn, user_datastore)
 
 # Registering blueprints.
-from mhn.api.views import api
 mhn.register_blueprint(api)
 
-from mhn.ui.views import ui
 mhn.register_blueprint(ui)
 
-from mhn.auth.views import auth
 mhn.register_blueprint(auth)
 
 # Trigger templatetag register.
-from mhn.common.templatetags import format_date
 mhn.jinja_env.filters['fdate'] = format_date
 
-from mhn.auth.contextprocessors import user_ctx
 mhn.context_processor(user_ctx)
 
-from mhn.common.contextprocessors import config_ctx
 mhn.context_processor(config_ctx)
 
-import logging
-from logging.handlers import RotatingFileHandler
 
 mhn.logger.setLevel(logging.INFO)
 formatter = logging.Formatter(
@@ -103,7 +101,8 @@ def get_feed():
         feedtext = feedtext.format(**s.to_dict())
         feed.add('Feed', feedtext, content_type='text',
                  published=s.timestamp, updated=s.timestamp,
-                 url=makeurl(url_for('api.get_session', session_id=str(s._id))))
+                 url=makeurl(url_for('api.get_session',
+                                     session_id=str(s._id))))
     return feed
 
 
@@ -122,7 +121,8 @@ def create_clean_db():
         user_datastore.create_role(name='user', description='')
         db.session.flush()
 
-        apikey = ApiKey(user_id=superuser.id, api_key=str(uuid.uuid4()).replace("-", ""))
+        apikey = ApiKey(user_id=superuser.id,
+                        api_key=str(uuid.uuid4()).replace("-", ""))
         db.session.add(apikey)
         db.session.flush()
 
@@ -132,10 +132,10 @@ def create_clean_db():
         from mhn.tasks.rules import fetch_sources
         # Creating a initial deploy scripts.
         # Reading initial deploy script should be: ../../scripts/
-        #|-- deploy_conpot.sh
-        #|-- deploy_dionaea.sh
-        #|-- deploy_snort.sh
-        #|-- deploy_kippo.sh
+        # |-- deploy_conpot.sh
+        # |-- deploy_dionaea.sh
+        # |-- deploy_snort.sh
+        # |-- deploy_kippo.sh
         deployscripts = {
             'Ubuntu - Conpot': path.abspath('./scripts/deploy_conpot.sh'),
             'Ubuntu - Dionaea': path.abspath('./scripts/deploy_dionaea.sh'),
@@ -149,7 +149,8 @@ def create_clean_db():
             with open(deploypath, 'r') as deployfile:
                 initdeploy = DeployScript()
                 initdeploy.script = deployfile.read()
-                initdeploy.notes = 'Initial deploy script for {}'.format(honeypot)
+                initdeploy.notes = 'Initial deploy script for {}'.format(
+                    honeypot)
                 initdeploy.user = superuser
                 initdeploy.name = honeypot
                 db.session.add(initdeploy)

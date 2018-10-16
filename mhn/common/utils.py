@@ -4,6 +4,11 @@ from flask import jsonify, g
 
 from mhn.constants import PAGE_SIZE
 
+try:
+    xrange
+except NameError:
+    xrange = range
+
 
 def error_response(message, status_code=400):
     resp = jsonify({'error': message})
@@ -14,9 +19,7 @@ def error_response(message, status_code=400):
 def alchemy_pages(query, **kwargs):
     page = kwargs.get('page', g.page)
     page_size = kwargs.get('limit', PAGE_SIZE)
-    items = query.\
-            offset((page - 1) * page_size).\
-            limit(page_size)
+    items = query.offset((page - 1) * page_size).limit(page_size)
     return Pagination(page, page_size, query.count(), items)
 
 
@@ -80,10 +83,10 @@ class Pagination(object):
                    right_current=5, right_edge=2):
         last = 0
         for num in xrange(1, self.pages + 1):
-            if num <= left_edge or \
-               (num > self.page - left_current - 1 and \
-                num < self.page + right_current) or \
-               num > self.pages - right_edge:
+            if num <= left_edge or (
+                    num > self.page - left_current - 1
+                    and num < self.page + right_current
+            ) or num > self.pages - right_edge:
                 if last + 1 != num:
                     yield None
                 yield num

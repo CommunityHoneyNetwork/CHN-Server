@@ -20,6 +20,7 @@ import uuid
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
+
 @auth.route('/login/', methods=['POST'])
 def login_user():
     if 'email' not in request.json:
@@ -65,7 +66,8 @@ def create_user():
             db.session.add(user)
             db.session.flush()
 
-            apikey = ApiKey(user_id=user.id, api_key=str(uuid.uuid4()).replace("-", ""))
+            apikey = ApiKey(user_id=user.id,
+                            api_key=str(uuid.uuid4()).replace("-", ""))
             db.session.add(apikey)
 
             db.session.commit()
@@ -81,7 +83,7 @@ def delete_user(user_id):
     user = User.query.get(user_id)
     if not user:
         return error_response(errors.AUTH_NOT_FOUND.format(user_id), 404)
-    user.active= False
+    user.active = False
     db.session.add(user)
     db.session.commit()
     return jsonify({})
@@ -95,7 +97,8 @@ def reset_passwd_request():
     user = User.query.filter_by(email=email).first()
     if not user:
         return error_response(errors.AUTH_NOT_FOUND.format(email), 404)
-    hashstr = hashlib.sha1(str(random.getrandbits(128)) + user.email).hexdigest()
+    hashstr = hashlib.sha1(
+        str(random.getrandbits(128)) + user.email).hexdigest()
     # Deactivate all other password resets for this user.
     PasswdReset.query.filter_by(user=user).update({'active': False})
     reset = PasswdReset(hashstr=hashstr, active=True, user=user)
@@ -108,7 +111,7 @@ def reset_passwd_request():
             recipients=[user.email], sender=mhn.config['DEFAULT_MAIL_SENDER'])
     try:
         mail.send(msg)
-    except:
+    except Exception as e:
         return error_response(errors.AUTH_SMTP_ERROR, 500)
     else:
         return jsonify({})
@@ -135,9 +138,8 @@ def change_passwd():
             # request, ie, uses password reset hash.
             return error_response(errors.AUTH_RESET_MISSING, 400)
         reset = db.session.query(PasswdReset).join(User).\
-                    filter(User.email == email, PasswdReset.active == True).\
-                    filter(PasswdReset.hashstr == hashstr).\
-                    first()
+            filter(User.email == email, PasswdReset.active is True).\
+            filter(PasswdReset.hashstr == hashstr).first()
         if not reset:
             return error_response(errors.AUTH_RESET_HASH, 404)
         db.session.add(reset)

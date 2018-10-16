@@ -23,7 +23,7 @@ class SensorTestCase(MHNTestCase):
 
         # Registering a sensor with deploy_key in post body.
         resp = self.client.post(create_url, data=json.dumps(data),
-                               content_type='application/json')
+                                content_type='application/json')
         resp = json.loads(resp.data)
         authkey = self.clio.authkey.get(identifier=resp['uuid'])
         sensor = Sensor.query.first()

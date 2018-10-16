@@ -31,4 +31,3 @@ class APIModel(object):
             if (field not in payload) or payload.get(field) == '':
                 missing.append(field)
         return missing
-
