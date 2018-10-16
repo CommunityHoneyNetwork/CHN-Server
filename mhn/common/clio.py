@@ -14,6 +14,13 @@ import datetime
 import config
 
 
+# Python3 yo'
+try:
+    basestring
+except NameError:
+    basestring = str
+
+
 class Clio():
     """
     Main interface for Clio - Mnemosyne Client Library -
@@ -89,7 +96,8 @@ class ResourceMixin(object):
 
         if 'hours_ago' in dirty:
             clean['timestamp'] = {
-                '$gte': datetime.datetime.utcnow() - datetime.timedelta(hours=int(dirty['hours_ago']))
+                '$gte': datetime.datetime.utcnow() - datetime.timedelta(
+                    hours=int(dirty['hours_ago']))
             }
 
         return clean
@@ -212,7 +220,8 @@ class Counts(ResourceMixin):
         query = {'identifier': identifier}
         if date:
             query['date'] = date
-        return int(sum([rec['event_count'] for rec in self.collection.find(query)]))
+        return int(
+            sum([rec['event_count'] for rec in self.collection.find(query)]))
 
 
 class Session(ResourceMixin):
@@ -249,7 +258,8 @@ class Session(ResourceMixin):
             if field in clean.copy():
                 clean = clean_integer(field, clean)
 
-        if 'timestamp' in clean and isinstance(clean['timestamp'], basestring):
+        if 'timestamp' in clean and isinstance(
+                clean['timestamp'], basestring):
             # Transforms timestamp queries into
             # timestamp_lte queries.
             try:
@@ -260,7 +270,8 @@ class Session(ResourceMixin):
 
                 clean['timestamp'] = {
                     '$gte': date_to_datetime(timestamp.date()),
-                    '$lt': date_to_datetime(timestamp.date() + datetime.timedelta(days=1))
+                    '$lt': date_to_datetime(
+                        timestamp.date() + datetime.timedelta(days=1))
                 }
 
         return clean
@@ -287,7 +298,8 @@ class Session(ResourceMixin):
 
         if hours_ago:
             match_query['timestamp'] = {
-                '$gte': datetime.datetime.now() - datetime.timedelta(hours=hours_ago)
+                '$gte': datetime.datetime.now() - datetime.timedelta(
+                    hours=hours_ago)
             }
 
         query = [
@@ -296,7 +308,8 @@ class Session(ResourceMixin):
             },
             {
                 '$group': {
-                    '_id': dict([(field, '${}'.format(field)) for field in fields]),
+                    '_id': dict(
+                        [(field, '${}'.format(field)) for field in fields]),
                     'count': {'$sum': 1}
                 }
             },
@@ -325,16 +338,17 @@ class Session(ResourceMixin):
 
     def top_hp(self, top=5, hours_ago=None):
         return self._tops('honeypot', top, hours_ago)
-    
+
     def top_sensor(self, top=5, hours_ago=None):
         return self._tops('identifier', top, hours_ago)
-    
+
     def attacker_stats(self, ip, hours_ago=None):
-        match_query = { 'source_ip': ip }
+        match_query = {'source_ip': ip}
 
         if hours_ago:
             match_query['timestamp'] = {
-                '$gte': datetime.datetime.now() - datetime.timedelta(hours=hours_ago)
+                '$gte': datetime.datetime.now() - datetime.timedelta(
+                    hours=hours_ago)
             }
 
         query = [
@@ -397,10 +411,14 @@ class HpFeed(ResourceMixin):
     expected_filters = ('ident', 'channel', 'payload', '_id', 'timestamp', )
 
     channel_map = {
-        'snort.alerts': ['date', 'sensor', 'source_ip', 'destination_port', 'priority', 'classification', 'signature'],
-        'dionaea.capture': ['url', 'daddr', 'saddr', 'dport', 'sport', 'sha512', 'md5'],
-        'glastopf.events': ['time', 'pattern', 'filename', 'source', 'request_url'],
-        'suricata.events': ['timestamp', 'sensor', 'source_ip', 'destination_port', 'proto', 'signature'],
+        'snort.alerts': ['date', 'sensor', 'source_ip', 'destination_port',
+                         'priority', 'classification', 'signature'],
+        'dionaea.capture': ['url', 'daddr', 'saddr', 'dport', 'sport',
+                            'sha512', 'md5'],
+        'glastopf.events': ['time', 'pattern', 'filename', 'source',
+                            'request_url'],
+        'suricata.events': ['timestamp', 'sensor', 'source_ip',
+                            'destination_port', 'proto', 'signature'],
     }
 
     def json_payload(self, data):
@@ -409,9 +427,8 @@ class HpFeed(ResourceMixin):
         else:
             o_data = json.loads(data)
         return o_data
-        
+
     def get_payloads(self, options, req_args):
-        payloads = []
         columns = []
         if len(req_args.get('payload', '')) > 1:
             req_args['payload'] = {'$regex': req_args['payload']}
@@ -421,9 +438,11 @@ class HpFeed(ResourceMixin):
 
         columns = self.channel_map.get(req_args['channel'])
 
-        return count, columns,(self.json_payload(fr.payload) for fr in self.get(options=options, **req_args))
+        return count, columns, (
+            self.json_payload(fr.payload) for fr in self.get(
+                options=options, **req_args))
 
-    def count_passwords(self,payloads):
+    def count_passwords(self, payloads):
         passwords = []
         for creds in payloads:
             if creds['credentials']:
@@ -454,11 +473,14 @@ class HpFeed(ResourceMixin):
             query['hours_ago'] = hours_ago
 
         res = self.get(options={}, **query)
-        val_list = [rec.get(field) for rec in [self.json_payload(r.payload) for r in res] if field in rec]
+        val_list = [rec.get(field) for rec in [self.json_payload(
+            r.payload) for r in res] if field in rec]
         cnt = Counter()
         for val in val_list:
             cnt[val] += 1
-        results = [dict({field: val, 'count': num}) for val, num in cnt.most_common(top)]
+        results = [
+            dict({field: val, 'count': num}
+                 ) for val, num in cnt.most_common(top)]
 
         return results
 
@@ -492,7 +514,8 @@ class Dork(ResourceMixin):
 class Metadata(ResourceMixin):
 
     collection_name = 'metadata'
-    expected_filters = ('ip', 'date', 'os', 'link', 'app', 'uptime', '_id', 'honeypot', 'timestamp',)
+    expected_filters = ('ip', 'date', 'os', 'link', 'app', 'uptime', '_id',
+                        'honeypot', 'timestamp',)
 
 
 class AuthKey(ResourceMixin):

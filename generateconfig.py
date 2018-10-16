@@ -15,7 +15,17 @@ import argparse
 
 
 el = string.ascii_letters + string.digits
-rand_str = lambda n: ''.join(choice(el) for _ in range(n))
+# rand_str = lambda n: ''.join(choice(el) for _ in range(n))
+
+# Make work with python2 and 3
+try:
+    input = raw_input
+except NameError:
+    pass
+
+
+def rand_str(rand_len):
+    return ''.join(choice(el) for _ in range(rand_len))
 
 
 def generate_config():
@@ -37,28 +47,35 @@ def generate_config():
     is_unattended = False
 
     # Get and parse args for command unattended install
-    parser_description = 'This is a help script to generate a working config.py file from the config template.'
+    parser_description = (
+        'This is a help script to generate a working config.py file from the'
+        'config template.')
     parser = argparse.ArgumentParser(description=parser_description)
 
     subparsers = parser.add_subparsers(help='commands')
 
-    parser_generate = subparsers.add_parser('generate', help='Generate a config.py and prompt for options')
+    parser_generate = subparsers.add_parser(
+        'generate', help='Generate a config.py and prompt for options')
     parser_generate.set_defaults(which='generate')
 
-    parser_unatt = subparsers.add_parser('unattended', help='Unattended install')
+    parser_unatt = subparsers.add_parser('unattended',
+                                         help='Unattended install')
     parser_unatt.set_defaults(which='unattended')
     parser_unatt.add_argument('-e', '--email', type=str, required=True,
                               help='Superuser email address')
     parser_unatt.add_argument('-p', '--password', type=str,
                               help='Superuser password')
-    parser_unatt.add_argument('-b', '--base_url', type=str, default=default_base_url,
+    parser_unatt.add_argument('-b', '--base_url', type=str,
+                              default=default_base_url,
                               help='Server base url')
-    parser_unatt.add_argument('-y', '--honeymap_url', type=str, default=default_honeymap_url,
+    parser_unatt.add_argument('-y', '--honeymap_url', type=str,
+                              default=default_honeymap_url,
                               help='Honeymap url')
-    parser_unatt.add_argument('-r', '--redis_url', type=str, default=default_redis_url,
+    parser_unatt.add_argument('-r', '--redis_url', type=str,
+                              default=default_redis_url,
                               help='Redis url')
-    parser_unatt.add_argument('-m', '--mail_server', type=str, default='localhost',
-                              help='Mail server address')
+    parser_unatt.add_argument('-m', '--mail_server', type=str,
+                              default='localhost', help='Mail server address')
     parser_unatt.add_argument('-s', '--mail_port', type=int, default=25,
                               help='Mail server port')
     parser_unatt.add_argument('--mail_tls', action='store_true',
@@ -71,8 +88,8 @@ def generate_config():
                               help='Mail password')
     parser_unatt.add_argument('--mail_sender', type=str, default='',
                               help='Mail sender')
-    parser_unatt.add_argument('-l', '--log_file_path', type=str, default=default_log_path,
-                              help='Log file path')
+    parser_unatt.add_argument('-l', '--log_file_path', type=str,
+                              default=default_log_path, help='Log file path')
     parser_unatt.add_argument('-d', '--debug', action='store_true',
                               help='Run in debug mode')
     parser_unatt.add_argument('--mongo_host', type=str, default="localhost",
@@ -121,14 +138,14 @@ def generate_config():
         deploy_key = args.deploy_key
     else:
         # Collect values from user
-        debug = raw_input('Do you wish to run in Debug mode?: y/n ')
+        debug = input('Do you wish to run in Debug mode?: y/n ')
         while debug not in ['y', 'n']:
-            debug = raw_input('Please y or n ')
+            debug = input('Please y or n ')
         debug = True if debug == 'y' else False
 
-        email = raw_input('Superuser email: ')
+        email = input('Superuser email: ')
         while '@' not in email:
-            email = raw_input('Superuser email (must be valid): ')
+            email = input('Superuser email (must be valid): ')
 
         while True:
             password = getpass('Superuser password: ')
@@ -137,55 +154,61 @@ def generate_config():
 
             password2 = getpass('Superuser password: (again): ')
             while not password2:
-                password2 = getpass('Superuser password (again; cannot be blank): ')
+                password2 = getpass(
+                    'Superuser password (again; cannot be blank): ')
 
             if password == password2:
                 break
             else:
-                print "Passwords did not match. Try again"
+                print("Passwords did not match. Try again")
 
-        secret_key = raw_input('CHN Server secret key [""]: ')
-        deploy_key = raw_input('CHN Server honeypot deployment key [""]: ')
+        secret_key = input('CHN Server secret key [""]: ')
+        deploy_key = input('CHN Server honeypot deployment key [""]: ')
 
-        server_base_url = raw_input('Server base url ["{}"]: '.format(default_base_url))
+        server_base_url = input('Server base url ["{}"]: '.format(
+            default_base_url))
         if server_base_url.endswith('/'):
             server_base_url = server_base_url[:-1]
 
         default_honeymap_url = '{}:3000'.format(server_base_url)
-        honeymap_url = raw_input('Honeymap url ["{}"]: '.format(default_honeymap_url))
+        honeymap_url = input('Honeymap url ["{}"]: '.format(
+            default_honeymap_url))
         if honeymap_url.endswith('/'):
             honeymap_url = honeymap_url[:-1]
 
         default_redis_url = 'redis://localhost:6379'
-        redis_url = raw_input('Redis url ["{}"]: '.format(default_redis_url))
+        redis_url = input('Redis url ["{}"]: '.format(default_redis_url))
         if redis_url.endswith('/'):
             redis_url = redis_url[:-1]
 
-        mail_server = raw_input('Mail server address ["localhost"]: ')
-        mail_port = raw_input('Mail server port [25]: ')
+        mail_server = input('Mail server address ["localhost"]: ')
+        mail_port = input('Mail server port [25]: ')
 
-        mail_tls = raw_input('Use TLS for email?: y/n ')
+        mail_tls = input('Use TLS for email?: y/n ')
         while mail_tls not in ['y', 'n']:
-            mail_tls = raw_input('Please y or n ')
+            mail_tls = input('Please y or n ')
 
-        mail_ssl = raw_input('Use SSL for email?: y/n ')
+        mail_ssl = input('Use SSL for email?: y/n ')
         while mail_ssl not in ['y', 'n']:
-            mail_ssl = raw_input('Please y or n ')
+            mail_ssl = input('Please y or n ')
 
-        mail_username = raw_input('Mail server username [""]: ')
+        mail_username = input('Mail server username [""]: ')
         mail_password = getpass('Mail server password [""]: ')
 
-        default_mail_sender = raw_input('Mail default sender [""]: ')
+        default_mail_sender = input('Mail default sender [""]: ')
 
-        log_file_path = raw_input('Path for log file ["{}"]: '.format(default_log_path))
+        log_file_path = input('Path for log file ["{}"]: '.format(
+            default_log_path))
 
-        mongo_host = raw_input('MongoDB hostname ["localhost"]: ')
-        mongo_port = raw_input('MongoDB port[27017]: ')
-        hpfeeds_host = raw_input('HPFeeds hostname ["localhost"]: ')
-        hpfeeds_port = raw_input('HPFeeds port[10000]: ')
+        mongo_host = input('MongoDB hostname ["localhost"]: ')
+        mongo_port = input('MongoDB port[27017]: ')
+        hpfeeds_host = input('HPFeeds hostname ["localhost"]: ')
+        hpfeeds_port = input('HPFeeds port[10000]: ')
 
-    server_base_url = server_base_url if server_base_url.strip() else default_base_url
-    honeymap_url = honeymap_url if honeymap_url.strip() else default_honeymap_url
+    server_base_url = \
+        server_base_url if server_base_url.strip() else default_base_url
+    honeymap_url = \
+        honeymap_url if honeymap_url.strip() else default_honeymap_url
     redis_url = redis_url if redis_url.strip() else default_redis_url
     log_file_path = log_file_path if log_file_path else default_log_path
     password = password if password else default_superuser_password
@@ -206,14 +229,16 @@ def generate_config():
     localconfig['MAIL_USE_SSL'] = 'y' == mail_ssl
     localconfig['MAIL_USERNAME'] = mail_username if mail_username else ''
     localconfig['MAIL_PASSWORD'] = mail_password if mail_password else ''
-    localconfig['DEFAULT_MAIL_SENDER'] = default_mail_sender if default_mail_sender else ""
+    localconfig['DEFAULT_MAIL_SENDER'] = \
+        default_mail_sender if default_mail_sender else ""
     localconfig['LOG_FILE_PATH'] = log_file_path
     localconfig['MONGODB_HOST'] = mongo_host if mongo_host else "localhost"
     localconfig['MONGODB_PORT'] = mongo_port if mongo_port else 27017
     localconfig['HPFEEDS_HOST'] = hpfeeds_host if hpfeeds_host else "localhost"
     localconfig['HPFEEDS_PORT'] = hpfeeds_port if hpfeeds_port else 10000
 
-    with open('config.py.template', 'r') as templfile, open('config.py', 'w') as confile:
+    with open('config.py.template', 'r') as templfile, \
+            open('config.py', 'w') as confile:
         templ = templfile.read()
         for key, setting in localconfig.iteritems():
             templ = templ.replace('{{' + key + '}}', str(setting))

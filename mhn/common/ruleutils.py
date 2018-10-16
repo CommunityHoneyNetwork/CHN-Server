@@ -15,8 +15,9 @@ def _parse_plain(r):
         re.compile("(reference)\s*:\s*(.*?);"),
         re.compile("(classtype)\s*:\s*(.*?);"),
     )
-    actions = ("alert", "log", "pass", "activate",
-            "dynamic", "drop", "reject", "sdrop")
+    actions = (
+        "alert", "log", "pass", "activate", "dynamic", "drop", "reject",
+        "sdrop")
     rule_pattern = re.compile(
         r"^(?P<enabled>#)*\s*"      # Enabled/disabled
         r"(?P<raw>"
@@ -41,7 +42,8 @@ def _parse_plain(r):
             rplctext = '{}:{};'
             rplctoken = '{' + opt + '};'
             if opt != 'rev':
-                # Rev is the last option and doesn't have a trailing have space.
+                # Rev is the last option and doesn't have a trailing have
+                # space.
                 rplctext += ' '
                 rplctoken += ' '
             if opt in ["gid", "sid", "rev"]:

@@ -1,6 +1,5 @@
 from mhn import create_clean_db
 from mhn import mhn, db
-from sqlalchemy import create_engine
 from sqlalchemy import inspect
 import sys
 
@@ -13,4 +12,3 @@ if __name__ == '__main__':
         else:
             print("Initializing new database")
             create_clean_db()
-
