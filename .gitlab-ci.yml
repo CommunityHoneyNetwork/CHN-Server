@@ -1,4 +1,9 @@
 ---
+stages:
+  - test
+  - build
+  - integration_testing
+
 variables:
   DOCKER_DRIVER: overlay2
   ## Define two new variables based on GitLab's CI/CD predefined variables
@@ -101,6 +106,7 @@ license_management:
 
 container_scanning:
   image: docker:stable
+  stage: integration_testing
   allow_failure: true
   services:
     - docker:stable-dind
