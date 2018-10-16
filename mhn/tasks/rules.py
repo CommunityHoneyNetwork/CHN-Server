@@ -50,7 +50,8 @@ def fetch_sources():
                     zrules = tarfile.open(fileobj=ziprules, mode='r:gz')
                 except tarfile.TarError as terr:
                     app.logger.warning(
-                        'Error in rule file: {}\n{}'.format(src.uri, str(terr)))
+                        'Error in rule file: {}\n{}'.format(src.uri,
+                                                            str(terr)))
                 else:
                     ruleslist = []
                     for member in zrules.getmembers():
@@ -66,7 +67,9 @@ def fetch_sources():
                                 rules.extend(from_buffer(rfile.read()))
                             os.remove(rulepath)
                         except Exception as e:
-                            app.logger.exception("Unhandled exception: {}. Continuing".format(e))
+                            app.logger.exception(
+                                "Unhandled exception: {}. Continuing".format(
+                                    e))
                             continue
 
                     # A subdirectory /rules/ is created when extracting,

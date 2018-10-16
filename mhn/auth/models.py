@@ -8,7 +8,8 @@ from mhn.api import APIModel
 
 
 roles_users = db.Table(
-        'roles_users', db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+        'roles_users', db.Column('user_id', db.Integer(),
+                                 db.ForeignKey('user.id')),
         db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
 
 
@@ -51,9 +52,9 @@ class PasswdReset(db.Model):
     def email_body(self):
         from mhn import mhn
         return render_template(
-                'auth/reset-email.html', hashstr=self.hashstr,
-                 server_url=mhn.config['SERVER_BASE_URL'],
-                 email=self.user.email)
+            'auth/reset-email.html', hashstr=self.hashstr,
+            server_url=mhn.config['SERVER_BASE_URL'], email=self.user.email)
+
 
 class ApiKey(db.Model):
     all_fields = {
@@ -63,4 +64,5 @@ class ApiKey(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     api_key = db.Column(db.String(32), unique=True)
-    user_id = db.Column('user_id', db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_id = db.Column(
+        'user_id', db.Integer, db.ForeignKey("user.id"), nullable=False)

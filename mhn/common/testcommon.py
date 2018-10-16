@@ -53,4 +53,5 @@ class MHNTestCase(TestCase):
             password = self.passwd
         login_url = url_for('auth.login_user')
         logindata = json.dumps(dict(email=email, password=password))
-        self.client.post(login_url, data=logindata, content_type='application/json')
+        self.client.post(login_url, data=logindata,
+                         content_type='application/json')
