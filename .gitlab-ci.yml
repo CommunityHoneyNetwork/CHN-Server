@@ -25,7 +25,7 @@ build_container:
     - docker:stable-dind
   script:
     - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
-    - sudo docker build --pull -t "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}" -f Dockerfile-ubuntu .
+    - sudo docker build --pull -t "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}" -f Dockerfile-centos .
     - sudo docker push "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}"
 
 dependency_scanning:
