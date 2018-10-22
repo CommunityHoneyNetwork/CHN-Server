@@ -20,16 +20,15 @@ parser.add_argument('-p',
                     dest='password',
                     required=True,
                     help='password')
-if len(sys.argv) == 1:
+if len(sys.argv)==1:
     parser.print_help()
     sys.exit(1)
-
-args = parser.parse_args()
+args=parser.parse_args()
 
 with mhn.test_request_context():
     try:
         user = User.query.filter_by(email=args.email).first()
-    except Exception as e:
+    except:
         print("Unable to find user %r" % user)
 
     if user:
@@ -37,7 +36,7 @@ with mhn.test_request_context():
         try:
             db.session.add(user)
             db.session.commit()
-        except Exception as e:
+        except:
             print('Unable to update user password')
     else:
         print("No user with that email address was found.")

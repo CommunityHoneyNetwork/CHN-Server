@@ -278,7 +278,7 @@ def get_tags(rec):
     else:
         meta = {}
 
-    for meta_key in ['app', 'os', 'link']:
+    for meta_key in ['app', 'os', 'link',]:
         value = meta.get(meta_key)
         if value:
             tags.append(value.replace(',', '').replace('\t', ' '))

@@ -10,11 +10,6 @@ from mhn.auth.models import User
 from mhn.common.clio import Clio
 
 
-def rand_str(rand_len):
-    el = string.ascii_letters + string.digits
-    return ''.join(choice(el) for _ in range(rand_len))
-
-
 class Sensor(db.Model, APIModel):
 
     # Defines some properties on the fields:
@@ -65,8 +60,8 @@ class Sensor(db.Model, APIModel):
             secret=self.authkey.secret, publish=self.authkey.publish)
 
     def new_auth_dict(self):
-        # el = string.ascii_letters + string.digits
-        # rand_str = lambda n: ''.join(choice(el) for _ in range(n))
+        el = string.ascii_letters + string.digits
+        rand_str = lambda n: ''.join(choice(el) for _ in range(n))
         return dict(secret=rand_str(16),
                     identifier=self.uuid, honeypot=self.honeypot,
                     subscribe=[], publish=Sensor.get_channels(self.honeypot))
@@ -156,9 +151,8 @@ class Rule(db.Model, APIModel):
             reference += 'reference:{}; '.format(r.text)
         # Remove trailing '; ' from references.
         reference = reference[:-2]
-        return self.rule_format.format(
-            msg=msg, sid=sid, rev=rev, classtype=classtype,
-            reference=reference)
+        return self.rule_format.format(msg=msg, sid=sid, rev=rev,
+                                       classtype=classtype, reference=reference)
 
     @classmethod
     def renderall(cls):
@@ -168,8 +162,8 @@ class Rule(db.Model, APIModel):
         context.
         """
         rules = cls.query.filter_by(is_active=True).\
-            group_by(cls.sid).\
-            having(func.max(cls.rev))
+                    group_by(cls.sid).\
+                    having(func.max(cls.rev))
         return '\n\n'.join([ru.render() for ru in rules])
 
     @classmethod
@@ -197,8 +191,8 @@ class Rule(db.Model, APIModel):
                     update({'is_active': False}, False)
             cnt += 1
             if cnt % 500 == 0:
-                print('Imported {} rules so far...'.format(cnt))
-        print('Finished Importing {} rules.  Committing data'.format(cnt))
+                print 'Imported {} rules so far...'.format(cnt)
+        print 'Finished Importing {} rules.  Committing data'.format(cnt)
         db.session.commit()
 
 
@@ -216,7 +210,7 @@ class RuleSource(db.Model, APIModel):
     note = db.Column(db.String(140))
     name = db.Column(db.String(40))
 
-    def __repr__(self):
+    def  __repr__(self):
         return '<RuleSource>{}'.format(self.to_dict())
 
     def to_dict(self):
