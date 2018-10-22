@@ -1,0 +1,131 @@
+---
+stages:
+  - test
+  - build
+  - integration_testing
+
+variables:
+  DOCKER_DRIVER: overlay2
+  ## Define two new variables based on GitLab's CI/CD predefined variables
+  ## https://docs.gitlab.com/ee/ci/variables/#predefined-variables-environment-variables
+  CI_APPLICATION_REPOSITORY: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
+  CI_APPLICATION_TAG: $CI_COMMIT_SHA
+
+pep8:
+  stage: test
+  tags:
+    - linting
+
+  before_script:
+    - flake8 --version
+
+  script:
+    - flake8 .
+
+build_container:
+  stage: build
+  tags: 
+    - container_scanning
+  services:
+    - docker:stable-dind
+  script:
+    - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
+    - sudo docker build --pull -t "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}" -f Dockerfile-centos .
+    - sudo docker push "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}"
+
+dependency_scanning:
+   image: docker:stable
+   variables:
+     DOCKER_DRIVER: overlay2
+   allow_failure: true
+   services:
+     - docker:stable-dind
+   tags:
+     - dependency_scanning
+   script:
+     - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+     - sudo docker run
+         --env DEP_SCAN_DISABLE_REMOTE_CHECKS="${DEP_SCAN_DISABLE_REMOTE_CHECKS:-false}"
+         --volume "$PWD:/code"
+         --volume /var/run/docker.sock:/var/run/docker.sock
+         "registry.gitlab.com/gitlab-org/security-products/dependency-scanning:$SP_VERSION" /code
+   artifacts:
+     paths: [gl-dependency-scanning-report.json]
+
+sast:
+  image: docker:stable
+  tags:
+    - sast
+  allow_failure: true
+  services:
+    - docker:stable-dind
+  script:
+    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+    - sudo docker run
+        --env SAST_CONFIDENCE_LEVEL="${SAST_CONFIDENCE_LEVEL:-3}"
+        --volume "$PWD:/code"
+        --volume /var/run/docker.sock:/var/run/docker.sock
+        "registry.gitlab.com/gitlab-org/security-products/sast:$SP_VERSION" /app/bin/run /code
+  artifacts:
+    paths: [gl-sast-report.json]
+
+license_management:
+  image: docker:stable
+  stage: test
+  tags:
+    - license_management
+  allow_failure: true
+  services:
+    - docker:stable-dind
+  script:
+    - export LICENSE_MANAGEMENT_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+    - sudo docker run
+        --volume "$PWD:/code"
+        "registry.gitlab.com/gitlab-org/security-products/license-management:$LICENSE_MANAGEMENT_VERSION" analyze /code
+  artifacts:
+    paths: [gl-license-management-report.json]
+
+#code_quality:
+# image: docker:stable
+# allow_failure: true
+# variables:
+#   CONTAINER_TIMEOUT_SECONDS: 3600
+# tags:
+#   - code_quality
+# services:
+#   - docker:stable-dind
+# script:
+#   - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+#   - sudo docker run
+#       --env SOURCE_CODE="$PWD"
+#       --volume "$PWD":/code
+#       --volume /var/run/docker.sock:/var/run/docker.sock
+#       "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
+# artifacts:
+#   paths: [gl-code-quality-report.json]
+
+container_scanning:
+  image: docker:stable
+  stage: integration_testing
+  allow_failure: true
+  services:
+    - docker:stable-dind
+  tags:
+    - container_scanning
+  script:
+    - env
+    - sudo docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
+    - sudo docker run -d --name db arminc/clair-db:latest
+    - sudo docker run -p 6060:6060 --link db:postgres -d --name clair --restart on-failure arminc/clair-local-scan:v2.0.5
+    - sudo wget https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64
+    - sudo mv clair-scanner_linux_amd64 clair-scanner
+    - sudo chmod +x clair-scanner
+    - sudo touch clair-whitelist.yml
+    - sudo docker ps
+    - while( ! wget -O /dev/null http://127.0.0.1:6060/v1/namespaces ) ; do sleep 1 ; done
+    - retries=0
+    - echo "Waiting for clair daemon to start"
+    - while( ! wget -T 10 -q -O /dev/null http://127.0.0.1:6060/v1/namespaces ) ; do sleep 1 ; echo -n "." ; if [ $retries -eq 10 ] ; then echo " Timeout, aborting." ; exit 1 ; fi ; retries=$(($retries+1)) ; done
+    - sudo ./clair-scanner -c http://127.0.0.1:6060 --ip "$(hostname -I | awk '{print $1}')" -r gl-container-scanning-report.json -l clair.log -w clair-whitelist.yml ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG} || true
+  artifacts:
+    paths: [gl-container-scanning-report.json]
