@@ -11,7 +11,7 @@ services:
     conpot:
         image: stingar/conpot:latest
         volumes:
-            - ./conpot.sysconfig:/etc/sysconfig/conpot
+            - ./conpot.sysconfig:/etc/default/conpot
             - ./conpot:/etc/conpot
         ports:
             - 80:80
