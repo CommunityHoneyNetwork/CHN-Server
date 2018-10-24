@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     glastopf:
-        image: stingar/glastopf:0.2-alpha-ubuntu
+        image: stingar/glastopf:latest
         volumes:
             - ./glastopf.sysconfig:/etc/default/glastopf
             - ./glastopf:/etc/glastopf

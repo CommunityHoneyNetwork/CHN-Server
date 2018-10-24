@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     conpot:
-        image: stingar/conpot:0.2-alpha-centos
+        image: stingar/conpot:latest
         volumes:
             - ./conpot.sysconfig:/etc/sysconfig/conpot
             - ./conpot:/etc/conpot
