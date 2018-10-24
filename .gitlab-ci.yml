@@ -13,6 +13,7 @@ variables:
 
 pep8:
   stage: test
+  allow_failure: true
   tags:
     - linting
 
@@ -33,7 +34,7 @@ build_container:
     - sudo docker build --pull -t "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}" -f Dockerfile-centos .
     - sudo docker push "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}"
 
-dependency_scanning:
+.dependency_scanning:
    image: docker:stable
    variables:
      DOCKER_DRIVER: overlay2
@@ -69,7 +70,7 @@ sast:
   artifacts:
     paths: [gl-sast-report.json]
 
-license_management:
+.license_management:
   image: docker:stable
   stage: test
   tags:
@@ -84,25 +85,6 @@ license_management:
         "registry.gitlab.com/gitlab-org/security-products/license-management:$LICENSE_MANAGEMENT_VERSION" analyze /code
   artifacts:
     paths: [gl-license-management-report.json]
-
-#code_quality:
-# image: docker:stable
-# allow_failure: true
-# variables:
-#   CONTAINER_TIMEOUT_SECONDS: 3600
-# tags:
-#   - code_quality
-# services:
-#   - docker:stable-dind
-# script:
-#   - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
-#   - sudo docker run
-#       --env SOURCE_CODE="$PWD"
-#       --volume "$PWD":/code
-#       --volume /var/run/docker.sock:/var/run/docker.sock
-#       "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
-# artifacts:
-#   paths: [gl-code-quality-report.json]
 
 container_scanning:
   image: docker:stable
