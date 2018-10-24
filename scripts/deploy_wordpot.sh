@@ -51,4 +51,5 @@ EOF
 echo 'Done!'
 echo ''
 echo ''
-echo 'Type "docker-compose up" to start your honeypot!'
+echo 'Type "docker-compose ps" to confirm your honeypot is running'
+echo 'You may type "docker-compose logs" to get any error or informational logs from your honeypot'
