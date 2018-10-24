@@ -11,7 +11,7 @@ services:
     wordpot:
         image: stingar/wordpot:latest
         volumes:
-            - ./wordpot.sysconfig:/etc/sysconfig/wordpot
+            - ./wordpot.sysconfig:/etc/default/wordpot
             - ./wordpot:/etc/wordpot
         ports:
             - "8080:8080"
