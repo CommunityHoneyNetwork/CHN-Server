@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     rdphoney:
-        image: stingar/rdphoney:0.2-alpha-centos
+        image: stingar/rdphoney:latest
         volumes:
             - ./rdphoney.sysconfig:/etc/sysconfig/rdphoney
             - ./rdphoney:/etc/rdphoney
@@ -43,7 +43,7 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-# RDPHONEY_JSON="/etc/rdphoney/rdphoney.json
+RDPHONEY_JSON="/etc/rdphoney/rdphoney.json"
 EOF
 echo 'Done!'
 echo ''

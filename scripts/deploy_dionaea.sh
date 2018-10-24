@@ -57,6 +57,7 @@ LISTEN_INTERFACES="eth0"
 # blackhole, epmap, ftp, http, memcache, mirror, mongo, mqtt, mssql, mysql, pptp, sip, smb, tftp, upnp
 SERVICES=(blackhole epmap ftp http memcache mirror mongo mqtt pptp sip smb tftp upnp)
 
+DIONAEA_JSON="/etc/dionaea/dionaea.json"
 
 # Logging options
 HPFEEDS_ENABLED=true

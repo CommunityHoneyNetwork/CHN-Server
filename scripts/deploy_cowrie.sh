@@ -44,7 +44,7 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-# COWRIE_JSON="/etc/cowrie/cowrie.json
+COWRIE_JSON="/etc/cowrie/cowrie.json"
 
 # SSH Listen Port
 # Can be set to 22 for deployments on real servers

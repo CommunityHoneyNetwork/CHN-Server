@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     amun:
-        image: stingar/amun:0.2-alpha-centos
+        image: stingar/amun:latest
         volumes:
             - ./amun.sysconfig:/etc/sysconfig/amun
             - ./amun:/etc/amun

@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     wordpot:
-        image: stingar/wordpot:0.2-alpha-centos
+        image: stingar/wordpot:latest
         volumes:
             - ./wordpot.sysconfig:/etc/sysconfig/wordpot
             - ./wordpot:/etc/wordpot
@@ -43,7 +43,7 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-# WORDPOT_JSON="/etc/wordpot/wordpot.json
+WORDPOT_JSON="/etc/wordpot/wordpot.json"
 
 # Wordpress options
 WORDPRESS_PORT=8080
