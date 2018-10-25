@@ -13,6 +13,7 @@ services:
     volumes:
       - ./dionaea.sysconfig:/etc/default/dionaea
       - ./dionaea/services-available/:/opt/dionaea/etc/dionaea/services-enabled/
+      - ./dionaea/dionaea:/etc/dionaea/
     ports:
       - "21:21"
       - "23:23"
