@@ -27,7 +27,10 @@ touch /var/log/nginx/error.log
 if  [ -d "/etc/pki/tls/certs" ] && [ -d "/etc/pki/tls/private" ] && [ -z "$(ls -A /etc/pki/tls/certs)" ]
 then
   # directories exist and certs is empty, let's put in a cert
-  openssl req -x509 -newkey rsa:4096 -keyout /etc/pki/tls/private/key.pem -out /etc/pki/tls/certs/cert.pem -nodes -days 730 -subj "/CN=${SERVER}"
+  # We'll use a self-signed to start, and let LetsEncrypt replace
+  openssl req -x509 -newkey rsa:4096 -keyout /etc/pki/tls/private/key.pem -out /etc/pki/tls/certs/cert.pem -nodes -days 1 -subj "/CN=${SERVER}"
+  sed -ie "s/#server_name/server_name ${SERVER};/" /etc/nginx/sites-available/default
+  certbot --nginx -n --register-unsafely-without-email --keep-until-expiring --agree-tos --domains ${SERVER}
 fi
 
 /usr/sbin/nginx -t

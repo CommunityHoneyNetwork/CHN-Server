@@ -6,6 +6,7 @@
     - libgeoip-dev
     - libsqlite3-dev
     - runit
+    - python-certbot-nginx
 
   sysconfig_dir: /etc/default
 
