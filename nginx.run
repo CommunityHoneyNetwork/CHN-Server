@@ -29,8 +29,12 @@ then
   # directories exist and certs is empty, let's put in a cert
   # We'll use a self-signed to start, and let LetsEncrypt replace
   openssl req -x509 -newkey rsa:4096 -keyout /etc/pki/tls/private/key.pem -out /etc/pki/tls/certs/cert.pem -nodes -days 1 -subj "/CN=${SERVER}"
+  /usr/sbin/nginx &
+  sleep 2
   sed -ie "s/#server_name/server_name ${SERVER};/" /etc/nginx/sites-available/default
   certbot --nginx -n --register-unsafely-without-email --keep-until-expiring --agree-tos --domains ${SERVER}
+  sleep 1
+  pkill nginx
 fi
 
 /usr/sbin/nginx -t
