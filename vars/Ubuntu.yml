@@ -20,3 +20,5 @@
     - /etc/nginx
     - /etc/nginx/sites-available
     - /etc/nginx/sites-enabled
+    - /etc/pki/tls/certs
+    - /etc/pki/tls/private
