@@ -120,7 +120,7 @@ generate_config () {
     else
       MONGODB_PORT="--mongo_port ${MONGODB_PORT}"
     fi
-    
+
     if [[ ! -z "${HPFEEDS_HOST}" ]]
     then
       HPFEEDS_HOST="--hpfeeds_host ${HPFEEDS_HOST}"
@@ -164,7 +164,7 @@ generate_config () {
         DEPLOY_KEY=""
     fi
 
-    
+
     python generateconfig.py unattended ${EMAIL} \
                                         ${SERVER_BASE_URL} \
                                         ${HONEYMAP_URL} \
@@ -221,6 +221,9 @@ main () {
   make_logdir
 
   cd {{ server_dir }}
+
+  # Start a background rule refresh here, rather than in initdatabase.py
+  python manage.py fetch_rules &
 
   exec uwsgi --socket /tmp/uwsgi.sock \
              --module mhn:mhn \

@@ -163,4 +163,5 @@ def create_clean_db():
             rulesrc.name = 'Default rules source'
             db.session.add(rulesrc)
             db.session.commit()
-            fetch_sources()
+            # skip fetching sources on initial database population
+            # fetch_sources()
