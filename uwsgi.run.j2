@@ -164,8 +164,7 @@ generate_config () {
       echo 'null'
       return
     else
-      # Kick this off, but don't wait
-      python initdatabase.py &
+      python initdatabase.py
       echo $!
       return $?
     fi
