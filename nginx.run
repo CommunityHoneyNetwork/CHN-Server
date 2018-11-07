@@ -10,6 +10,7 @@ trap "exit 137" SIGKILL
 trap "exit 143" SIGTERM
 
 PIDFILE=/var/run/nginx.pid
+SERVER_BASE_URL=${SERVER_BASE_URL:-http://localhost}
 SERVER=$(echo ${SERVER_BASE_URL} | awk -F/ '{print $3}')
 
 # Should we be doing this this way?

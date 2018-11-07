@@ -86,6 +86,17 @@ sast:
   artifacts:
     paths: [gl-license-management-report.json]
 
+infra_testing:
+  image: docker:stable
+  stage: integration_testing
+  allow_failure: true
+  services:
+    - docker:stable-dind
+  tags:
+    - container_scanning
+  script:
+    - sudo py.test .
+
 container_scanning:
   image: docker:stable
   stage: integration_testing
