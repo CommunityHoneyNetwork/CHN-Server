@@ -8,6 +8,7 @@ from mhn.common.utils import error_response
 from mhn.auth import current_user
 from mhn.auth.models import ApiKey
 
+
 def deploy_auth(view):
     """
     Authenticates the view, allowing access if user
@@ -43,6 +44,7 @@ def sensor_auth(view):
         return error_response(errors.API_NOT_AUTHORIZED, 401)
     return wrapped_view
 
+
 def token_auth(view):
     """
     Authenticates the view, allowing access if user
@@ -53,7 +55,7 @@ def token_auth(view):
         if current_user and current_user.is_authenticated():
             return view(*args, **kwargs)
 
-        api_key = request.args.get('api_key', '')
+        api_key = request.headers.get('apikey')
         if api_key:
             key = ApiKey.query.filter_by(api_key=api_key).first()
             if key:
