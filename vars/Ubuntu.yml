@@ -8,6 +8,8 @@
     - runit
     - python-certbot-nginx
     - net-tools
+    - jq
+    - curl
 
   sysconfig_dir: /etc/default
 
