@@ -33,7 +33,8 @@ then
   openssl req -x509 -newkey rsa:4096 -keyout /etc/pki/tls/private/key.pem -out /etc/pki/tls/certs/cert.pem -nodes -days 1 -subj "/CN=${SERVER}"
   /usr/sbin/nginx &
   sleep 2
-  sed -ie "s/#server_name/server_name ${SERVER};/" /etc/nginx/sites-available/default
+  ## Note, -ie means inplace, suffix with 'e', '-i -e' means in-place, with no suffix, then run expression
+  sed -i -e "s/#server_name/server_name ${SERVER};/" /etc/nginx/sites-available/default
   certbot --nginx -n --register-unsafely-without-email --keep-until-expiring --agree-tos --domains ${SERVER}
   sleep 1
   pkill nginx
