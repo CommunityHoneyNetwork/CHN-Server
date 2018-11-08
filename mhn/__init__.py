@@ -165,3 +165,31 @@ def create_clean_db():
             db.session.commit()
             # skip fetching sources on initial database population
             # fetch_sources()
+
+
+def reload_scripts():
+    from os import path
+    from mhn.api.models import DeployScript
+
+    superuser = user_datastore.get_user(mhn.config.get('SUPERUSER_EMAIL'))
+
+    deployscripts = {
+        'Ubuntu - Conpot': path.abspath('./scripts/deploy_conpot.sh'),
+        'Ubuntu - Dionaea': path.abspath('./scripts/deploy_dionaea.sh'),
+        'Ubuntu - Cowrie': path.abspath('./scripts/deploy_cowrie.sh'),
+        'Ubuntu - Amun': path.abspath('./scripts/deploy_amun.sh'),
+        'Ubuntu - Glastopf': path.abspath('./scripts/deploy_glastopf.sh'),
+        'Ubuntu - Wordpot': path.abspath('./scripts/deploy_wordpot.sh'),
+        'Ubuntu - RDPHoney': path.abspath('./scripts/deploy_rdphoney.sh'),
+    }
+
+    db.session.query(DeployScript).delete()
+    for honeypot, deploypath in deployscripts.iteritems():
+        with open(deploypath, 'r') as deployfile:
+            initdeploy = DeployScript()
+            initdeploy.script = deployfile.read()
+            initdeploy.notes = 'Initial deploy script for {}'.format(honeypot)
+            initdeploy.user = superuser
+            initdeploy.name = honeypot
+            db.session.add(initdeploy)
+            db.session.commit()
