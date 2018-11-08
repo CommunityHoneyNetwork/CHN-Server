@@ -1,4 +1,4 @@
-from mhn import create_clean_db
+from mhn import create_clean_db, reload_scripts
 from mhn import mhn, db
 from sqlalchemy import create_engine
 from sqlalchemy import inspect
@@ -9,8 +9,8 @@ if __name__ == '__main__':
         inspector = inspect(db.engine)
         if 'user' in inspector.get_table_names():
             print("Database already initialized")
+            reload_scripts()
             sys.exit()
         else:
             print("Initializing new database")
             create_clean_db()
-
