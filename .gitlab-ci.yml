@@ -96,6 +96,8 @@ infra_testing:
   tags:
     - container_scanning
   script:
+    - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
+    - sudo docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
     - sudo py.test .
 
 container_scanning:
@@ -134,5 +136,5 @@ deploy_dockerhub:
   script:
     - env
     - echo "Doing the deploy tag bit"
-    - echo "fake docker tag ${CI_REGISTRY_IMAGE} ${CI_PROJECT_PATH}:$(echo $CI_BUILD_REF_NAME | awk -F / '{print $2}')"
+    - echo "fake docker tag ${CI_REGISTRY_IMAGE} ${CI_PROJECT_PATH}:$(echo $CI_BUILD_REF_NAME | awk -F v '{print $2}')"
     - echo "fake docker login, push, etc"
