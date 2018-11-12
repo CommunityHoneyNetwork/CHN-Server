@@ -134,7 +134,10 @@ deploy_dockerhub:
   only:
     - /^v\d+(.\d+){1,2}$/
   script:
-    - env
-    - echo "Doing the deploy tag bit"
-    - echo "fake docker tag ${CI_REGISTRY_IMAGE} ${CI_PROJECT_PATH}:$(echo $CI_BUILD_REF_NAME | awk -F v '{print $2}')"
+    - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
+    - sudo docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
+    - sudo docker logout
+    - export VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id=${VAULT_ROLE_ID} secret_id=${VAULT_SECRET_ID})
+    - sudo docker tag ${CI_REGISTRY_IMAGE} ${CI_PROJECT_PATH}:$(echo $CI_BUILD_REF_NAME | awk -F v '{print $2}')"
+    - sudo docker images
     - echo "fake docker login, push, etc"
