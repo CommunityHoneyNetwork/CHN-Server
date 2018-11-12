@@ -122,3 +122,16 @@ container_scanning:
     - sudo ./clair-scanner -c http://127.0.0.1:6060 --ip "$(hostname -I | awk '{print $1}')" -r gl-container-scanning-report.json -l clair.log -w clair-whitelist.yml ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG} || true
   artifacts:
     paths: [gl-container-scanning-report.json]
+
+deploy_dockerhub:
+  image: docker:stable
+  stage: deploy
+  tags:
+    - container_scanning
+  only:
+    - /^v\d+(.\d+){1,2}$/
+  script:
+    - env
+    - echo "Doing the deploy tag bit"
+    - echo "fake docker tag ${CI_REGISTRY_IMAGE} ${CI_PROJECT_PATH}:$(echo $CI_BUILD_REF_NAME | awk -F / '{print $2}')"
+    - echo "fake docker login, push, etc"
