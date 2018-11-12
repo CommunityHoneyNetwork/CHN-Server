@@ -3,6 +3,7 @@ import subprocess
 import testinfra
 import os
 import time
+import sys
 
 
 # scope='session' uses the same container for all the tests;
@@ -10,6 +11,7 @@ import time
 @pytest.fixture(scope='session')
 def host(request):
     if 'CI_BUILD_TOKEN' in os.environ:
+        sys.stderr.write("Using CI env\n")
         # Use existing if we are in a CI process
         docker_id = subprocess.check_output(
             ['docker', 'run', '-d', os.environ['CI_APPLICATION_TAG']]
@@ -19,6 +21,7 @@ def host(request):
 
     else:
         # build locally
+        sys.stderr.write("Building locally\n")
         subprocess.check_call([
             'docker', 'build', '-t', 'chn-server-test',
             '-f', 'Dockerfile-ubuntu', '.'])
