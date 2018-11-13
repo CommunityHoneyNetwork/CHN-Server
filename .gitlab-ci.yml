@@ -24,7 +24,7 @@ pep8:
   script:
     - flake8 .
 
-build_container:
+.build_container:
   stage: build
   tags: 
     - container_scanning
@@ -36,26 +36,7 @@ build_container:
     - sudo docker build --pull -t "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}" -f Dockerfile-centos .
     - sudo docker push "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}"
 
-.dependency_scanning:
-   image: docker:stable
-   variables:
-     DOCKER_DRIVER: overlay2
-   allow_failure: true
-   services:
-     - docker:stable-dind
-   tags:
-     - dependency_scanning
-   script:
-     - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
-     - sudo docker run
-         --env DEP_SCAN_DISABLE_REMOTE_CHECKS="${DEP_SCAN_DISABLE_REMOTE_CHECKS:-false}"
-         --volume "$PWD:/code"
-         --volume /var/run/docker.sock:/var/run/docker.sock
-         "registry.gitlab.com/gitlab-org/security-products/dependency-scanning:$SP_VERSION" /code
-   artifacts:
-     paths: [gl-dependency-scanning-report.json]
-
-sast:
+.sast:
   image: docker:stable
   tags:
     - sast
@@ -72,22 +53,6 @@ sast:
   artifacts:
     paths: [gl-sast-report.json]
 
-.license_management:
-  image: docker:stable
-  stage: test
-  tags:
-    - license_management
-  allow_failure: true
-  services:
-    - docker:stable-dind
-  script:
-    - export LICENSE_MANAGEMENT_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
-    - sudo docker run
-        --volume "$PWD:/code"
-        "registry.gitlab.com/gitlab-org/security-products/license-management:$LICENSE_MANAGEMENT_VERSION" analyze /code
-  artifacts:
-    paths: [gl-license-management-report.json]
-
 infra_testing:
   image: docker:stable
   stage: integration_testing
@@ -101,7 +66,7 @@ infra_testing:
     - sudo docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
     - sudo py.test .
 
-container_scanning:
+.container_scanning:
   image: docker:stable
   stage: integration_testing
   allow_failure: true
