@@ -111,4 +111,6 @@ deploy_dockerhub:
     - export DOCKER_USERNAME=$(vault read -field=username secret/stingar/dockerhub-account)
     - export DOCKER_PASSWORD=$(vault read -field=password secret/stingar/dockerhub-account)
     - sudo docker login -u "$DOCKER_USERNAME" --password "${DOCKER_PASSWORD}"
+    - sudo docker push ${PROJECT_PATH}:$DOCKER_TAG
+    - sudo docker logout
     
