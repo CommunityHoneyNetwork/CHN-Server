@@ -18,6 +18,13 @@
           file: default.yml
         tags: vars
 
+      - name: Check date
+        shell: date
+        register: date_thing
+
+      - debug:
+          var: date_thing
+
       - name: Update apt cache
         apt:
           update_cache: true
