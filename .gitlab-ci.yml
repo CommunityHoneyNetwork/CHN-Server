@@ -103,8 +103,9 @@ deploy_dockerhub:
     - sudo docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
     - sudo docker logout
     - export DOCKER_TAG=$(echo $CI_BUILD_REF_NAME | sed -E 's/^v?([[:digit:]]+(.[[:digit:]]+){1,2}|latest)$/\1/g')
-    - sudo docker tag ${CI_REGISTRY_IMAGE} ${CI_PROJECT_PATH}:$DOCKER_TAG
     - env
+    - echo sudo docker tag ${CI_REGISTRY_IMAGE} ${CI_PROJECT_PATH}:$DOCKER_TAG
+    - sudo docker tag ${CI_REGISTRY_IMAGE} ${CI_PROJECT_PATH}:$DOCKER_TAG
     - export VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id=${VAULT_ROLE_ID} secret_id=${VAULT_SECRET_ID})
     - export DOCKER_USERNAME=$(vault read -field=username secret/stingar/dockerhub-account)
     - export DOCKER_PASSWORD=$(vault read -field=password secret/stingar/dockerhub-account)
