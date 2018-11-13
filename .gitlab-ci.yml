@@ -24,7 +24,7 @@ pep8:
   script:
     - flake8 .
 
-.build_container:
+build_container:
   stage: build
   tags: 
     - container_scanning
@@ -53,7 +53,7 @@ pep8:
   artifacts:
     paths: [gl-sast-report.json]
 
-infra_testing:
+.infra_testing:
   image: docker:stable
   stage: integration_testing
 # allow_failure: true
@@ -63,8 +63,6 @@ infra_testing:
     - container_scanning
   script:
     - sudo ntpdate pool.ntp.org
-#   - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
-#   - sudo docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
     - sudo py.test .
 
 .container_scanning:
