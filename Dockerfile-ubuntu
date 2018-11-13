@@ -11,6 +11,7 @@ LABEL changelog-url "https://github.com/CommunityHoneyNetwork/communityhoneynetw
 
 ENV playbook "chnserver.yml"
 
+RUN date
 RUN apt-get update \
       && apt-get install -y ansible
 
