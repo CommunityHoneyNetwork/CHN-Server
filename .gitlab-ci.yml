@@ -31,7 +31,7 @@ build_container:
   services:
     - docker:stable-dind
   script:
-    - date
+    - sudo ntpdate pool.ntp.org
     - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
     - sudo docker build --pull -t "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}" .
     - sudo docker push "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}"
