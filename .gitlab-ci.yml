@@ -33,7 +33,7 @@ build_container:
   script:
     - date
     - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
-    - sudo docker build --pull -t "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}" -f Dockerfile-centos .
+    - sudo docker build --pull -t "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}" .
     - sudo docker push "${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}"
 
 sast:
@@ -61,7 +61,7 @@ infra_testing:
   services:
     - docker:stable-dind
   tags:
-    - container_scanning
+    - stingar
   script:
     - sudo ntpdate pool.ntp.org
     - sudo py.test .
@@ -96,7 +96,7 @@ deploy_dockerhub:
   image: docker:stable
   stage: deploy
   tags:
-    - container_scanning
+    - stingar
   only:
     - /(^v\d+(.\d+){1,2}$|^latest$)/
   script:
