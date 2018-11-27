@@ -14,7 +14,7 @@ def host(request):
     sys.stderr.write("Building locally\n")
     subprocess.check_call([
         'docker', 'build', '-t', 'chn-server-test',
-        '-f', 'Dockerfile-ubuntu', '.'])
+        '-f', 'Dockerfile', '.'])
     # run a container
     docker_id = subprocess.check_output(
         ['docker', 'run', '-d', 'chn-server-test']).decode().strip()

@@ -20,7 +20,6 @@ pep8:
 
   before_script:
     - flake8 --version
-
   script:
     - flake8 .
 
@@ -90,7 +89,8 @@ container_scanning:
     - while( ! wget -T 10 -q -O /dev/null http://127.0.0.1:6060/v1/namespaces ) ; do sleep 1 ; echo -n "." ; if [ $retries -eq 10 ] ; then echo " Timeout, aborting." ; exit 1 ; fi ; retries=$(($retries+1)) ; done
     - sudo ./clair-scanner -c http://127.0.0.1:6060 --ip "$(hostname -I | awk '{print $1}')" -r gl-container-scanning-report.json -l clair.log -w clair-whitelist.yml ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG} || true
   artifacts:
-    paths: [gl-container-scanning-report.json]
+    reports:
+      container_scanning: 'gl-container-scanning-report.json'
 
 deploy_dockerhub:
   image: docker:stable
