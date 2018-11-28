@@ -17,9 +17,9 @@
   sqlite_dir: /opt/sqlite
 
   hpfeeds_repo: https://github.com/CommunityHoneyNetwork/hpfeeds.git
-  ### NEED TO UPDATE THIS TO MASTER 
+  ### NEED TO UPDATE THIS TO MASTER
   ### ONCE MASTER HAS THE FORK MERGED
-  hpfeeds_version: staging
+  hpfeeds_version: master
   hpfeeds_dir: /srv
 
   geolite_city_db: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
