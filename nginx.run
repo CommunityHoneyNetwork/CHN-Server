@@ -10,7 +10,7 @@ trap "exit 130" SIGINT
 trap "exit 137" SIGKILL
 trap "exit 143" SIGTERM
 
-PIDFILE=/run/nginx.pid
+PIDFILE=/var/run/nginx.pid
 SERVER_BASE_URL=${SERVER_BASE_URL:-http://$(curl http://httpbin.org/ip | jq -r .origin)}
 SERVER=$(echo ${SERVER_BASE_URL} | awk -F/ '{print $3}')
 
@@ -31,9 +31,13 @@ then
   # directories exist and certs is empty, let's put in a cert
   # We'll use a self-signed to start, and let LetsEncrypt replace
   openssl req -x509 -newkey rsa:4096 -keyout /etc/pki/tls/private/key.pem -out /etc/pki/tls/certs/cert.pem -nodes -days 1 -subj "/CN=${SERVER}"
+  /usr/sbin/nginx &
+  sleep 2
   ## Note, -ie means inplace, suffix with 'e', '-i -e' means in-place, with no suffix, then run expression
   sed -i -e "s/#server_name/server_name ${SERVER};/" /etc/nginx/sites-available/default
   certbot --nginx -n --register-unsafely-without-email --keep-until-expiring --agree-tos --domains ${SERVER}
+  sleep 1
+  pkill nginx
 fi
 
 /usr/sbin/nginx -t
