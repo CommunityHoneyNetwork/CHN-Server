@@ -10,7 +10,7 @@ trap "exit 130" SIGINT
 trap "exit 137" SIGKILL
 trap "exit 143" SIGTERM
 
-PIDFILE=/run/nginx.pid
+PIDFILE=/var/run/nginx.pid
 SERVER_BASE_URL=${SERVER_BASE_URL:-http://$(curl http://httpbin.org/ip | jq -r .origin)}
 SERVER=$(echo ${SERVER_BASE_URL} | awk -F/ '{print $3}')
 
