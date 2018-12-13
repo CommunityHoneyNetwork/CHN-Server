@@ -26,11 +26,11 @@ mkdir -p /var/log/nginx
 touch /var/log/nginx/error.log
 
 # Check whether we can generate a certbot cert
-USE_CERTBOT=1
+USE_CERTBOT="yes"
 protocol=$(echo ${SERVER_BASE_URL} | awk -F: '{print $1}')
 if [[ $protocol == "http" ]] || [[ $SERVER == "localhost" ]] || [[ $SERVER =~ ([0-9]{1,3}\.){3}[0-9]{1,3} ]]
 then
-    USE_CERTBOT=0
+    USE_CERTBOT="no"
 fi
 
 # Test if we should generate a self-signed cert
@@ -39,7 +39,7 @@ then
   # directories exist and certs is empty, let's put in a cert
   # We'll use a self-signed to start, and let LetsEncrypt replace
   openssl req -x509 -newkey rsa:4096 -keyout /etc/pki/tls/private/key.pem -out /etc/pki/tls/certs/cert.pem -nodes -days 1 -subj "/CN=${SERVER}"
-  if [ $USE_CERTBOT -ne 0 ]
+  if [ $USE_CERTBOT == "yes" ]
   then
     /usr/sbin/nginx &
     sleep 2
