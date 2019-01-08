@@ -21,8 +21,3 @@
   ### ONCE MASTER HAS THE FORK MERGED
   hpfeeds_version: master
   hpfeeds_dir: /srv
-
-  geolite_city_db: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-  geolite_city_db_sum: sha256:f2a1c59e4a8b66446cfe1e68781394e872a0b735d5029de160786bdbacc31dfb
-  geolite_asn_db: http://download.maxmind.com/download/geoip/database/asnum/GeoIPASNum.dat.gz
-  geolite_asn_db_sum: sha256:5a3ce40fb31f92aa5921a30ca1eb2a438f42cbeab9e1d9811f4ad89cc026e651
