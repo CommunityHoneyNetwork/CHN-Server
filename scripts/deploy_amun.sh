@@ -44,6 +44,9 @@ DEPLOY_KEY=${DEPLOY}
 # Registration information file
 # If running in a container, this needs to persist
 AMUN_JSON="/etc/amun/amun.json"
+
+# Comma separated tags for honeypot
+TAGS=
 EOF
 echo 'Done!'
 echo ''

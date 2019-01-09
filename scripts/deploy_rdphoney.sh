@@ -44,6 +44,9 @@ DEPLOY_KEY=${DEPLOY}
 # Registration information file
 # If running in a container, this needs to persist
 RDPHONEY_JSON="/etc/rdphoney/rdphoney.json"
+
+# Comma separated tags for honeypot
+TAGS=
 EOF
 echo 'Done!'
 echo ''

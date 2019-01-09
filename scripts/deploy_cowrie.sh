@@ -58,6 +58,8 @@ SSH_LISTEN_PORT=2222
 # in a container
 TELNET_LISTEN_PORT=2223
 
+# Comma separated tags for honeypot
+TAGS=
 EOF
 echo 'Done!'
 echo ''
