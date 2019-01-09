@@ -144,6 +144,7 @@ def create_clean_db():
             'Ubuntu - Glastopf': path.abspath('./scripts/deploy_glastopf.sh'),
             'Ubuntu - Wordpot': path.abspath('./scripts/deploy_wordpot.sh'),
             'Ubuntu - RDPHoney': path.abspath('./scripts/deploy_rdphoney.sh'),
+            'Ubuntu - UHP': path.abspath('./scripts/deploy_uhp.sh'),
         }
         for honeypot, deploypath in deployscripts.iteritems():
             with open(deploypath, 'r') as deployfile:
@@ -181,6 +182,7 @@ def reload_scripts():
         'Ubuntu - Glastopf': path.abspath('./scripts/deploy_glastopf.sh'),
         'Ubuntu - Wordpot': path.abspath('./scripts/deploy_wordpot.sh'),
         'Ubuntu - RDPHoney': path.abspath('./scripts/deploy_rdphoney.sh'),
+        'Ubuntu - UHP': path.abspath('./scripts/deploy_uhp.sh'),
     }
 
     db.session.query(DeployScript).delete()
