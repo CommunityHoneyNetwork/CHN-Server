@@ -64,6 +64,9 @@ DIONAEA_JSON="/etc/dionaea/dionaea.json"
 HPFEEDS_ENABLED=true
 FEEDS_SERVER="${SERVER}"
 FEEDS_SERVER_PORT=10000
+
+# Comma separated tags for honeypot
+TAGS=
 EOF
 echo 'Done!'
 echo ''

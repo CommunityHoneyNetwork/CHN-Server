@@ -46,6 +46,9 @@ DEPLOY_KEY=${DEPLOY}
 GLASTOPF_JSON="/etc/glastopf/glastopf.json"
 
 GLASTOPF_PORT=8080
+
+# Comma separated tags for honeypot
+TAGS=
 EOF
 echo 'Done!'
 echo ''

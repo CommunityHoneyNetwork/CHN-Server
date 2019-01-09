@@ -8,23 +8,23 @@ echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '2'
 services:
-    amun:
-        image: stingar/amun:latest
+    uhp:
+        image: stingar/uhp:latest
         volumes:
-            - ./amun.sysconfig:/etc/default/amun
-            - ./amun:/etc/amun
+            - ./uhp.sysconfig:/etc/default/uhp
+            - ./uhp:/etc/uhp
         ports:
-            - "445:445"
+            - "25:2525"
 EOF
 echo 'Done!'
-echo 'Creating amun.sysconfig...'
-cat << EOF > amun.sysconfig
-# This file is read from /etc/sysconfig/amun or /etc/default/amun
+echo 'Creating uhp.sysconfig...'
+cat << EOF > uhp.sysconfig
+# This file is read from /etc/sysconfig/uhp or /etc/default/uhp
 # depending on the base distro
 #
-# This can be modified to change the default setup of the amun unattended installation
+# This can be modified to change the default setup of the uhp unattended installation
 
-DEBUG=false
+DEBUG=true
 
 # IP Address of the honeypot
 # Leaving this blank will default to the docker container IP
@@ -43,7 +43,13 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-AMUN_JSON="/etc/amun/amun.json"
+UHP_JSON="/etc/uhp/uhp.json"
+
+# Defaults include auto-config-gen.json, avtech-devices.json, generic-listener.json,
+# hajime.json, http-log-headers.json, http.json, pop3.json, and smtp.json
+UHP_CONFIG="smtp.json"
+
+UHP_LISTEN_PORT=2525
 
 # Comma separated tags for honeypot
 TAGS=

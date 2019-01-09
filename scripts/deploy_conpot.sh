@@ -49,6 +49,9 @@ CONPOT_JSON="/etc/conpot/conpot.json"
 
 # Conpot specific configuration options
 CONPOT_TEMPLATE=default
+
+# Comma separated tags for honeypot
+TAGS=
 EOF
 echo 'Done!'
 echo ''
