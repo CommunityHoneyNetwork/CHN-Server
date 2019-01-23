@@ -25,31 +25,49 @@ fi
 mkdir -p /var/log/nginx
 touch /var/log/nginx/error.log
 
-# Check whether we can generate a certbot cert
-USE_CERTBOT="yes"
+
+# Check whether we can generate a certbot cert.  No certbot for IPs
 protocol=$(echo ${SERVER_BASE_URL} | awk -F: '{print $1}')
 if [[ $protocol == "http" ]] || [[ $SERVER == "localhost" ]] || [[ $SERVER =~ ([0-9]{1,3}\.){3}[0-9]{1,3} ]]
 then
-    USE_CERTBOT="no"
+    CERTIFICATE_STRATEGY=${CERTIFICATE_STRATEGY:-SELFSIGNED}
+else
+    CERTIFICATE_STRATEGY=${CERTIFICATE_STRATEGY:-CERTBOT}
 fi
 
-# Test if we should generate a self-signed cert
-if [ -d "/etc/pki/tls/certs" ] && [ -d "/etc/pki/tls/private" ] && [ -z "$(ls -A /etc/pki/tls/certs)" ]
-then
-  # directories exist and certs is empty, let's put in a cert
-  # We'll use a self-signed to start, and let LetsEncrypt replace
-  openssl req -x509 -newkey rsa:4096 -keyout /etc/pki/tls/private/key.pem -out /etc/pki/tls/certs/cert.pem -nodes -days 1 -subj "/CN=${SERVER}"
-  if [ $USE_CERTBOT == "yes" ]
-  then
-    /usr/sbin/nginx &
-    sleep 2
-    ## Note, -ie means inplace, suffix with 'e', '-i -e' means in-place, with no suffix, then run expression
-    sed -i -e "s/#server_name/server_name ${SERVER};/" /etc/nginx/sites-available/default
-    certbot --nginx -n --register-unsafely-without-email --keep-until-expiring --agree-tos --domains ${SERVER}
-    sleep 1
-    pkill nginx
-  fi
-fi
+## Generate certificates here (or make sure they exist for BYO)
+CERT_FILE="/tls/cert.pem"
+KEY_FILE="/tls/key.pem"
+case "${CERTIFICATE_STRATEGY}" in
+    "CERTBOT")
+        echo "Using CERTBOT to manage certificate"
+        ACME_SERVER=${ACME_SERVER:-https://acme-v02.api.letsencrypt.org/directory}
+        certbot standalone -n --register-unsafely-without-email \
+            --keep-until-expiring --agree-tos --domains ${SERVER} \
+            --server=${ACME_SERVER}
+        ln -sf /etc/letsencrypt/live/${SERVER}/fullchain.pem "${CERT_FILE}"
+        ln -sf /etc/letsencrypt/live/${SERVER}/privkey.pem "${KEY_FILE}"
+    ;;
+    "SELFSIGNED")
+        echo "Generating self signed certificate"
+        openssl req -x509 -newkey rsa:4096 -keyout "${KEY_FILE}" \
+            -out "${CERT_FILE}" -nodes -days 365 -subj "/CN=${SERVER}"
+    ;;
+    "BYO")
+        echo "Expecting cert.pem and key.pem to exist in /tls"
+        if [[ ! -e "${CERT_FILE}" ]]; then
+            echo "Missing ${CERT_FILE} in BYO strategy" 1>&1
+            exit 5
+        elif [[ ! -e "${KEY_FILE}" ]]; then
+            echo "Missing ${KEY_FILE} in BYO strategy" 1>&1
+            exit 5
+        fi
+        echo "BYO Certs are good!"
+    ;;
+esac
+
+## Generate SSL configuration for NGINX
+
 
 /usr/sbin/nginx -t
 exec /usr/sbin/nginx
