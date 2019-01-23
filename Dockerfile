@@ -9,6 +9,8 @@ LABEL description "Multi-snort and honeypot sensor management, uses a network of
 LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/communityhoneynetwork"
 LABEL changelog-url "https://github.com/CommunityHoneyNetwork/communityhoneynetwork/commits/master"
 
+VOLUME /tls
+
 ENV playbook "chnserver.yml"
 
 RUN date
