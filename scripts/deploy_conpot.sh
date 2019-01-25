@@ -51,7 +51,7 @@ CONPOT_JSON="/etc/conpot/conpot.json"
 CONPOT_TEMPLATE=default
 
 # Comma separated tags for honeypot
-TAGS=
+TAGS=""
 EOF
 echo 'Done!'
 echo ''

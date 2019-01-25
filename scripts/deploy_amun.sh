@@ -46,7 +46,7 @@ DEPLOY_KEY=${DEPLOY}
 AMUN_JSON="/etc/amun/amun.json"
 
 # Comma separated tags for honeypot
-TAGS=
+TAGS=""
 EOF
 echo 'Done!'
 echo ''

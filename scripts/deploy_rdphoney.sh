@@ -46,7 +46,7 @@ DEPLOY_KEY=${DEPLOY}
 RDPHONEY_JSON="/etc/rdphoney/rdphoney.json"
 
 # Comma separated tags for honeypot
-TAGS=
+TAGS=""
 EOF
 echo 'Done!'
 echo ''

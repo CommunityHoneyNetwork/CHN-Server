@@ -59,7 +59,7 @@ SSH_LISTEN_PORT=2222
 TELNET_LISTEN_PORT=2223
 
 # Comma separated tags for honeypot
-TAGS=
+TAGS=""
 EOF
 echo 'Done!'
 echo ''

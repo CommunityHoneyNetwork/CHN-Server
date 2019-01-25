@@ -66,7 +66,7 @@ FEEDS_SERVER="${SERVER}"
 FEEDS_SERVER_PORT=10000
 
 # Comma separated tags for honeypot
-TAGS=
+TAGS=""
 EOF
 echo 'Done!'
 echo ''
