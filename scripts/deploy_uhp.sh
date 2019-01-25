@@ -52,7 +52,7 @@ UHP_CONFIG="smtp.json"
 UHP_LISTEN_PORT=2525
 
 # Comma separated tags for honeypot
-TAGS=
+TAGS=""
 EOF
 echo 'Done!'
 echo ''
