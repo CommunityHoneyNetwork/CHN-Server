@@ -1,4 +1,4 @@
-from flask_security.utils import encrypt_password
+from flask_security.utils import hash_password
 from mhn.auth.models import User
 from mhn import mhn, db
 import sys
@@ -44,7 +44,7 @@ def main():
         user = User.query.filter_by(email=email).first()
         if user:
             print("user found, updating password")
-            user.password = encrypt_password(password)
+            user.password = hash_password(password)
             db.session.add(user)
             db.session.commit()
         else:

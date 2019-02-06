@@ -3,7 +3,7 @@ from urlparse import urljoin
 from flask import Flask, request, jsonify, abort, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security, SQLAlchemyUserDatastore
-from flask_security.utils import encrypt_password as encrypt
+from flask_security.utils import hash_password as hash
 from flask_mail import Mail
 from werkzeug.contrib.atom import AtomFeed
 import xmltodict
@@ -116,7 +116,7 @@ def create_clean_db():
         # Creating superuser entry.
         superuser = user_datastore.create_user(
                 email=mhn.config.get('SUPERUSER_EMAIL'),
-                password=encrypt(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
+                password=hash(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
         adminrole = user_datastore.create_role(name='admin', description='')
         user_datastore.add_role_to_user(superuser, adminrole)
         user_datastore.create_role(name='user', description='')
