@@ -1,6 +1,7 @@
 import os
 from urlparse import urlparse
 
+import initdatabase
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
@@ -13,9 +14,8 @@ except ImportError:
         from generateconfig import generate_config
         generate_config()
         import config
-        from mhn import create_clean_db
         print 'Initializing database "{}".'.format(config.SQLALCHEMY_DATABASE_URI)
-        create_clean_db()
+        initdatabase.init_database()
     except Exception as e:
         print e
         print 'An error ocurred. Please fix the errors and try again.'
