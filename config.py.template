@@ -39,12 +39,14 @@ HPFEEDS_PORT = {{HPFEEDS_PORT}}
 
 # Other settings.
 FEED_AUTH_REQUIRED = False
+SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'sqlite/mhn.db')
 SECURITY_PASSWORD_HASH = 'bcrypt'
 SECURITY_PASSWORD_SALT = SECRET_KEY
 SECURITY_LOGIN_URL = '/ui/login/'
 BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = BROKER_URL
+CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
 RENDERED_RULES_PATH = os.path.join(_basedir, 'mhn/static/mhn.rules')
 CELERYBEAT_SCHEDULE = {
     'fetch-emerging-rules': {
