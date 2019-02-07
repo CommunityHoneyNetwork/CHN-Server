@@ -1,6 +1,5 @@
 import json
 import datetime
-from collections import Counter
 from StringIO import StringIO
 import csv
 
