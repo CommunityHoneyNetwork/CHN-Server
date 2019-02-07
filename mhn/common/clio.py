@@ -423,6 +423,14 @@ class HpFeed(ResourceMixin):
 
         return count, columns,(self.json_payload(fr.payload) for fr in self.get(options=options, **req_args))
 
+    def get_credentials(self, payloads):
+        credentials = []
+        for creds in payloads:
+            if creds['credentials']:
+                for cred in (creds['credentials']):
+                    credentials.append(tuple(cred))
+        return Counter(credentials).most_common()
+
     def count_passwords(self,payloads):
         passwords = []
         for creds in payloads:
