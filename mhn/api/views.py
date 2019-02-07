@@ -1,4 +1,5 @@
 import json
+import datetime
 from StringIO import StringIO
 import csv
 
@@ -244,6 +245,69 @@ def top_attackers():
         meta={
             'size': len(results),
             'query': 'top_attackers',
+            'options': options
+        }
+    )
+
+
+def get_credentials_payloads(clio, limit=10000, hours_ago=4):
+    credentials_payloads = []
+    credentials_payloads += clio.hpfeed.get_payloads({'limit': limit}, {"channel": "cowrie.sessions",
+                                                                        "timestamp":
+                                                                        {'$gte': datetime.datetime.now() -
+                                                                         datetime.timedelta(hours=hours_ago)}})[2]
+    return credentials_payloads
+
+
+@api.route('/credentials.csv/', methods=['GET'])
+@token_auth
+def credential_list_csv():
+    fieldnames = ['username', 'password', 'count']
+
+    options = request.args.to_dict()
+    limit = int(options.get('limit', '1000'))
+    hours_ago = int(options.get('hours_ago', '4'))
+
+    clio = Clio()
+    credentials = clio.hpfeed.get_credentials(get_credentials_payloads(clio, limit, hours_ago))
+
+    outf = StringIO()
+    wr = csv.DictWriter(outf, fieldnames=fieldnames,
+                        delimiter='\t', lineterminator='\n')
+    wr.writeheader()
+    for cred in credentials:
+        wr.writerow({'username': cred[0][0],
+                     'password': cred[0][1],
+                     'count': cred[1]})
+    response_data = outf.getvalue()
+    outf.close()
+
+    response = make_response(response_data)
+    response.headers['Content-type'] = 'text/plain'
+    return response
+
+
+@api.route('/credentials/', methods=['GET'])
+@token_auth
+def credential_list():
+
+    options = request.args.to_dict()
+    limit = int(options.get('limit', '1000'))
+    hours_ago = int(options.get('hours_ago', '4'))
+
+    clio = Clio()
+    credentials = clio.hpfeed.get_credentials(get_credentials_payloads(clio, limit, hours_ago))
+
+    results = []
+    for cred in credentials:
+        results.append({'username': cred[0][0],
+                        'password': cred[0][1],
+                        'count': cred[1]})
+
+    return jsonify(
+        data=results,
+        meta={
+            'query': 'attacker_stats',
             'options': options
         }
     )
