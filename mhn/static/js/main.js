@@ -230,6 +230,7 @@ $(document).ready(function() {
 
         $('.del-sensor').click(function() {
             var sensorId = $(this).attr('data-sensor-id');
+            var c = window.confirm("Do you wish to delete all events associated with this honeypot?\nPlease click 'OK' to delete events or 'Cancel' to keep events.");
 
             $.ajax({
                 type: 'DELETE',
@@ -242,6 +243,17 @@ $(document).ready(function() {
                     alert('There was an error deleting this sensor.');
                 }
             });
+
+            if (c){
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/api/session/' + sensorId + '/',
+                    headers: {'X-CSRFToken': $('#_csrf_token').val()},
+                    success: function() {
+                        window.location.reload();
+                    }
+                });
+            }
         });
 
         $('.del-session').click(function() {
