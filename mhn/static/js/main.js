@@ -230,34 +230,54 @@ $(document).ready(function() {
 
         $('.del-sensor').click(function() {
             var sensorId = $(this).attr('data-sensor-id');
+            var d_sensor = window.confirm("Do you wish to delete sensor " + sensorId + "?");
 
-            $.ajax({
-                type: 'DELETE',
-                url: '/api/sensor/' + sensorId + '/',
-                headers: {'X-CSRFToken': $('#_csrf_token').val()},
-                success: function() {
-                    window.location.reload();
-                },
-                error: function(resp) {
-                    alert('There was an error deleting this sensor.');
+            if (d_sensor) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/api/sensor/' + sensorId + '/',
+                    headers: {'X-CSRFToken': $('#_csrf_token').val()},
+                    success: function () {
+                        window.location.reload();
+                    },
+                    error: function (resp) {
+                        alert('There was an error deleting this sensor.');
+                    }
+                });
+
+                var d_events = window.confirm("Do you wish to delete all events for sensor "  + sensorId + "?\n\nPlease click 'OK' to delete events or 'Cancel' to keep events.");
+
+                if (d_events) {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: '/api/session/' + sensorId + '/',
+                        headers: {'X-CSRFToken': $('#_csrf_token').val()},
+                        success: function () {
+                            window.location.reload();
+                        }
+                    });
                 }
-            });
+            }
         });
 
         $('.del-session').click(function() {
             var sensorId = $(this).attr('data-sensor-id');
 
-            $.ajax({
-                type: 'DELETE',
-                url: '/api/session/' + sensorId + '/',
-                headers: {'X-CSRFToken': $('#_csrf_token').val()},
-                success: function() {
-                    window.location.reload();
-                },
-                error: function(resp) {
-                    alert('There was an error clearing these sessions.');
-                }
-            });
+            var d_events = window.confirm("Do you wish to delete all events for sensor " + sensorId + "?");
+
+            if (d_events) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/api/session/' + sensorId + '/',
+                    headers: {'X-CSRFToken': $('#_csrf_token').val()},
+                    success: function () {
+                        window.location.reload();
+                    },
+                    error: function (resp) {
+                        alert('There was an error clearing these sessions.');
+                    }
+                });
+            }
         });
     }
 
