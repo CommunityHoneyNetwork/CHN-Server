@@ -58,8 +58,15 @@ SSH_LISTEN_PORT=2222
 # in a container
 TELNET_LISTEN_PORT=2223
 
-# Comma separated tags for honeypot
+# double quotes, comma delimited tags may be specified, which will be included
+# as a field in the hpfeeds output. Use cases include tagging provider
+# infrastructure the sensor lives in, geographic location for the sensor, etc.
 TAGS=""
+
+# A specific "personality" directory for the Cowrie honeypot may be specified
+# here. These directories can include custom fs.pickle, cowrie.cfg, txtcmds and
+# userdb.txt files which can influence the attractiveness of the honeypot.
+PERSONALITY=default
 EOF
 echo 'Done!'
 echo ''
