@@ -42,7 +42,7 @@ case "${CERTIFICATE_STRATEGY}" in
     "CERTBOT")
         echo "Using CERTBOT to manage certificate"
         ACME_SERVER=${ACME_SERVER:-https://acme-v02.api.letsencrypt.org/directory}
-        certbot standalone -n --register-unsafely-without-email \
+        certbot certonly --standalone -n --register-unsafely-without-email \
             --keep-until-expiring --agree-tos --domains ${SERVER} \
             --server=${ACME_SERVER}
         ln -sf /etc/letsencrypt/live/${SERVER}/fullchain.pem "${CERT_FILE}"
