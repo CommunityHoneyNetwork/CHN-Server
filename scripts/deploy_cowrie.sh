@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
   cowrie:
-    image: stingar/cowrie:latest
+    image: stingar/cowrie:1.7
     volumes:
       - ./cowrie.sysconfig:/etc/default/cowrie
       - ./cowrie:/etc/cowrie

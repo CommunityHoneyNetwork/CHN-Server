@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     wordpot:
-        image: stingar/wordpot:latest
+        image: stingar/wordpot:1.7
         volumes:
             - ./wordpot.sysconfig:/etc/default/wordpot
             - ./wordpot:/etc/wordpot

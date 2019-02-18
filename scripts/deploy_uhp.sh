@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     uhp:
-        image: stingar/uhp:latest
+        image: stingar/uhp:1.7
         volumes:
             - ./uhp.sysconfig:/etc/default/uhp
             - ./uhp:/etc/uhp
