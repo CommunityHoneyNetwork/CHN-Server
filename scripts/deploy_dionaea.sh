@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
   dionaea:
-    image: stingar/dionaea:latest
+    image: stingar/dionaea:1.7
     volumes:
       - ./dionaea.sysconfig:/etc/default/dionaea
       - ./dionaea/dionaea:/etc/dionaea/

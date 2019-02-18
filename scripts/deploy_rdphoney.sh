@@ -9,7 +9,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     rdphoney:
-        image: stingar/rdphoney:latest
+        image: stingar/rdphoney:1.7
         volumes:
             - ./rdphoney.sysconfig:/etc/sysconfig/rdphoney
             - ./rdphoney:/etc/rdphoney
