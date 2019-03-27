@@ -24,7 +24,7 @@ cat << EOF > uhp.sysconfig
 #
 # This can be modified to change the default setup of the uhp unattended installation
 
-DEBUG=true
+DEBUG=false
 
 # IP Address of the honeypot
 # Leaving this blank will default to the docker container IP
