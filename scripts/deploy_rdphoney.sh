@@ -11,8 +11,8 @@ services:
     rdphoney:
         image: stingar/rdphoney:1.7
         volumes:
-            - ./rdphoney.sysconfig:/etc/sysconfig/rdphoney
-            - ./rdphoney:/etc/rdphoney
+            - ./rdphoney.sysconfig:/etc/sysconfig/rdphoney:z
+            - ./rdphoney:/etc/rdphoney:z
         ports:
             - "3389:3389"
 EOF

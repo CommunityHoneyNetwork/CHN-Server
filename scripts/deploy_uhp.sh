@@ -11,8 +11,8 @@ services:
     uhp:
         image: stingar/uhp:1.7
         volumes:
-            - ./uhp.sysconfig:/etc/default/uhp
-            - ./uhp:/etc/uhp
+            - ./uhp.sysconfig:/etc/default/uhp:z
+            - ./uhp:/etc/uhp:z
         ports:
             - "25:2525"
 EOF

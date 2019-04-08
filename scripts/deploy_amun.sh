@@ -11,8 +11,8 @@ services:
     amun:
         image: stingar/amun:1.7
         volumes:
-            - ./amun.sysconfig:/etc/default/amun
-            - ./amun:/etc/amun
+            - ./amun.sysconfig:/etc/default/amun:z
+            - ./amun:/etc/amun:z
         ports:
             - "445:445"
 EOF

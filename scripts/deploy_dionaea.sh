@@ -11,8 +11,8 @@ services:
   dionaea:
     image: stingar/dionaea:1.7
     volumes:
-      - ./dionaea.sysconfig:/etc/default/dionaea
-      - ./dionaea/dionaea:/etc/dionaea/
+      - ./dionaea.sysconfig:/etc/default/dionaea:z
+      - ./dionaea/dionaea:/etc/dionaea/:z
     ports:
       - "21:21"
       - "23:23"

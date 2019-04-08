@@ -11,8 +11,8 @@ services:
     glastopf:
         image: stingar/glastopf:1.7
         volumes:
-            - ./glastopf.sysconfig:/etc/default/glastopf
-            - ./glastopf:/etc/glastopf
+            - ./glastopf.sysconfig:/etc/default/glastopf:z
+            - ./glastopf:/etc/glastopf:z
         ports:
             - "8080:8080"
 EOF

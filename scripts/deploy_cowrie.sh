@@ -11,8 +11,8 @@ services:
   cowrie:
     image: stingar/cowrie:1.7
     volumes:
-      - ./cowrie.sysconfig:/etc/default/cowrie
-      - ./cowrie:/etc/cowrie
+      - ./cowrie.sysconfig:/etc/default/cowrie:z
+      - ./cowrie:/etc/cowrie:z
     ports:
       - "2222:2222"
       - "23:2223"

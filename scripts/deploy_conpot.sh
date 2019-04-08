@@ -11,8 +11,8 @@ services:
     conpot:
         image: stingar/conpot:1.7
         volumes:
-            - ./conpot.sysconfig:/etc/default/conpot
-            - ./conpot:/etc/conpot
+            - ./conpot.sysconfig:/etc/default/conpot:z
+            - ./conpot:/etc/conpot:z
         ports:
             - 80:80
             - 102:102
