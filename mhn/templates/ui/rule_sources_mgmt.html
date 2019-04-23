@@ -15,7 +15,7 @@
                 {% if src.note %}
                 <li>Comment: {{ src.note }}</li>
                 {% endif %}
-                <li><img class="del-rs right" data-rs-id="{{ src.id }}" src="/static/img/trash-24.png"/></li>
+                <li><img class="del-rs right" data-rs-id="{{ src.id }}" src="{{ url_for('static', filename='img/trash-24.png') }}"/></li>
             </ul>
         </div>
     </div>
