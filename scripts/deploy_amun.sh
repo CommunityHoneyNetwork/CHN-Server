@@ -10,10 +10,10 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     amun:
-        image: stingar/amun${ARCH}:latest
+        image: stingar/amun${ARCH}:1.7
         volumes:
-            - ./amun.sysconfig:/etc/default/amun
-            - ./amun:/etc/amun
+            - ./amun.sysconfig:/etc/default/amun:z
+            - ./amun:/etc/amun:z
         ports:
             - "445:445"
 EOF

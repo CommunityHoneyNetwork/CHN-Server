@@ -10,10 +10,10 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
   dionaea:
-    image: stingar/dionaea${ARCH}:latest
+    image: stingar/dionaea${ARCH}:1.7
     volumes:
-      - ./dionaea.sysconfig:/etc/default/dionaea
-      - ./dionaea/dionaea:/etc/dionaea/
+      - ./dionaea.sysconfig:/etc/default/dionaea:z
+      - ./dionaea/dionaea:/etc/dionaea/:z
     ports:
       - "21:21"
       - "23:23"
@@ -40,7 +40,7 @@ cat << EOF > dionaea.sysconfig
 #
 # This can be modified to change the default setup of the dionaea unattended installation
 
-DEBUG=true
+DEBUG=false
 
 # IP Address of the honeypot
 # Leaving this blank will default to the docker container IP

@@ -10,10 +10,10 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     uhp:
-        image: stingar/uhp${ARCH}:latest
+        image: stingar/uhp${ARCH}:1.7
         volumes:
-            - ./uhp.sysconfig:/etc/default/uhp
-            - ./uhp:/etc/uhp
+            - ./uhp.sysconfig:/etc/default/uhp:z
+            - ./uhp:/etc/uhp:z
         ports:
             - "25:2525"
 EOF
@@ -25,7 +25,7 @@ cat << EOF > uhp.sysconfig
 #
 # This can be modified to change the default setup of the uhp unattended installation
 
-DEBUG=true
+DEBUG=false
 
 # IP Address of the honeypot
 # Leaving this blank will default to the docker container IP

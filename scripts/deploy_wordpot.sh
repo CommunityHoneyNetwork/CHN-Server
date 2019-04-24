@@ -10,10 +10,10 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     wordpot:
-        image: stingar/wordpot${ARCH}:latest
+        image: stingar/wordpot${ARCH}:1.7
         volumes:
-            - ./wordpot.sysconfig:/etc/default/wordpot
-            - ./wordpot:/etc/wordpot
+            - ./wordpot.sysconfig:/etc/default/wordpot:z
+            - ./wordpot:/etc/wordpot:z
         ports:
             - "8080:8080"
 EOF

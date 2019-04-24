@@ -10,10 +10,10 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
   cowrie:
-    image: stingar/cowrie${ARCH}:latest
+    image: stingar/cowrie${ARCH}:1.7
     volumes:
-      - ./cowrie.sysconfig:/etc/default/cowrie
-      - ./cowrie:/etc/cowrie
+      - ./cowrie.sysconfig:/etc/default/cowrie:z
+      - ./cowrie:/etc/cowrie:z
     ports:
       - "2222:2222"
       - "23:2223"
