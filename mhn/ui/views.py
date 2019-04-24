@@ -160,13 +160,17 @@ def add_sensor():
 @login_required
 def deploy_mgmt():
     script_id = request.args.get('script_id')
+    arch_id = request.args.get('arch_id')
+    arch = ""
+    if arch_id == "1":
+        arch = "-arm"
     if not script_id or script_id == '0':
         script = Script(name='', notes='', script='')
     else:
         script = Script.query.get(script_id)
     return render_template(
             'ui/script.html', scripts=Script.query.order_by(Script.date.desc()),
-            script=script)
+            script=script, arch=arch)
 
 
 @ui.route('/honeymap/', methods=['GET'])

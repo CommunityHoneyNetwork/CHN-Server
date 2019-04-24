@@ -2,17 +2,25 @@
 {% block title %}Manage Deploy{% endblock %}
 {% block content %}
     <div class="row">
-        <div class="small-4 columns">
-            <h3>Select Script</h3>
-            <form id="script-select" method="get" action="">
+        <form id="script-select" method="get" action="">
+            <div class="small-4 columns">
+                <h3>Select Script</h3>
                 <select onchange="this.form.submit();" name="script_id">
                     <option value="0">New script</option>
                     {% for s in scripts %}
                     <option {% if script.id == s.id %}selected{% endif %} value={{ s.id }}>{{ s.name }}</option>
                     {% endfor %}
                 </select>
-            </form>
-        </div>
+            </div>
+            <div class="small-4 columns">
+                <h3>Architecture</h3>
+                <select onchange="this.form.submit();" name="arch_id">
+                    <option value="0">Intel</option>
+                    <option {% if arch == "-arm" %}selected{% endif %} value="1">ARM</option>
+                </select>
+            </div>
+            <div class="small-4 columns"></div>
+        </form>
     </div>
     {% if script %}
         {% if script.id %}
@@ -24,7 +32,7 @@
         <div class="row">
             <div class="small-12 small-centered columns">
                 <p><kbd>wget "{{ settings.server_url }}/api/script/?text=true&script_id={{ script.id }}" -O deploy.sh &&
-                    sudo bash deploy.sh {{ settings.server_url }} {{ settings.deploy_key }} && docker-compose up -d</kbd>
+                    sudo bash deploy.sh {{ settings.server_url }} {{ settings.deploy_key }} {{ arch }} && docker-compose up -d</kbd>
                 </p>
             </div>
         </div>
