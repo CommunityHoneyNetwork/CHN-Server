@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import sys
 import os
 import argparse
 import validators
-from urllib.parse import urlparse
+from urlparse import urlparse
 
 
 def generate_nginx_defaults(args):
