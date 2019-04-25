@@ -2,6 +2,7 @@
 
 URL=$1
 DEPLOY=$2
+ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
 
 echo 'Creating docker-compose.yml...'
@@ -9,7 +10,7 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
   dionaea:
-    image: stingar/dionaea:1.7
+    image: stingar/dionaea${ARCH}:1.7
     volumes:
       - ./dionaea.sysconfig:/etc/default/dionaea:z
       - ./dionaea/dionaea:/etc/dionaea/:z
