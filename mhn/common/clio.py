@@ -397,10 +397,8 @@ class HpFeed(ResourceMixin):
     expected_filters = ('ident', 'channel', 'payload', '_id', 'timestamp', )
 
     channel_map = {
-        'snort.alerts': ['date', 'sensor', 'source_ip', 'destination_port', 'priority', 'classification', 'signature'],
         'dionaea.capture': ['url', 'daddr', 'saddr', 'dport', 'sport', 'sha512', 'md5'],
         'glastopf.events': ['time', 'pattern', 'filename', 'source', 'request_url'],
-        'suricata.events': ['timestamp', 'sensor', 'source_ip', 'destination_port', 'proto', 'signature'],
     }
 
     def json_payload(self, data):
