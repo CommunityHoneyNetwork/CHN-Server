@@ -5,6 +5,7 @@ from flask import (
         Blueprint, render_template, request, url_for,
         redirect, g)
 from flask_security import logout_user as logout
+import unicodedata
 from sqlalchemy import desc, func
 
 from mhn.ui.utils import get_flag_ip, get_sensor_name
@@ -27,6 +28,8 @@ PYGAL_CONFIG.js = (
     'https://kozea.github.io/pygal.js/javascripts/pygal-tooltips.js',
 )
 
+def remove_control_characters(s):
+    return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
 
 @app.template_filter()
 def number_format(value):
@@ -218,8 +221,10 @@ def graph_passwords():
     bar_chart.title = "Kippo/Cowrie Top Passwords"
     clio = Clio()
     top_passwords = clio.hpfeed.count_passwords(get_credentials_payloads(clio))
-    for password in top_passwords:
-        bar_chart.add(password[0], [{'label': str(password[0]), 'xlink': '', 'value':password[1]}])
+    for password_data in top_passwords:
+        password,count = password_data
+        password = remove_control_characters(password)
+        bar_chart.add(password, [{'label': password, 'xlink': '', 'value':count}])
 
     return bar_chart.render_response()
 
@@ -233,8 +238,10 @@ def graph_users():
     bar_chart.title = "Kippo/Cowrie Top Users"
     clio = Clio()
     top_users = clio.hpfeed.count_users(get_credentials_payloads(clio))
-    for user in top_users:
-        bar_chart.add(user[0], [{'label': str(user[0]), 'xlink':'', 'value': user[1]}])
+    for user_list in top_users:
+        user,password = user_list
+        user = remove_control_characters(user)
+        bar_chart.add(user, [{'label':user, 'xlink':'', 'value':password}])
 
     return bar_chart.render_response()
 
@@ -248,8 +255,10 @@ def graph_combos():
     bar_chart.title = "Kippo/Cowrie Top User/Passwords"
     clio = Clio()
     top_combos = clio.hpfeed.count_combos(get_credentials_payloads(clio))
-    for combo in top_combos:
-        bar_chart.add(combo[0],[{'label':str(combo[0]),'xlink':'','value':combo[1]}])
+    for combo_list in top_combos:
+        user,password = combo_list
+        user = remove_control_characters(user)
+        bar_chart.add(user,[{'label':user,'xlink': '', 'value':password}])
 
     return bar_chart.render_response()
 
