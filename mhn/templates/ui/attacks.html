@@ -85,7 +85,7 @@
                         <td>{{ loop.index }}</td>
                         <td>{{ at.timestamp|fdate }}</td>
                         <td>{{ get_sensor_name(at.identifier) }}</td>
-                        <td><img src="{{ get_flag_ip(at.source_ip) }}" width=25 height=50 /></td>
+                        <td><img src="{{ get_flag_ip(at.source_ip) }}" title="{{ get_country_ip(at.source_ip) }}" width=25 height=50 /></td>
                         <td>{{ at.source_ip }}</td>
                         <td>{{ at.destination_port }}</td>
                         <td>{{ at.protocol }}</td>
