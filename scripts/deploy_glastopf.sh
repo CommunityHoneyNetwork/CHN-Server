@@ -11,6 +11,7 @@ version: '2'
 services:
     glastopf:
         image: stingar/glastopf${ARCH}:1.7
+        restart: always
         volumes:
             - ./glastopf.sysconfig:/etc/default/glastopf:z
             - ./glastopf:/etc/glastopf:z
