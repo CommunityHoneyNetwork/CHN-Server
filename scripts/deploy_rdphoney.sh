@@ -11,6 +11,7 @@ version: '2'
 services:
     rdphoney:
         image: stingar/rdphoney${ARCH}:1.7
+        restart: always
         volumes:
             - ./rdphoney.sysconfig:/etc/sysconfig/rdphoney:z
             - ./rdphoney:/etc/rdphoney:z
