@@ -146,7 +146,7 @@ def create_clean_db():
             'Ubuntu - RDPHoney': path.abspath('./scripts/deploy_rdphoney.sh'),
             'Ubuntu - UHP': path.abspath('./scripts/deploy_uhp.sh'),
         }
-        for honeypot, deploypath in deployscripts.iteritems():
+        for honeypot, deploypath in deployscripts.items():
             with open(deploypath, 'r') as deployfile:
                 initdeploy = DeployScript()
                 initdeploy.script = deployfile.read()
@@ -167,6 +167,38 @@ def create_clean_db():
             # skip fetching sources on initial database population
             # fetch_sources()
 
+def load_custom_scripts():
+    from os import path
+    from os.path import isfile
+    from mhn.api.models import DeployScript
+    from os import walk
+    import re
+
+    superuser = user_datastore.get_user(mhn.config.get('SUPERUSER_EMAIL'))
+    deployscripts = {}
+    custom_path = './custom_scripts/'
+
+    f = []
+    for (dirpath, dirnames, filenames) in walk(custom_path):
+        f.extend(filenames)
+        break
+    for fname in f:
+        p = path.abspath(custom_path + fname)
+        if isfile(p):
+            n = re.sub('[\'";&%#@!()*]*','',path.basename(p))
+            deployscripts[n] = p
+
+    db.session.query(DeployScript).delete()
+    for honeypot, deploypath in deployscripts.items():
+        with open(deploypath, 'r') as deployfile:
+            initdeploy = DeployScript()
+            initdeploy.script = deployfile.read()
+            initdeploy.notes = 'Initial deploy script for {}'.format(honeypot)
+            initdeploy.user = superuser
+            initdeploy.name = honeypot
+            db.session.add(initdeploy)
+            db.session.commit()
+
 
 def reload_scripts():
     from os import path
@@ -186,7 +218,7 @@ def reload_scripts():
     }
 
     db.session.query(DeployScript).delete()
-    for honeypot, deploypath in deployscripts.iteritems():
+    for honeypot, deploypath in deployscripts.items():
         with open(deploypath, 'r') as deployfile:
             initdeploy = DeployScript()
             initdeploy.script = deployfile.read()
