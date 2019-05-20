@@ -11,13 +11,10 @@ def init_database():
         if 'user' in inspector.get_table_names():
             print("Database already initialized")
             reload_scripts()
-            load_custom_scripts()
             sys.exit()
         else:
             print("Initializing new database")
             create_clean_db()
-            load_custom_scripts()
-
 
 if __name__ == '__main__':
     init_database()
