@@ -172,13 +172,13 @@ def create_clean_db():
 
 def pretty_name(name):
     # remove trailing suffix
-    nosuffix = os.path.splittext(name)[0]
+    nosuffix = os.path.splitext(name)[0]
 
     # remove special characters
     nospecial = re.sub('[\'";&%#@!()*]*', '', nosuffix)
 
     # Convert underscore to space
-    underspace = re.sub('[_]*', ' ', nospecial)
+    underspace = re.sub('_', ' ', nospecial)
 
     return underspace
 
