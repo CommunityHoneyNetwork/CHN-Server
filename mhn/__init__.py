@@ -11,14 +11,17 @@ import uuid
 import random
 import string
 from flask_wtf.csrf import CsrfProtect
+import os
+import re
+
 csrf = CsrfProtect()
 
 db = SQLAlchemy()
 # After defining `db`, import auth models due to
 # circular dependency.
 from mhn.auth.models import User, Role, ApiKey
-user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 
 mhn = Flask(__name__)
 mhn.config.from_object('config')
@@ -36,22 +39,28 @@ Security(mhn, user_datastore)
 
 # Registering blueprints.
 from mhn.api.views import api
+
 mhn.register_blueprint(api)
 
 from mhn.ui.views import ui
+
 mhn.register_blueprint(ui)
 
 from mhn.auth.views import auth
+
 mhn.register_blueprint(auth)
 
 # Trigger templatetag register.
 from mhn.common.templatetags import format_date
+
 mhn.jinja_env.filters['fdate'] = format_date
 
 from mhn.auth.contextprocessors import user_ctx
+
 mhn.context_processor(user_ctx)
 
 from mhn.common.contextprocessors import config_ctx
+
 mhn.context_processor(config_ctx)
 
 import logging
@@ -59,9 +68,9 @@ from logging.handlers import RotatingFileHandler
 
 mhn.logger.setLevel(logging.INFO)
 formatter = logging.Formatter(
-      '%(asctime)s -  %(pathname)s - %(message)s')
+    '%(asctime)s -  %(pathname)s - %(message)s')
 handler = RotatingFileHandler(
-        mhn.config['LOG_FILE_PATH'], maxBytes=10240, backupCount=5)
+    mhn.config['LOG_FILE_PATH'], maxBytes=10240, backupCount=5)
 handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 mhn.logger.addHandler(handler)
@@ -115,8 +124,8 @@ def create_clean_db():
         db.create_all()
         # Creating superuser entry.
         superuser = user_datastore.create_user(
-                email=mhn.config.get('SUPERUSER_EMAIL'),
-                password=hash(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
+            email=mhn.config.get('SUPERUSER_EMAIL'),
+            password=hash(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
         adminrole = user_datastore.create_role(name='admin', description='')
         user_datastore.add_role_to_user(superuser, adminrole)
         user_datastore.create_role(name='user', description='')
@@ -126,27 +135,20 @@ def create_clean_db():
         db.session.add(apikey)
         db.session.flush()
 
-        from os import path
-
         from mhn.api.models import DeployScript, RuleSource
         from mhn.tasks.rules import fetch_sources
         # Creating a initial deploy scripts.
-        # Reading initial deploy script should be: ../../scripts/
-        #|-- deploy_conpot.sh
-        #|-- deploy_dionaea.sh
-        #|-- deploy_snort.sh
-        #|-- deploy_kippo.sh
         deployscripts = {
-            'Ubuntu - Conpot': path.abspath('./scripts/deploy_conpot.sh'),
-            'Ubuntu - Dionaea': path.abspath('./scripts/deploy_dionaea.sh'),
-            'Ubuntu - Cowrie': path.abspath('./scripts/deploy_cowrie.sh'),
-            'Ubuntu - Amun': path.abspath('./scripts/deploy_amun.sh'),
-            'Ubuntu - Glastopf': path.abspath('./scripts/deploy_glastopf.sh'),
-            'Ubuntu - Wordpot': path.abspath('./scripts/deploy_wordpot.sh'),
-            'Ubuntu - RDPHoney': path.abspath('./scripts/deploy_rdphoney.sh'),
-            'Ubuntu - UHP': path.abspath('./scripts/deploy_uhp.sh'),
+            'Ubuntu - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
+            'Ubuntu - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
+            'Ubuntu - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
+            'Ubuntu - Amun': os.path.abspath('./scripts/deploy_amun.sh'),
+            'Ubuntu - Glastopf': os.path.abspath('./scripts/deploy_glastopf.sh'),
+            'Ubuntu - Wordpot': os.path.abspath('./scripts/deploy_wordpot.sh'),
+            'Ubuntu - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
+            'Ubuntu - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
         }
-        for honeypot, deploypath in deployscripts.items():
+        for honeypot, deploypath in sorted(deployscripts.items()):
             with open(deploypath, 'r') as deployfile:
                 initdeploy = DeployScript()
                 initdeploy.script = deployfile.read()
@@ -168,39 +170,48 @@ def create_clean_db():
             # fetch_sources()
 
 
+def pretty_name(name):
+    # remove trailing suffix
+    nosuffix = os.path.splittext(name)[0]
+
+    # remove special characters
+    nospecial = re.sub('[\'";&%#@!()*]*', '', nosuffix)
+
+    # Convert underscore to space
+    underspace = re.sub('[_]*', ' ', nospecial)
+
+    return underspace
+
+
 def reload_scripts():
-    from os import path
-    from os.path import isfile
-    from os import walk
     from mhn.api.models import DeployScript
-    import re
 
     superuser = user_datastore.get_user(mhn.config.get('SUPERUSER_EMAIL'))
     custom_path = './custom_scripts/'
 
     deployscripts = {
-        'Ubuntu - Conpot': path.abspath('./scripts/deploy_conpot.sh'),
-        'Ubuntu - Dionaea': path.abspath('./scripts/deploy_dionaea.sh'),
-        'Ubuntu - Cowrie': path.abspath('./scripts/deploy_cowrie.sh'),
-        'Ubuntu - Amun': path.abspath('./scripts/deploy_amun.sh'),
-        'Ubuntu - Glastopf': path.abspath('./scripts/deploy_glastopf.sh'),
-        'Ubuntu - Wordpot': path.abspath('./scripts/deploy_wordpot.sh'),
-        'Ubuntu - RDPHoney': path.abspath('./scripts/deploy_rdphoney.sh'),
-        'Ubuntu - UHP': path.abspath('./scripts/deploy_uhp.sh'),
+        'Ubuntu - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
+        'Ubuntu - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
+        'Ubuntu - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
+        'Ubuntu - Amun': os.path.abspath('./scripts/deploy_amun.sh'),
+        'Ubuntu - Glastopf': os.path.abspath('./scripts/deploy_glastopf.sh'),
+        'Ubuntu - Wordpot': os.path.abspath('./scripts/deploy_wordpot.sh'),
+        'Ubuntu - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
+        'Ubuntu - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
     }
 
     f = []
-    for (dirpath, dirnames, filenames) in walk(custom_path):
+    for (dirpath, dirnames, filenames) in os.walk(custom_path):
         f.extend(filenames)
         break
     for fname in f:
-        p = path.abspath(custom_path + fname)
-        if isfile(p):
-            n = re.sub('[\'";&%#@!()*]*','',path.basename(p))
+        p = os.path.abspath(custom_path + fname)
+        if os.path.isfile(p):
+            n = pretty_name(os.path.basename(p))
             deployscripts[n] = p
 
     db.session.query(DeployScript).delete()
-    for honeypot, deploypath in deployscripts.items():
+    for honeypot, deploypath in sorted(deployscripts.items()):
         with open(deploypath, 'r') as deployfile:
             initdeploy = DeployScript()
             initdeploy.script = deployfile.read()
