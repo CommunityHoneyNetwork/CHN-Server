@@ -11,6 +11,7 @@ version: '2'
 services:
   dionaea:
     image: stingar/dionaea${ARCH}:1.7
+    restart: always
     volumes:
       - ./dionaea.sysconfig:/etc/default/dionaea:z
       - ./dionaea/dionaea:/etc/dionaea/:z

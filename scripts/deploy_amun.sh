@@ -11,6 +11,7 @@ version: '2'
 services:
     amun:
         image: stingar/amun${ARCH}:1.7
+        restart: always
         volumes:
             - ./amun.sysconfig:/etc/default/amun:z
             - ./amun:/etc/amun:z

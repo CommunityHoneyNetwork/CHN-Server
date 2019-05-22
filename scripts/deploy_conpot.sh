@@ -11,6 +11,7 @@ version: '2'
 services:
     conpot:
         image: stingar/conpot${ARCH}:1.7
+        restart: always
         volumes:
             - ./conpot.sysconfig:/etc/default/conpot:z
             - ./conpot:/etc/conpot:z
