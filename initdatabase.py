@@ -16,6 +16,5 @@ def init_database():
             print("Initializing new database")
             create_clean_db()
 
-
 if __name__ == '__main__':
     init_database()
