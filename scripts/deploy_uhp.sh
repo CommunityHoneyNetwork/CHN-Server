@@ -11,6 +11,7 @@ version: '2'
 services:
     uhp:
         image: stingar/uhp${ARCH}:1.7
+        restart: always
         volumes:
             - ./uhp.sysconfig:/etc/default/uhp:z
             - ./uhp:/etc/uhp:z

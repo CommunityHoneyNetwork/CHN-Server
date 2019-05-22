@@ -7,7 +7,7 @@ from flask import (
 from flask_security import logout_user as logout
 from sqlalchemy import desc, func
 
-from mhn.ui.utils import get_flag_ip, get_sensor_name
+from mhn.ui.utils import get_flag_ip, get_country_ip, get_sensor_name
 from mhn.api.models import (
         Sensor, Rule, DeployScript as Script,
         RuleSource)
@@ -70,7 +70,6 @@ def dashboard():
     top_sensor = clio.session.top_sensor(top=5, hours_ago=24)
     # TOP 5 sigs
     freq_sigs = clio.hpfeed.top_sigs(top=5, hours_ago=24)
-    
     return render_template('ui/dashboard.html',
                            attackcount=attackcount,
                            top_attackers=top_attackers,
@@ -79,7 +78,8 @@ def dashboard():
                            top_sensor=top_sensor,
                            freq_sigs=freq_sigs,
                            get_sensor_name=get_sensor_name,
-                           get_flag_ip=get_flag_ip)
+                           get_flag_ip=get_flag_ip,
+                           get_country_ip=get_country_ip)
 
 
 @ui.route('/attacks/', methods=['GET'])
@@ -94,8 +94,8 @@ def get_attacks():
     sessions = mongo_pages(sessions, total, limit=10)
     return render_template('ui/attacks.html', attacks=sessions,
                            sensors=Sensor.query, view='ui.get_attacks',
-                           get_flag_ip=get_flag_ip, get_sensor_name=get_sensor_name,
-                           **request.args.to_dict())
+                           get_flag_ip=get_flag_ip, get_country_ip=get_country_ip,
+                           get_sensor_name=get_sensor_name, **request.args.to_dict())
 
 
 @ui.route('/feeds/', methods=['GET'])

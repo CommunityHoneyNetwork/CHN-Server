@@ -11,6 +11,7 @@ version: '2'
 services:
   cowrie:
     image: stingar/cowrie${ARCH}:1.7
+    restart: always
     volumes:
       - ./cowrie.sysconfig:/etc/default/cowrie:z
       - ./cowrie:/etc/cowrie:z

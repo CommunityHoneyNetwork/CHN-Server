@@ -11,6 +11,7 @@ version: '2'
 services:
     wordpot:
         image: stingar/wordpot${ARCH}:1.7
+        restart: always
         volumes:
             - ./wordpot.sysconfig:/etc/default/wordpot:z
             - ./wordpot:/etc/wordpot:z
