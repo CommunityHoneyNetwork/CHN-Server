@@ -216,19 +216,36 @@ make_logdir () {
   chown -R {{ nginx_user}}.root ${log_file_path}
 }
 
+generate_nginx_config () {
+  cd /opt
+  export server_base_url=$(awk '/SERVER_BASE_URL/ {print $3}' /opt/config.py | sed "s/'//g")
+  python generate_nginx_standalone.py --server-base-url ${server_base_url} --output-file-nginx /etc/nginx/sites-available/default -f
+}
+
 main () {
   generate_config
   make_logdir
-
+  generate_nginx_config
+  
+  local custom_url_path=$(python -c "from urlparse import urlparse; import os; result=urlparse(os.environ['server_base_url']); print(result.path.rstrip('/'))")
+    
   cd {{ server_dir }}
 
   # Start a background rule refresh here, rather than in initdatabase.py
+  # if custom_url_path isn't null, there's a custom path in SERVER_BASE_URL, so use it as a mount point
+  # otherwise, mount at default root route as normal 
+  if [[ -z ${custom_url_path} ]]
+    then
+        custom_url_path="/"
+  fi
+  
   python manage.py fetch_rules &
 
   exec uwsgi --socket /tmp/uwsgi.sock \
              --module mhn:mhn \
              --chmod-socket=666 \
-             --buffer-size 04960
+             --buffer-size 04960 \
+             --manage-script-name --mount ${custom_url_path}=mhn:mhn
 }
 
 main "${@}"

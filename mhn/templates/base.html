@@ -2,12 +2,15 @@
     <head>
         <title>{% block title %}{% endblock %}</title>
         <title>{% block extra_head %}{% endblock %}</title>
-        <script src="/static/js/vendor/jquery.js"></script>
-        <link rel="stylesheet" href="/static/css/foundation.min.css">
-        <link rel="stylesheet" href="/static/css/normalize.css">
-        <script src="/static/js/vendor/foundation.min.js"></script>
-        <script src="/static/js/vendor/modernizr.js"></script>
-        <script src="/static/js/main.js"></script>
+	<script type=text/javascript>
+    		$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  	</script>
+        <script src="{{ url_for('static', filename='js/vendor/jquery.js') }}"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+        <script src="{{ url_for('static', filename='js/vendor/foundation.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/vendor/modernizr.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     </head>
     <body>
         {% if user.is_authenticated %}
@@ -34,12 +37,12 @@
 				
 				
 			 <li class="has-dropdown">
-                        <a href="/ui/chart">Charts</a>
+                        <a href="{{ url_for('ui.chart') }}">Charts</a>
                         <ul class="dropdown">
-                            <li><a href="/image/top_passwords.svg">Kippo/Cowrie Top Passwords</a></li>
-                            <li><a href="/image/top_users.svg">Kippo/Cowrie Top Users</a></li>
-                            <li><a href="/image/top_combos.svg">Kippo/Cowrie Top User/Passwords</a></li>
-                            <li><a href="/image/top_sessions.svg">Kippo/Cowrie Top Attackers</a></li>
+			    <li><a href="{{ url_for('graph_passwords') }}">Kippo/Cowrie Top Passwords</a></li>
+                            <li><a href="{{ url_for('graph_users') }}">Kippo/Cowrie Top Users</a></li>
+                            <li><a href="{{ url_for('graph_combos') }}">Kippo/Cowrie Top User/Passwords</a></li>
+                            <li><a href="{{ url_for('graph_top_attackers') }}">Kippo/Cowrie Top Attackers</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -75,7 +78,7 @@
             </div>
         </div>
         {% endblock %}
-        <script src="/static/js/vendor/fastclick.js"></script>
+        <script src="{{ url_for('static', filename='js/vendor/fastclick.js') }}"></script>
         <script>
             $(document).foundation();
         </script>

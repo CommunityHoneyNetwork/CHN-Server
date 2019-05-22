@@ -5,24 +5,24 @@
 	<div class="large-6 columns">
 
 		<figure>
-			<embed type="image/svg+xml" src="/image/top_users.svg"/>
+			<embed type="image/svg+xml" src="{{ url_for('graph_users') }}"/>
 		</figure>
 	</div>
 
 	<div class="large-6 columns">
 		<figure>
-			<embed type="image/svg+xml" src="/image/top_passwords.svg"/>
+			<embed type="image/svg+xml" src="{{ url_for('graph_passwords') }}"/>
 		</figure>
 	</div>
 
 	<div class="large-6 columns">
 		<figure>
-			<embed type="image/svg+xml" src="/image/top_combos.svg"/>
+			<embed type="image/svg+xml" src="{{ url_for('graph_combos') }}"/>
 		</figure>
 	</div>
 	<div class="large-6 columns">
 		<figure>
-			<embed type="image/svg+xml" src="/image/top_sessions.svg"/>
+			<embed type="image/svg+xml" src="{{ url_for('graph_top_attackers') }}"/>
 		</figure>
 	</div>
 
