@@ -2,6 +2,7 @@
 
 URL=$1
 DEPLOY=$2
+ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
 
 echo 'Creating docker-compose.yml...'
@@ -9,7 +10,8 @@ cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     amun:
-        image: stingar/amun:1.7
+        image: stingar/amun${ARCH}:1.7
+        restart: always
         volumes:
             - ./amun.sysconfig:/etc/default/amun:z
             - ./amun:/etc/amun:z

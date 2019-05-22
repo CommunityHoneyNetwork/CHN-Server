@@ -1,11 +1,39 @@
 version: '2'
 services:
-  ubuntu:
+  mongodb:
+    image: stingar/mongodb:1.7
+    volumes:
+      - ./storage/mongodb:/var/lib/mongo:z
+  redis:
+    image: stingar/redis:1.7
+    volumes:
+      - ./storage/redis:/var/lib/redis:z
+  hpfeeds:
+    image: stingar/hpfeeds:1.7
+    links:
+      - mongodb:mongodb
+    ports:
+      - "10000:10000"
+  mnemosyne:
+    image: stingar/mnemosyne:1.7
+    links:
+      - mongodb:mongodb
+      - hpfeeds:hpfeeds
+  chnserver:
     build:
       context: .
-    image: chnserver:ubuntu
-    ports:
-      - "127.0.0.1:80:80"
-      - "127.0.0.1:443:443"
     env_file:
       - .development.env
+    volumes:
+      - ./config/collector:/etc/collector:z
+      - ./storage/chnserver/sqlite:/opt/sqlite:z
+      - ./chnserver.sysconfig:/etc/default/chnserver:z
+      - ./certs:/etc/letsencrypt:z
+      - ./mhn:/opt/mhn:z
+    links:
+      - mongodb:mongodb
+      - redis:redis
+      - hpfeeds:hpfeeds
+    ports:
+      - "80:80"
+      - "443:443"

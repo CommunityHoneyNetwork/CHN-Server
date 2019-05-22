@@ -9,6 +9,7 @@ import struct
 from mhn.api.models import Sensor
 
 flag_cache = SimpleCache(threshold=1000, default_timeout=300)
+country_cache = SimpleCache(threshold=1000, default_timeout=300)
 sensor_cache = SimpleCache(threshold=1000, default_timeout=300)
 
 
@@ -43,6 +44,17 @@ def get_flag_ip(ipaddr):
     return flag
 
 
+def get_country_ip(ipaddr):
+    if is_RFC1918_addr(ipaddr):
+        return constants.DEFAULT_COUNTRY_NAME
+
+    name = country_cache.get(ipaddr)
+    if not name:
+        name = _get_country_ip(ipaddr)
+        country_cache.set(ipaddr, name)
+    return name
+
+  
 def get_sensor_name(sensor_id):
     sensor_name = sensor_cache.get(sensor_id)
     if not sensor_name:
@@ -68,6 +80,7 @@ def _get_flag_ip(ipaddr):
         # the country code for this IP address.
         r = requests.get(geo_api.format(ipaddr))
         ccode = r.json()['countryCode']
+	app.logger.warning(r.json())
     except Exception:
         app.logger.warning(
             "Could not determine flag for ip: {}".format(ipaddr))
@@ -82,3 +95,16 @@ def _get_flag_ip(ipaddr):
             return flag
         else:
             return url_for('static', filename=constants.DEFAULT_FLAG_URL)
+
+          
+def _get_country_ip(ipaddr):
+    geo_api = 'https://geospray.threatstream.com/ip/{}'
+    try:
+        # Using threatstream's geospray API to get
+        # the country name for this IP address.
+        r = requests.get(geo_api.format(ipaddr))
+        name = r.json()['countryName']
+        return name
+    except Exception:
+        app.logger.warning("Could not determine country name for ip: {}".format(ipaddr))
+        return constants.DEFAULT_COUNTRY_NAME

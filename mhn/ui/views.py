@@ -5,9 +5,10 @@ from flask import (
         Blueprint, render_template, request, url_for,
         redirect, g)
 from flask_security import logout_user as logout
+import unicodedata
 from sqlalchemy import desc, func
 
-from mhn.ui.utils import get_flag_ip, get_sensor_name
+from mhn.ui.utils import get_flag_ip, get_country_ip, get_sensor_name
 from mhn.api.models import (
         Sensor, Rule, DeployScript as Script,
         RuleSource)
@@ -27,6 +28,8 @@ PYGAL_CONFIG.js = (
     'https://kozea.github.io/pygal.js/javascripts/pygal-tooltips.js',
 )
 
+def remove_control_characters(s):
+    return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
 
 @app.template_filter()
 def number_format(value):
@@ -70,7 +73,6 @@ def dashboard():
     top_sensor = clio.session.top_sensor(top=5, hours_ago=24)
     # TOP 5 sigs
     freq_sigs = clio.hpfeed.top_sigs(top=5, hours_ago=24)
-    
     return render_template('ui/dashboard.html',
                            attackcount=attackcount,
                            top_attackers=top_attackers,
@@ -79,7 +81,8 @@ def dashboard():
                            top_sensor=top_sensor,
                            freq_sigs=freq_sigs,
                            get_sensor_name=get_sensor_name,
-                           get_flag_ip=get_flag_ip)
+                           get_flag_ip=get_flag_ip,
+                           get_country_ip=get_country_ip)
 
 
 @ui.route('/attacks/', methods=['GET'])
@@ -94,8 +97,8 @@ def get_attacks():
     sessions = mongo_pages(sessions, total, limit=10)
     return render_template('ui/attacks.html', attacks=sessions,
                            sensors=Sensor.query, view='ui.get_attacks',
-                           get_flag_ip=get_flag_ip, get_sensor_name=get_sensor_name,
-                           **request.args.to_dict())
+                           get_flag_ip=get_flag_ip, get_country_ip=get_country_ip,
+                           get_sensor_name=get_sensor_name, **request.args.to_dict())
 
 
 @ui.route('/feeds/', methods=['GET'])
@@ -160,13 +163,17 @@ def add_sensor():
 @login_required
 def deploy_mgmt():
     script_id = request.args.get('script_id')
+    arch_id = request.args.get('arch_id')
+    arch = ""
+    if arch_id == "1":
+        arch = "-arm"
     if not script_id or script_id == '0':
         script = Script(name='', notes='', script='')
     else:
         script = Script.query.get(script_id)
     return render_template(
             'ui/script.html', scripts=Script.query.order_by(Script.date.desc()),
-            script=script)
+            script=script, arch=arch)
 
 
 @ui.route('/honeymap/', methods=['GET'])
@@ -214,8 +221,10 @@ def graph_passwords():
     bar_chart.title = "Kippo/Cowrie Top Passwords"
     clio = Clio()
     top_passwords = clio.hpfeed.count_passwords(get_credentials_payloads(clio))
-    for password in top_passwords:
-        bar_chart.add(password[0], [{'label': str(password[0]), 'xlink': '', 'value':password[1]}])
+    for password_data in top_passwords:
+        password,count = password_data
+        password = remove_control_characters(password)
+        bar_chart.add(password, [{'label': password, 'xlink': '', 'value':count}])
 
     return bar_chart.render_response()
 
@@ -229,8 +238,10 @@ def graph_users():
     bar_chart.title = "Kippo/Cowrie Top Users"
     clio = Clio()
     top_users = clio.hpfeed.count_users(get_credentials_payloads(clio))
-    for user in top_users:
-        bar_chart.add(user[0], [{'label': str(user[0]), 'xlink':'', 'value': user[1]}])
+    for user_list in top_users:
+        user,password = user_list
+        user = remove_control_characters(user)
+        bar_chart.add(user, [{'label':user, 'xlink':'', 'value':password}])
 
     return bar_chart.render_response()
 
@@ -244,8 +255,10 @@ def graph_combos():
     bar_chart.title = "Kippo/Cowrie Top User/Passwords"
     clio = Clio()
     top_combos = clio.hpfeed.count_combos(get_credentials_payloads(clio))
-    for combo in top_combos:
-        bar_chart.add(combo[0],[{'label':str(combo[0]),'xlink':'','value':combo[1]}])
+    for combo_list in top_combos:
+        user,password = combo_list
+        user = remove_control_characters(user)
+        bar_chart.add(user,[{'label':user,'xlink': '', 'value':password}])
 
     return bar_chart.render_response()
 

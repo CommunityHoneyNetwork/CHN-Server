@@ -28,7 +28,7 @@
                 <ol>
                 {% for ip in top_attackers %}
                     <li><strong>
-                    <img src="{{ get_flag_ip(ip.source_ip) }}" width=25 height=50 />
+                    <img src="{{ get_flag_ip(ip.source_ip) }}" title="{{ get_country_ip(ip.source_ip) }}" width=25 height=50 />
                     <a href="{{ url_for('ui.get_attacks', source_ip=ip.source_ip) }}">{{ ip.source_ip }} ({{ ip.count | number_format }} attacks)</a>
                     </li></strong>
                 {% endfor %}
@@ -83,22 +83,7 @@
                 </ol>
             </div>
         </div>
-        <div class="row" style="margin-top:30px;">
-            <div class="small-6 columns">
-                <h3>TOP 5 Attacks Signatures:</h3>
-            </div>
-        </div>
-        <div class="row">
-            <div class="small-10 push-2 columns">
-                <ol>
-                {% for sig in freq_sigs %}
-                    <li><strong>
-                    <a href="{{ url_for('ui.get_feeds', payload=sig['signature'], channel='snort.alerts') }}">{{ sig['signature'] }} ({{ sig['count'] | number_format }} times)</a>
-                    </li></strong>
-                {% endfor %}
-                </ol>
-            </div>
-        </div>
+
     </div>
 </div>
 {% endblock %}
