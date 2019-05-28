@@ -4,13 +4,15 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.8-pre
+TAGS=""
 
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '2'
 services:
   cowrie:
-    image: stingar/cowrie${ARCH}:1.7
+    image: stingar/cowrie${ARCH}:${VERSION}
     restart: always
     volumes:
       - ./cowrie.sysconfig:/etc/default/cowrie:z
@@ -63,7 +65,7 @@ TELNET_LISTEN_PORT=2223
 # double quotes, comma delimited tags may be specified, which will be included
 # as a field in the hpfeeds output. Use cases include tagging provider
 # infrastructure the sensor lives in, geographic location for the sensor, etc.
-TAGS=""
+TAGS="${TAGS}"
 
 # A specific "personality" directory for the Cowrie honeypot may be specified
 # here. These directories can include custom fs.pickle, cowrie.cfg, txtcmds and

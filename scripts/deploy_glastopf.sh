@@ -4,13 +4,15 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.8-pre
+TAGS=""
 
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     glastopf:
-        image: stingar/glastopf${ARCH}:1.7
+        image: stingar/glastopf${ARCH}:${VERSION}
         restart: always
         volumes:
             - ./glastopf.sysconfig:/etc/default/glastopf:z
@@ -50,7 +52,7 @@ GLASTOPF_JSON="/etc/glastopf/glastopf.json"
 GLASTOPF_PORT=8080
 
 # Comma separated tags for honeypot
-TAGS=""
+TAGS="${TAGS}"
 EOF
 echo 'Done!'
 echo ''

@@ -4,13 +4,15 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.8-pre
+TAGS=""
 
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     amun:
-        image: stingar/amun${ARCH}:1.7
+        image: stingar/amun${ARCH}:${VERSION}
         restart: always
         volumes:
             - ./amun.sysconfig:/etc/default/amun:z
@@ -48,7 +50,7 @@ DEPLOY_KEY=${DEPLOY}
 AMUN_JSON="/etc/amun/amun.json"
 
 # Comma separated tags for honeypot
-TAGS=""
+TAGS="${TAGS}"
 EOF
 echo 'Done!'
 echo ''

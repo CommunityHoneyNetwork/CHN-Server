@@ -4,13 +4,15 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.8-pre
+TAGS=""
 
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     wordpot:
-        image: stingar/wordpot${ARCH}:1.7
+        image: stingar/wordpot${ARCH}:${VERSION}
         restart: always
         volumes:
             - ./wordpot.sysconfig:/etc/default/wordpot:z
@@ -49,6 +51,7 @@ WORDPOT_JSON="/etc/wordpot/wordpot.json"
 
 # Wordpress options
 WORDPRESS_PORT=8080
+TAGS=${TAGS}
 EOF
 echo 'Done!'
 echo ''

@@ -4,13 +4,15 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.8-pre
+TAGS=""
 
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     uhp:
-        image: stingar/uhp${ARCH}:1.7
+        image: stingar/uhp${ARCH}:${VERSION}
         restart: always
         volumes:
             - ./uhp.sysconfig:/etc/default/uhp:z
@@ -54,7 +56,7 @@ UHP_CONFIG="smtp.json"
 UHP_LISTEN_PORT=2525
 
 # Comma separated tags for honeypot
-TAGS=""
+TAGS="${TAGS}"
 EOF
 echo 'Done!'
 echo ''

@@ -4,13 +4,15 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.8-pre
+TAGS=""
 
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '2'
 services:
   dionaea:
-    image: stingar/dionaea${ARCH}:1.7
+    image: stingar/dionaea${ARCH}:${VERSION}
     restart: always
     volumes:
       - ./dionaea.sysconfig:/etc/default/dionaea:z
@@ -67,7 +69,7 @@ FEEDS_SERVER="${SERVER}"
 FEEDS_SERVER_PORT=10000
 
 # Comma separated tags for honeypot
-TAGS=""
+TAGS="${TAGS}"
 EOF
 echo 'Done!'
 echo ''

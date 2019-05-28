@@ -4,13 +4,15 @@ URL=$1
 DEPLOY=$2
 ARCH=$4
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
+VERSION=1.8-pre
+TAGS=""
 
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '2'
 services:
     conpot:
-        image: stingar/conpot${ARCH}:1.7
+        image: stingar/conpot${ARCH}:${VERSION}
         restart: always
         volumes:
             - ./conpot.sysconfig:/etc/default/conpot:z
@@ -53,7 +55,7 @@ CONPOT_JSON="/etc/conpot/conpot.json"
 CONPOT_TEMPLATE=default
 
 # Comma separated tags for honeypot
-TAGS=""
+TAGS="${TAGS}"
 EOF
 echo 'Done!'
 echo ''
