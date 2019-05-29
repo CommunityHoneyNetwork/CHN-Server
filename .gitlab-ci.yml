@@ -25,7 +25,7 @@ pep8:
 
 build_container:
   stage: build
-  tags: 
+  tags:
     - container_scanning
   services:
     - docker:stable-dind
@@ -103,7 +103,7 @@ deploy_dockerhub:
     - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
     - sudo docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
     - sudo docker logout
-    - export DOCKER_TAG=$(echo $CI_BUILD_REF_NAME | sed -E 's/^v?([[:digit:]]+(.[[:digit:]]+){1,2}|latest)$/\1/g')
+    - export DOCKER_TAG=$(echo $CI_BUILD_REF_NAME | sed -E 's/^v?([[:digit:]]+(.[[:digit:]]+){1,2}(-pre)?|latest)$/\1/g')
     - export PROJECT_PATH=$(echo ${CI_PROJECT_PATH} | tr '[:upper:]' '[:lower:]')
     - env
     - echo docker tag ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG} ${PROJECT_PATH}:$DOCKER_TAG
