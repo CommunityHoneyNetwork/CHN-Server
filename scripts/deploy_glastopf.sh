@@ -2,7 +2,7 @@
 
 URL=$1
 DEPLOY=$2
-ARCH=$4
+ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
 VERSION=1.8-pre
 TAGS=""
