@@ -23,8 +23,7 @@ EOF
 echo 'Done!'
 echo 'Creating wordpot.sysconfig...'
 cat << EOF > wordpot.sysconfig
-# This file is read from /etc/sysconfig/wordpot or /etc/default/wordpot
-# depending on the base distro
+# This file is read from /etc/default/wordpot
 #
 # This can be modified to change the default setup of the wordpot unattended installation
 

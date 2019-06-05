@@ -24,10 +24,9 @@ EOF
 echo 'Done!'
 echo 'Creating cowrie.sysconfig...'
 cat << EOF > cowrie.sysconfig
-# This file is read from /etc/sysconfig/cowrie or /etc/default/cowrie
-# depending on the base distro
+# This file is read from /etc/default/cowrie
 #
-# This can be modified to change the default setup of the cowrie unattended installation
+# This can be modified to change the default setup of the unattended installation
 
 DEBUG=false
 
