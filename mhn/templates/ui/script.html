@@ -31,8 +31,8 @@
         </div>
         <div class="row">
             <div class="small-12 small-centered columns">
-                <p><kbd>wget "{{ settings.server_url }}/api/script/?text=true&script_id={{ script.id }}" -O deploy.sh &&
-                    sudo bash deploy.sh {{ settings.server_url }} {{ settings.deploy_key }} {{ arch }} && docker-compose up -d</kbd>
+                <p><kbd>sudo wget "{{ settings.server_url }}/api/script/?text=true&script_id={{ script.id }}" -O deploy.sh &&
+                    sudo bash deploy.sh {{ settings.server_url }} {{ settings.deploy_key }} {{ arch }} && sudo docker-compose up -d</kbd>
                 </p>
             </div>
         </div>
