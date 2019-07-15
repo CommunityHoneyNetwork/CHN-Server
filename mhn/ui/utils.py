@@ -74,12 +74,12 @@ def _get_flag_ip(ipaddr):
     """
     flag_path = url_for(
         'static', filename='img/flags-iso/shiny/64') + '/{}.png'
-    geo_api = 'https://geospray.threatstream.com/ip/{}'
+    geo_api = 'https://api.ipgeolocationapi.com/geolocate/{}'
     try:
         # Using threatstream's geospray API to get
         # the country code for this IP address.
         r = requests.get(geo_api.format(ipaddr))
-        ccode = r.json()['countryCode']
+        ccode = r.json()['un_locode']
 	app.logger.warning(r.json())
     except Exception:
         app.logger.warning(
@@ -98,12 +98,12 @@ def _get_flag_ip(ipaddr):
 
           
 def _get_country_ip(ipaddr):
-    geo_api = 'https://geospray.threatstream.com/ip/{}'
+    geo_api = 'https://api.ipgeolocationapi.com/geolocate/{}'
     try:
         # Using threatstream's geospray API to get
         # the country name for this IP address.
         r = requests.get(geo_api.format(ipaddr))
-        name = r.json()['countryName']
+        name = r.json()['un_locode']
         return name
     except Exception:
         app.logger.warning("Could not determine country name for ip: {}".format(ipaddr))

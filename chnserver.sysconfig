@@ -1,7 +1,6 @@
-# This file is read from /etc/sysconfig/chnserver or /etc/default/chnserver
-# depending on the base distro
+# This file is read from /etc/default/chnserver
 #
-# This can be modified to change the default setup of the chnserver unattended installation
+# This can be modified to change the default setup of the unattended installation
 
 DEBUG=false
 

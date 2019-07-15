@@ -2,9 +2,9 @@
 
 URL=$1
 DEPLOY=$2
-ARCH=$4
+ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.8-pre
+VERSION=1.8
 TAGS=""
 
 echo 'Creating docker-compose.yml...'
@@ -24,10 +24,9 @@ EOF
 echo 'Done!'
 echo 'Creating cowrie.sysconfig...'
 cat << EOF > cowrie.sysconfig
-# This file is read from /etc/sysconfig/cowrie or /etc/default/cowrie
-# depending on the base distro
+# This file is read from /etc/default/cowrie
 #
-# This can be modified to change the default setup of the cowrie unattended installation
+# This can be modified to change the default setup of the unattended installation
 
 DEBUG=false
 

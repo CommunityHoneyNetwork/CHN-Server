@@ -2,9 +2,9 @@
 
 URL=$1
 DEPLOY=$2
-ARCH=$4
+ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.8-pre
+VERSION=1.8
 TAGS=""
 
 echo 'Creating docker-compose.yml...'
@@ -23,8 +23,7 @@ EOF
 echo 'Done!'
 echo 'Creating wordpot.sysconfig...'
 cat << EOF > wordpot.sysconfig
-# This file is read from /etc/sysconfig/wordpot or /etc/default/wordpot
-# depending on the base distro
+# This file is read from /etc/default/wordpot
 #
 # This can be modified to change the default setup of the wordpot unattended installation
 
