@@ -1,6 +1,8 @@
 from urlparse import urljoin
 
 from flask import Flask, request, jsonify, abort, url_for, session
+from flask_ldap3_login import LDAP3LoginManager
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import hash_password as hash
@@ -10,11 +12,11 @@ import xmltodict
 import uuid
 import random
 import string
-from flask_wtf.csrf import CsrfProtect
+from flask_wtf.csrf import CSRFProtect
 import os
 import re
 
-csrf = CsrfProtect()
+csrf = CSRFProtect()
 
 db = SQLAlchemy()
 # After defining `db`, import auth models due to
@@ -22,10 +24,14 @@ db = SQLAlchemy()
 from mhn.auth.models import User, Role, ApiKey
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+ldap3_manager = LDAP3LoginManager()
 
 mhn = Flask(__name__)
 mhn.config.from_object('config')
 csrf.init_app(mhn)
+
+# Register LDAP3LoginManager.
+ldap3_manager.init_app(mhn)
 
 # Email app setup.
 mail = Mail()
@@ -65,20 +71,54 @@ mhn.context_processor(config_ctx)
 
 import logging
 from logging.handlers import RotatingFileHandler
-
+mhn.logger
 mhn.logger.setLevel(logging.INFO)
 formatter = logging.Formatter(
-    '%(asctime)s -  %(pathname)s - %(message)s')
+    '%(asctime)s [%(levelname)s] -  %(pathname)s - %(message)s')
 handler = RotatingFileHandler(
-    mhn.config['LOG_FILE_PATH'], maxBytes=10240, backupCount=5)
+    mhn.config.get('LOG_FILE_PATH', '/var/log/mhn/mhn.log'), maxBytes=10240, backupCount=5)
 handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 mhn.logger.addHandler(handler)
-if mhn.config['DEBUG']:
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    console.setFormatter(formatter)
-    mhn.logger.addHandler(console)
+# enable debug logging if DEBUG == true
+if mhn.config.get('DEBUG'):
+    import logging.config
+    logging.config.dictConfig({
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'default': {
+                'format': '%(asctime)s [%(levelname)s] -  %(pathname)s - %(message)s',
+            }
+        },
+        'handlers': {
+            'wsgi': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'default'
+            }
+        },
+        'root': {
+            'level': 'DEBUG',
+            'handlers': ['wsgi']
+        }
+    })
+
+# Initialize a 'Tls' context, and add the server manually if we're using SSL for LDAP
+if mhn.config.get('LDAP_USE_SSL', False):
+    from ldap3 import Tls
+    import ssl
+    tls_ctx = Tls(
+        validate=getattr(ssl, mhn.config.get('LDAP_SSL_VALIDATE')),
+        version=getattr(ssl, 'PROTOCOL_%s' % mhn.config.get('LDAP_SSL_PROTOCOL_VERSION')),
+        ca_certs_file='%s' % mhn.config.get('LDAP_SSL_CERT_FILE')
+    )
+
+    ldap3_manager.add_server(
+        mhn.config.get('LDAP_HOST'),
+        mhn.config.get('LDAP_PORT'),
+        mhn.config.get('LDAP_USE_SSL'),
+        tls_ctx=tls_ctx
+    )
 
 
 @mhn.route('/feed.json')
@@ -159,7 +199,7 @@ def create_clean_db():
 
         # Creating an initial rule source.
         rules_source = mhn.config.get('SNORT_RULES_SOURCE')
-        if not mhn.config.get('TESTING'):
+        if not mhn.config.get('DEBUG'):
             rulesrc = RuleSource()
             rulesrc.name = rules_source['name']
             rulesrc.uri = rules_source['uri']

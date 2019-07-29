@@ -13,6 +13,14 @@
                     <h6 class="left"><b>Email</b>: {{ current_user.email }}</h6>
                 </div>
             </div>
+	    <div class ="row">
+		<div class="small-10 columns">
+		    <h6 class="left"><b>Role</b>: {% for role in current_user.roles %} 
+			{{ role.name }}
+			{% endfor %} 
+		    </h6>
+		</div>
+	    </div>
             <div class="row">
                 <div class="small-8 columns">
                     <h6 class="left"><b>Apikey</b>: {{apikey.api_key}}</h6>
@@ -21,37 +29,43 @@
         </div>
     </div>
 
+    {% if current_user.has_role('admin') %}
     <div class="row" style="margin-bottom:30px;">
         <div class="small-4 large-centered columns">
-            <h2>Users</h2>
+            <h2>Local Users</h2>
         </div>
     </div>
     {% for u in users %}
-    <div class="row">
-        <div class="small-8 large-centered columns">
-            <div class="row">
-                <div class="small-6 columns">
-                    <h6 class="left">
-                        {{ u.email }}
-                        {% if u == current_user %}
-                            (me)
-                        {% endif %}
-                    </h6>
-                </div>
-                <div class="small-6 columns">
-                    {% if u != current_user %}
-                    <h6><a class="delete-user right" data-user-id="{{ u.id }}" href="{{ url_for('auth.delete_user', user_id=u.id) }}" class="right">Delete</a></h6>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+	    {% if u.from_ldap != 'LDAP' %}
+	    <div class="row user-{{ u.id }}">
+		<div class="small-8 large-centered columns">
+		    <div class="row">
+			<div class="small-6 columns">
+			    <h6 class="left">
+				{{ u.email }}
+				{% if u == current_user %}
+				    (me)
+				{% endif %}
+				- {% for role in u.roles %}
+				    {{ role.name }}
+				  {% endfor %}
+			    </h6>
+			</div>
+			<div class="small-6 columns">
+			    {% if u != current_user %}
+			    <h6><a class="delete-user right" data-user-id="{{ u.id }}" href="{{ url_for('auth.delete_user', user_id=u.id) }}" class="right">Delete</a></h6>
+			    {% endif %}
+			</div>
+		    </div>
+		</div>
+	    </div>
+	    {% endif %}
     {% endfor %}
     <div class="row">
         <div class="small-6 columns">
             <div class="row" style="margin-top:30px;">
                 <div class="small-10 large-centered columns">
-                    <h5>Add User</h5>
+                    <h5>Add Local User</h5>
                 </div>
             </div>
             <form id="user-form" action="{{ url_for('auth.create_user') }}" method="post">
@@ -61,6 +75,16 @@
                         <input id="email-edit" name="email" type="text" placeholder="Email" />
                     </div>
                 </div>
+		<div class="row" style="padding-bottom: 16px;">
+		    <div class="small-10 large-centered columns">
+			<select id="role-edit" name="role">
+			    <option selected disabled>Select Role</option>
+			    {% for r in roles %}
+			    <option value="{{ r.name }}">{{ r.name }}</option>
+			    {% endfor %}
+			</select>
+		    </div>
+		</div>
                 <div class="row">
                     <div class="small-10 large-centered columns">
                         <input id="password-edit" name="password" type="password" placeholder="Password" />
@@ -80,6 +104,9 @@
                 </div>
             </form>
         </div>
+	{% endif %}
+	
+	{% if current_user.from_ldap != True %}
         <div class="small-6 columns">
             <div class="row" style="margin-top:30px;">
                 <div class="small-10 large-centered columns">
@@ -114,5 +141,6 @@
                 </div>
             </form>
         </div>
+	{% endif %}
     </div>
 {% endblock %}

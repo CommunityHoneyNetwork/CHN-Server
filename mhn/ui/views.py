@@ -1,3 +1,4 @@
+import ldap3
 from datetime import datetime, timedelta
 from pygal.style import *
 import pygal
@@ -13,7 +14,7 @@ from mhn.api.models import (
         Sensor, Rule, DeployScript as Script,
         RuleSource)
 from mhn.auth import login_required, current_user
-from mhn.auth.models import User, PasswdReset, ApiKey
+from mhn.auth.models import User, PasswdReset, ApiKey, Role
 from mhn import db, mhn
 from mhn.common.utils import (
         paginate_options, alchemy_pages, mongo_pages)
@@ -50,11 +51,12 @@ def check_page():
 
 
 @ui.route('/login/', methods=['GET'])
-def login_user():
+def login():
     if current_user.is_authenticated():
         return redirect(url_for('ui.dashboard'))
-    return render_template('security/login_user.html')
 
+    if not mhn.config.get('LDAP_ENABLE', False):
+        return render_template('security/login_user.html', form=form)
 
 @mhn.route('/')
 @ui.route('/dashboard/', methods=['GET'])
@@ -188,7 +190,8 @@ def settings():
     return render_template(
         'ui/settings.html', 
         users=User.query.filter_by(active=True),
-        apikey=ApiKey.query.filter_by(user_id=current_user.id).first()
+        apikey=ApiKey.query.filter_by(user_id=current_user.id).first(),
+        roles=Role.query.all()
     )
 
 

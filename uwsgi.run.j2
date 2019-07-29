@@ -1,4 +1,5 @@
 #!/bin/bash
+shopt -s nocasematch
 
 trap "exit 130" SIGINT
 trap "exit 137" SIGKILL
@@ -99,9 +100,9 @@ generate_config () {
       LOG_FILE_PATH=""
     fi
 
-    if [[ ! -z "${DEBUG}" ]]
+    if [[ "${DEBUG}" == "y" || "${DEBUG}" == "true" ]]
     then
-      DEBUG="--debug ${DEBUG}"
+      DEBUG="--debug"
     else
       DEBUG=""
     fi
@@ -164,8 +165,161 @@ generate_config () {
         DEPLOY_KEY=""
     fi
 
+    if [[ "${LDAP_AUTH_ENABLED}" == "y" ]]
+    then
+      LDAP_AUTH_ENABLED="--ldap_auth"
+    else
+      LDAP_AUTH_ENABLED=""
+    fi
 
-    python generateconfig.py unattended ${EMAIL} \
+    if [[ ! -z ${LDAP_HOST} ]]
+    then
+        LDAP_HOST="--ldap_host ${LDAP_HOST}"
+    else
+        LDAP_HOST=""
+    fi
+
+    if [[ ! -z ${LDAP_PORT} ]]
+    then
+        LDAP_PORT="--ldap_port ${LDAP_PORT}"
+    else
+        LDAP_PORT=""
+    fi
+
+    if [[ "${LDAP_USE_SSL}" == "y" ]]
+    then
+      LDAP_USE_SSL="--ldap_ssl"
+    else
+      LDAP_USE_SSL=""
+    fi
+
+    if [[ ! -z "${LDAP_SSL_VALIDATE}" ]]
+    then
+      LDAP_SSL_VALIDATE="--ldap_ssl_validate ${LDAP_SSL_VALIDATE}"
+    else
+      LDAP_SSL_VALIDATE=""
+    fi
+
+    if [[ ! -z "${LDAP_SSL_CERT_FILE}" ]]
+    then
+      LDAP_SSL_CERT_FILE="--ldap_ssl_cert_file ${LDAP_SSL_CERT_FILE}"
+    else
+      LDAP_SSL_CERT_FILE=""
+    fi
+
+    if [[ ! -z "${LDAP_SSL_PROTOCOL_VERSION}" ]]
+    then
+      LDAP_SSL_PROTOCOL_VERSION="--ldap_ssl_protocol_version ${LDAP_SSL_PROTOCOL_VERSION}"
+    else
+      LDAP_SSL_PROTOCOL_VERSION=""
+    fi
+
+    if [[ ! -z "${LDAP_ADD_SERVER}" ]]
+    then
+      LDAP_ADD_SERVER="--ldap_add_server ${LDAP_ADD_SERVER}"
+    else
+      LDAP_ADD_SERVER=""
+    fi
+
+    if [[ ! -z ${LDAP_BIND_USER_DN} ]]
+    then
+        LDAP_BIND_USER_DN="--ldap_bind_user ${LDAP_BIND_USER_DN}"
+    else
+        LDAP_BIND_USER_DN=""
+    fi
+
+    if [[ ! -z ${LDAP_BIND_USER_PASSWORD} ]]
+    then
+        LDAP_BIND_USER_PASSWORD="--ldap_bind_password ${LDAP_BIND_USER_PASSWORD}"
+    else
+        LDAP_BIND_USER_PASSWORD=""
+    fi
+
+    if [[ ! -z ${LDAP_BASE_DN} ]]
+    then
+	LDAP_BASE_DN="--ldap_base_dn ${LDAP_BASE_DN}"
+    else
+	LDAP_BASE_DN=""
+    fi
+
+    if [[ ! -z ${LDAP_USER_DN} ]]
+    then
+        LDAP_USER_DN="--ldap_user_dn ${LDAP_USER_DN}"
+    else
+        LDAP_USER_DN=""
+    fi
+
+    if [[ ! -z ${LDAP_USER_SEARCH_SCOPE} ]]
+    then
+        LDAP_USER_SEARCH_SCOPE="--ldap_user_search_scope ${LDAP_USER_SEARCH_SCOPE}"
+    else
+        LDAP_USER_SEARCH_SCOPE=""
+    fi
+
+    if [[ ! -z ${LDAP_USER_OBJECT_CLASS} ]]
+    then
+        LDAP_USER_OBJECT_CLASS="--ldap_user_class ${LDAP_USER_OBJECT_CLASS}"
+    else
+        LDAP_USER_OBJECT_CLASS=""
+    fi
+
+    if [[ ! -z ${LDAP_USER_LOGIN_ATTR} ]]
+    then
+        LDAP_USER_LOGIN_ATTR="--ldap_user_login_attribute ${LDAP_USER_LOGIN_ATTR}"
+    else
+        LDAP_USER_LOGIN_ATTR=""
+    fi
+
+    if [[ ! -z ${LDAP_USER_RDN_ATTR} ]]
+    then
+        LDAP_USER_RDN_ATTR="--ldap_user_rdn_attribute ${LDAP_USER_RDN_ATTR}"
+    else
+        LDAP_USER_RDN_ATTR=""
+    fi
+
+    if [[ ! -z ${LDAP_GROUP_DN} ]]
+    then
+        LDAP_GROUP_DN="--ldap_group_dn ${LDAP_GROUP_DN}"
+    else
+        LDAP_GROUP_DN=""
+    fi
+
+    if [[ ! -z ${LDAP_GROUP_SEARCH_SCOPE} ]]
+    then
+        LDAP_GROUP_SEARCH_SCOPE="--ldap_group_search_scope ${LDAP_GROUP_SEARCH_SCOPE}"
+    else
+        LDAP_GROUP_SEARCH_SCOPE=""
+    fi
+
+    if [[ ! -z ${LDAP_GROUP_MEMBERS_ATTR} ]]
+    then
+        LDAP_GROUP_MEMBERS_ATTR="--ldap_group_attribute ${LDAP_GROUP_MEMBERS_ATTR}"
+    else
+        LDAP_GROUP_MEMBERS_ATTR=""
+    fi
+
+    if [[ ! -z ${LDAP_GROUP_OBJECT_CLASS} ]]
+    then
+        LDAP_GROUP_OBJECT_CLASS="--ldap_group_class ${LDAP_GROUP_OBJECT_CLASS}"
+    else
+        LDAP_GROUP_OBJECT_CLASS=""
+    fi
+
+    if [[ ! -z ${LDAP_GROUP_TO_ROLE_ADMIN} ]]
+    then
+        LDAP_GROUP_TO_ROLE_ADMIN="--ldap_group_admins ${LDAP_GROUP_TO_ROLE_ADMIN}"
+    else
+        LDAP_GROUP_TO_ROLE_ADMIN=""
+    fi
+
+    if [[ ! -z ${LDAP_GROUP_TO_ROLE_USER} ]]
+    then
+        LDAP_GROUP_TO_ROLE_USER="--ldap_group_users ${LDAP_GROUP_TO_ROLE_USER}"
+    else
+        LDAP_GROUP_TO_ROLE_USER=""
+    fi
+
+    python generateconfig.py unattended	${EMAIL} \
                                         ${SERVER_BASE_URL} \
                                         ${HONEYMAP_URL} \
                                         ${REDIS_URL} \
@@ -177,6 +331,7 @@ generate_config () {
                                         ${MAIL_PASSWORD} \
                                         ${DEFAULT_MAIL_SENDER} \
                                         ${LOG_FILE_PATH} \
+					${DEBUG} \
                                         ${MONGODB_HOST} \
                                         ${MONGODB_PORT} \
                                         ${HPFEEDS_HOST} \
@@ -184,8 +339,30 @@ generate_config () {
                                         ${SUPERUSER_EMAIL} \
                                         ${SUPERUSER_PASSWORD} \
                                         ${SECRET_KEY} \
-                                        ${DEPLOY_KEY}
-
+                                        ${DEPLOY_KEY} \
+					${LDAP_AUTH_ENABLED} \
+					${LDAP_HOST} \
+					${LDAP_PORT} \
+					${LDAP_USE_SSL} \
+					${LDAP_SSL_VALIDATE} \
+					${LDAP_SSL_CERT_FILE} \
+					${LDAP_SSL_PROTOCOL_VERSION} \
+					${LDAP_ADD_SERVER} \
+					${LDAP_BIND_USER_DN} \
+					${LDAP_BIND_USER_PASSWORD} \
+					${LDAP_BASE_DN} \
+					${LDAP_USER_DN} \
+					${LDAP_USER_SEARCH_SCOPE} \
+					${LDAP_USER_OBJECT_CLASS} \
+					${LDAP_USER_LOGIN_ATTR} \
+					${LDAP_USER_RDN_ATTR} \
+					${LDAP_GROUP_DN} \
+					${LDAP_GROUP_SEARCH_SCOPE} \
+					${LDAP_GROUP_MEMBERS_ATTR} \
+					${LDAP_GROUP_OBJECT_CLASS} \
+					${LDAP_GROUP_TO_ROLE_ADMIN} \
+					${LDAP_GROUP_TO_ROLE_USER}
+	
     # Generate config file for hpfeeds broker
     cd {{ hpfeeds_dir }}/hpfeeds/broker
     python generateconfig.py unattended ${MONGODB_HOST} ${MONGODB_PORT}

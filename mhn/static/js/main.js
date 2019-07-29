@@ -285,6 +285,7 @@ $(document).ready(function() {
         $('#submit-user').click(function(e) {
             var email = $('#email-edit').val();
             var password = $('#password-edit').val();
+	    var role = $('#role-edit').val();
 
             e.preventDefault();
             $('#msg-container').hide();
@@ -294,7 +295,8 @@ $(document).ready(function() {
                 headers: {'X-CSRFToken': $('#_csrf_token').val()},
                 data: JSON.stringify({
                     email: email,
-                    password: password
+                    password: password,
+		    role: role
                 }),
                 contentType: 'application/json',
                 success: function(resp) {
@@ -313,15 +315,16 @@ $(document).ready(function() {
     $('.delete-user').click(function(e) {
         e.preventDefault();
         var userId = $(this).attr('data-user-id');
-
-        $.ajax({
+	e.preventDefault();
+        $('#msg-container').hide();
+        
+	$.ajax({
             type: 'DELETE',
             headers: {'X-CSRFToken': $('#_csrf_token').val()},
             url: $SCRIPT_ROOT + '/auth/user/' + userId + '/',
             contentType: 'application/json',
             success: function(resp) {
                 window.location.reload();
-
             },
             error: function(resp) {
                 alert('Could not delete user.');
