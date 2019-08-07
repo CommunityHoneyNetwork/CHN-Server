@@ -8,6 +8,7 @@ from flask_security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import hash_password as hash
 from flask_mail import Mail
 from werkzeug.contrib.atom import AtomFeed
+import flask_migrate
 import xmltodict
 import uuid
 import random

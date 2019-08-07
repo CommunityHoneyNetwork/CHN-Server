@@ -399,8 +399,18 @@ generate_nginx_config () {
   python generate_nginx_standalone.py --server-base-url ${server_base_url} --output-file-nginx /etc/nginx/sites-available/default -f
 }
 
+manage_db_version () {
+  # init migrations dir
+  python manage.py db init --directory /opt/sqlite/migrations
+  # auto-generate revision script
+  python manage.py db migrate --directory /opt/sqlite/migrations
+  # upgrade db if necessary
+  python manage.py db upgrade --directory /opt/sqlite/migrations
+}
+
 main () {
   generate_config
+  manage_db_version
   make_logdir
   generate_nginx_config
   
