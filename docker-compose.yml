@@ -28,8 +28,7 @@ services:
       - ./config/collector:/etc/collector:z
       - ./storage/chnserver/sqlite:/opt/sqlite:z
       - ./chnserver.sysconfig:/etc/default/chnserver:z
-      - ./certs:/etc/letsencrypt:z
-      - ./mhn:/opt/mhn:z
+      - ./certs:/tls:z
     links:
       - mongodb:mongodb
       - redis:redis
