@@ -2,7 +2,7 @@
 #
 # This can be modified to change the default setup of the unattended installation
 
-DEBUG=false
+DEBUG=true
 
 EMAIL=admin@localhost
 SERVER_BASE_URL=''
@@ -24,22 +24,22 @@ SUPERUSER_PASSWORD=''
 SECRET_KEY=''
 DEPLOY_KEY=''
 
-LDAP_AUTH_ENABLED='n'
-LDAP_HOST='dc01.domain.local'
-LDAP_PORT=636
-LDAP_USE_SSL='y'
+LDAP_AUTH_ENABLED='y'
+LDAP_HOST='192.168.0.2'
+LDAP_PORT=389
+LDAP_USE_SSL='n'
 LDAP_SSL_VALIDATE='CERT_NONE'
 LDAP_SSL_CERT_FILE='/etc/letsencrypt/cert.crt'
 LDAP_SSL_PROTOCOL_VERSION='TLS'
-LDAP_BIND_USER_DN='cn=svc_ldap_bind_user,cn=users,dc=domain,dc=local'
-LDAP_BIND_USER_PASSWORD='ReallyStrongRandomPassphraseOrComplexPassword5!'
+LDAP_BIND_USER_DN='cn=admin,dc=domain,dc=local'
+LDAP_BIND_USER_PASSWORD='mysecret'
 LDAP_BASE_DN='dc=domain,dc=local'
-LDAP_USER_DN='ou=useraccounts'
-LDAP_USER_OBJECT_CLASS='user'
-LDAP_USER_LOGIN_ATTR='sAMAccountName'
+LDAP_USER_DN='ou=users'
+LDAP_USER_OBJECT_CLASS='inetOrgPerson'
+LDAP_USER_LOGIN_ATTR='uid'
 LDAP_USER_RDN_ATTR='cn'
 LDAP_GROUP_DN='ou=groups'
-LDAP_GROUP_MEMBERS_ATTR='member'
-LDAP_GROUP_OBJECT_CLASS='group'
-LDAP_GROUP_TO_ROLE_ADMIN='sg-chn-admins'
-LDAP_GROUP_TO_ROLE_USER='sg-chn-users'
+LDAP_GROUP_MEMBERS_ATTR='memberUid'
+LDAP_GROUP_OBJECT_CLASS='posixGroup'
+LDAP_GROUP_TO_ROLE_ADMIN='sg-stingar-admins'
+LDAP_GROUP_TO_ROLE_USER='sg-stingar-users'

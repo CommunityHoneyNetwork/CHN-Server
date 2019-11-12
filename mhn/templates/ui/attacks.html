@@ -66,7 +66,7 @@
     </div>
     <div style="max-width: 90.5rem;" class="row">
         <div class="large-12 columns">
-            <table style="width:100%;">
+            <table style="width:100%;" id="attacks-table">
                 <thead>
                     <tr>
                         <th></th>
@@ -82,7 +82,7 @@
                 <tbody>
                     {% for at in attacks.items %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td><a href="{{ url_for('ui.get_attack', _id=map_sessionid_to_hpfeedid(at._id)) }}">{{ loop.index }}</a></td>
                         <td>{{ at.timestamp|fdate }}</td>
                         <td>{{ get_sensor_name(at.identifier) }}</td>
                         <td><img src="{{ get_flag_ip(at.source_ip) }}" title="{{ get_country_ip(at.source_ip) }}" width=25 height=50 /></td>

@@ -100,7 +100,9 @@ def get_attacks():
     return render_template('ui/attacks.html', attacks=sessions,
                            sensors=Sensor.query, view='ui.get_attacks',
                            get_flag_ip=get_flag_ip, get_country_ip=get_country_ip,
-                           get_sensor_name=get_sensor_name, **request.args.to_dict())
+                           get_sensor_name=get_sensor_name, 
+                           map_sessionid_to_hpfeedid=map_sessionid_to_hpfeedid,
+                           **request.args.to_dict())
 
 
 @ui.route('/feeds/', methods=['GET'])
@@ -207,6 +209,30 @@ def forgot_passwd(hashstr):
 def reset_passwd():
     return render_template('ui/reset-request.html')
 
+
+def map_sessionid_to_hpfeedid(sessionid):
+    clio = Clio()
+    session_info = clio.session.get(_id=sessionid)
+    session_info = session_info.__dict__
+    hpfeed_id = session_info.get('hpfeed_id')
+    return hpfeed_id
+
+
+@ui.route('/attack/', methods=['GET'])
+@login_required
+def get_attack():
+    clio = Clio()
+    options = paginate_options(limit=10)
+    options['order_by'] = '-_id'
+    attack_info = clio.hpfeed.get_payloads(options, request.args.to_dict())[2]
+    attack_info = next(attack_info)
+    columns = attack_info.keys()
+    # manually set since there's only one result
+    count = 1
+    attack_info = mongo_pages(attack_info, count, limit=10)
+    return render_template('ui/attack-info.html', attack_info=attack_info, columns=columns,
+                           view='ui.get_attack',
+                           **request.args.to_dict())
 
 def get_credentials_payloads(clio):
     credentials_payloads = []
