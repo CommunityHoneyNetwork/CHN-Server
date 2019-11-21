@@ -70,6 +70,11 @@ FEEDS_SERVER_PORT=10000
 
 # Comma separated tags for honeypot
 TAGS="${TAGS}"
+
+# A specific "personality" directory for the dionaea honeypot may be specified
+# here. These directories can include custom dionaea.cfg and service configurations
+# files which can influence the attractiveness of the honeypot.
+PERSONALITY=""
 EOF
 echo 'Done!'
 echo ''
