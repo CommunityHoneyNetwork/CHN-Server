@@ -9,8 +9,6 @@
   runit_service_directories:
     - /etc/service/nginx
     - /etc/service/uwsgi
-    - /etc/service/celery_worker
-    - /etc/service/celery_beat
 
   server_dir: /opt
 

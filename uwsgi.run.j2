@@ -34,13 +34,6 @@ generate_config () {
       HONEYMAP_URL=""
     fi
 
-    if [[ ! -z "${REDIS_URL}" ]]
-    then
-      REDIS_URL="--redis_url ${REDIS_URL}"
-    else
-      REDIS_URL=""
-    fi
-
     if [[ -z ${MAIL_SERVER} ]]
     then
       echo "Mail server is required"
@@ -168,7 +161,6 @@ generate_config () {
     python generateconfig.py unattended ${EMAIL} \
                                         ${SERVER_BASE_URL} \
                                         ${HONEYMAP_URL} \
-                                        ${REDIS_URL} \
                                         ${MAIL_SERVER} \
                                         ${MAIL_PORT} \
                                         ${MAIL_SSL} \
@@ -238,8 +230,6 @@ main () {
     then
         custom_url_path="/"
   fi
-  
-  python manage.py fetch_rules &
 
   exec uwsgi --socket /tmp/uwsgi.sock \
              --module mhn:mhn \

@@ -10,8 +10,7 @@ from sqlalchemy import desc, func
 
 from mhn.ui.utils import get_flag_ip, get_country_ip, get_sensor_name
 from mhn.api.models import (
-        Sensor, Rule, DeployScript as Script,
-        RuleSource)
+        Sensor, DeployScript as Script)
 from mhn.auth import login_required, current_user
 from mhn.auth.models import User, PasswdReset, ApiKey
 from mhn import db, mhn
@@ -113,30 +112,6 @@ def get_feeds():
     return render_template('ui/feeds.html', feeds=feeds, columns=columns,
                            channel_list=channel_list, view='ui.get_feeds',
                            **request.args.to_dict())
-
-
-@ui.route('/rules/', methods=['GET'])
-@login_required
-def get_rules():
-    if 'sig_name' in request.args:
-        search = '%%%s%%' % request.args.get('sig_name')
-        rules = db.session.query(Rule, func.count(Rule.rev).label('nrevs')).\
-            filter(Rule.message.like(search)).\
-            group_by(Rule.sid).\
-            order_by(desc(Rule.date))
-    else:
-        rules = db.session.query(Rule, func.count(Rule.rev).label('nrevs')).\
-            group_by(Rule.sid).\
-            order_by(desc(Rule.date))
-    rules = alchemy_pages(rules, limit=10)
-    return render_template('ui/rules.html', rules=rules, view='ui.get_rules', **request.args.to_dict())
-
-
-@ui.route('/rule-sources/', methods=['GET'])
-@login_required
-def rule_sources_mgmt():
-    sources = RuleSource.query
-    return render_template('ui/rule_sources_mgmt.html', sources=sources)
 
 
 @ui.route('/sensors/', methods=['GET'])

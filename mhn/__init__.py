@@ -135,8 +135,7 @@ def create_clean_db():
         db.session.add(apikey)
         db.session.flush()
 
-        from mhn.api.models import DeployScript, RuleSource
-        from mhn.tasks.rules import fetch_sources
+        from mhn.api.models import DeployScript
         # Creating a initial deploy scripts.
         deployscripts = {
             'Ubuntu - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
@@ -157,17 +156,7 @@ def create_clean_db():
                 initdeploy.name = honeypot
                 db.session.add(initdeploy)
 
-        # Creating an initial rule source.
-        rules_source = mhn.config.get('SNORT_RULES_SOURCE')
-        if not mhn.config.get('TESTING'):
-            rulesrc = RuleSource()
-            rulesrc.name = rules_source['name']
-            rulesrc.uri = rules_source['uri']
-            rulesrc.name = 'Default rules source'
-            db.session.add(rulesrc)
-            db.session.commit()
-            # skip fetching sources on initial database population
-            # fetch_sources()
+        db.session.commit()
 
 
 def pretty_name(name):
