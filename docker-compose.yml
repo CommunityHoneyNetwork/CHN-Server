@@ -4,6 +4,10 @@ services:
     image: stingar/mongodb:1.8
     volumes:
       - ./storage/mongodb:/var/lib/mongo:z
+  redis:
+    image: stingar/redis:1.8
+    volumes:
+      - ./storage/redis:/var/lib/redis:z
   hpfeeds:
     image: stingar/hpfeeds:1.8
     links:
