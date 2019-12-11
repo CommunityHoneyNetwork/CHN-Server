@@ -6,7 +6,6 @@ DEBUG=false
 
 EMAIL=admin@localhost
 SERVER_BASE_URL=''
-REDIS_URL='redis://redis:6379'
 MAIL_SERVER='127.0.0.1'
 MAIL_PORT=25
 MAIL_TLS='y'

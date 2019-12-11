@@ -10,8 +10,6 @@ Flask-WTF==0.13.1
 Flask-Script
 bcrypt
 python-dateutil==2.2
-celery==3.1.16
-redis==2.10.3
 requests>=2.20.0
 xmltodict==0.9.0
 uWSGI==2.0.14

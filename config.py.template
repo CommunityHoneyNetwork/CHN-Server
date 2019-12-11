@@ -4,7 +4,6 @@ Do not add 'config.py' to SCM.
 """
 
 import os
-from celery.schedules import crontab
 
 
 _basedir = os.path.abspath(os.path.dirname(__file__))
@@ -18,7 +17,6 @@ SUPERUSER_EMAIL = '{{SUPERUSER_EMAIL}}'
 SUPERUSER_ONETIME_PASSWORD = '{{SUPERUSER_ONETIME_PASSWORD}}'
 SERVER_BASE_URL = '{{SERVER_BASE_URL}}'
 HONEYMAP_URL = '{{HONEYMAP_URL}}'
-REDIS_URL = '{{REDIS_URL}}'
 DEPLOY_KEY = '{{DEPLOY_KEY}}'
 LOG_FILE_PATH = '{{LOG_FILE_PATH}}'
 
@@ -44,21 +42,6 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'sqlite/mhn.db')
 SECURITY_PASSWORD_HASH = 'sha512_crypt'
 SECURITY_PASSWORD_SINGLE_HASH = True
 SECURITY_LOGIN_URL = '/ui/login/'
-BROKER_URL = REDIS_URL
-CELERY_RESULT_BACKEND = BROKER_URL
-CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
-RENDERED_RULES_PATH = os.path.join(_basedir, 'mhn/static/mhn.rules')
-CELERYBEAT_SCHEDULE = {
-    'fetch-emerging-rules': {
-            'task': 'mhn.tasks.rules.fetch_sources',
-            'schedule': crontab(hour=12),
-            'args': ()
-    }
-}
-SNORT_RULES_SOURCE = {
-    'name': 'Emerging Threats',
-    'uri': 'http://rules.emergingthreats.net/open/snort-2.9.0/emerging.rules.tar.gz'
-}
 HONEYPOT_CHANNELS = {
     'dionaea': [
         'mwbinary.dionaea.sensorunique',
