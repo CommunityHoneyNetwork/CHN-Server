@@ -62,7 +62,7 @@ class Sensor(db.Model, APIModel):
     def new_auth_dict(self):
         el = string.ascii_letters + string.digits
         rand_str = lambda n: ''.join(choice(el) for _ in range(n))
-        return dict(secret=rand_str(16),
+        return dict(secret=rand_str(16), owner="chn",
                     identifier=self.uuid, honeypot=self.honeypot,
                     subscribe=[], publish=Sensor.get_channels(self.honeypot))
 

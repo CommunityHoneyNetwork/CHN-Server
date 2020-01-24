@@ -505,7 +505,7 @@ class AuthKey(ResourceMixin):
 
     db_name = 'hpfeeds'
     collection_name = 'auth_key'
-    expected_filters = ('identifier', 'secret', 'publish', 'subscribe', '_id')
+    expected_filters = ('identifier', 'secret', 'owner', 'publish', 'subscribe', '_id')
 
     def get(self, options={}, **kwargs):
         if 'identifier' in kwargs:
@@ -516,7 +516,7 @@ class AuthKey(ResourceMixin):
 
     def post(self):
         objectid = self.collection.insert(dict(
-                identifier=self.identifier, secret=self.secret,
+                identifier=self.identifier, secret=self.secret, owner=self.owner,
                 publish=self.publish, subscribe=self.subscribe))
         self.client.fsync()
         return objectid
