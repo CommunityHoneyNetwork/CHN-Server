@@ -249,7 +249,7 @@ class Session(ResourceMixin):
             if field in clean.copy():
                 clean = clean_integer(field, clean)
 
-        if 'timestamp' in clean and isinstance(clean['timestamp'], basestring):
+        if 'timestamp' in clean and isinstance(clean['timestamp'], str):
             # Transforms timestamp queries into
             # timestamp_lte queries.
             try:
@@ -266,7 +266,7 @@ class Session(ResourceMixin):
         return clean
 
     def _tops(self, fields, top=5, hours_ago=None, **kwargs):
-        if isinstance(fields, basestring):
+        if isinstance(fields, str):
             fields = [fields, ]
 
         match_query = dict([(field, {'$ne': None}) for field in fields])
