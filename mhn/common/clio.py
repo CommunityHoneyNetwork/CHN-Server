@@ -249,7 +249,7 @@ class Session(ResourceMixin):
             if field in clean.copy():
                 clean = clean_integer(field, clean)
 
-        if 'timestamp' in clean and isinstance(clean['timestamp'], basestring):
+        if 'timestamp' in clean and isinstance(clean['timestamp'], str):
             # Transforms timestamp queries into
             # timestamp_lte queries.
             try:
@@ -266,7 +266,7 @@ class Session(ResourceMixin):
         return clean
 
     def _tops(self, fields, top=5, hours_ago=None, **kwargs):
-        if isinstance(fields, basestring):
+        if isinstance(fields, str):
             fields = [fields, ]
 
         match_query = dict([(field, {'$ne': None}) for field in fields])
@@ -505,7 +505,7 @@ class AuthKey(ResourceMixin):
 
     db_name = 'hpfeeds'
     collection_name = 'auth_key'
-    expected_filters = ('identifier', 'secret', 'publish', 'subscribe', '_id')
+    expected_filters = ('identifier', 'secret', 'owner', 'publish', 'subscribe', '_id')
 
     def get(self, options={}, **kwargs):
         if 'identifier' in kwargs:
@@ -516,7 +516,7 @@ class AuthKey(ResourceMixin):
 
     def post(self):
         objectid = self.collection.insert(dict(
-                identifier=self.identifier, secret=self.secret,
+                identifier=self.identifier, secret=self.secret, owner=self.owner,
                 publish=self.publish, subscribe=self.subscribe))
         self.client.fsync()
         return objectid
