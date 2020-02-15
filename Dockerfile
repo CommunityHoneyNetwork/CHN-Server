@@ -11,7 +11,7 @@ LABEL changelog-url "https://github.com/CommunityHoneyNetwork/CHN-Server/commits
 
 VOLUME /tls
 
-ENV TZ "America/New_York
+ENV TZ "America/New_York"
 ENV DEBIAN_FRONTEND "noninteractive"
 
 RUN apt-get update && \
