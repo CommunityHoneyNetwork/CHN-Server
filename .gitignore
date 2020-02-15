@@ -2,7 +2,5 @@ TODO
 *.swp
 .pytest_cache/
 *.pyc
-
 mhn/static/mhn.rules
 storage/
-

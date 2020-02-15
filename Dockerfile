@@ -1,24 +1,21 @@
 FROM ubuntu:18.04
 
-LABEL maintainer Chris Collins <collins.christopher@gmail.com>
+LABEL maintainer Team STINGAR <team-stingar@duke.edu>
 LABEL name "chn-server"
 LABEL version "0.1"
 LABEL release "1"
 LABEL summary "Community Honey Network Server"
-LABEL description "Multi-snort and honeypot sensor management, uses a network of VMs, small footprint SNORT installations, stealthy dionaeas, and a centralized server for management."
-LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/communityhoneynetwork"
-LABEL changelog-url "https://github.com/CommunityHoneyNetwork/communityhoneynetwork/commits/master"
+LABEL description "Multi-honeypot sensor management, uses a network of VMs and a centralized server for management."
+LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/CHN-Server"
+LABEL changelog-url "https://github.com/CommunityHoneyNetwork/CHN-Server/commits/master"
 
 VOLUME /tls
 
-ENV playbook "chnserver.yml"
-ENV TZ "America/New_York"
+ENV TZ "America/New_York
 ENV DEBIAN_FRONTEND "noninteractive"
 
-RUN date
-RUN apt-get update
-
-RUN apt-get install -y gcc git nginx python3-pip python3-dev redis-server libgeoip-dev libsqlite3-dev runit python3-certbot-nginx net-tools jq curl
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends gcc git nginx python3-pip python3-dev redis-server libgeoip-dev libsqlite3-dev runit python3-certbot-nginx net-tools jq curl
 
 ADD requirements.txt /opt/requirements.txt
 RUN pip3 install -r /opt/requirements.txt
@@ -41,9 +38,6 @@ RUN mkdir -p /etc/service/nginx /etc/service/uwsgi
 # Create nginx runit conf
 COPY nginx.run /etc/service/nginx/run
 RUN chmod 755 /etc/service/nginx/run
-
-# Create CHNServer sysconfig file
-COPY chnserver.sysconfig /etc/default/chnserver
 
 # Create uwsgi runit conf
 COPY uwsgi.run /etc/service/uwsgi/run
