@@ -15,7 +15,7 @@ ENV TZ "America/New_York"
 ENV DEBIAN_FRONTEND "noninteractive"
 
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends gcc git nginx python3-pip python3-dev redis-server libgeoip-dev libsqlite3-dev runit python3-certbot-nginx net-tools jq curl
+	apt-get install -y gcc git nginx python3-pip python3-dev redis-server libgeoip-dev libsqlite3-dev runit python3-certbot-nginx net-tools jq curl
 
 ADD requirements.txt /opt/requirements.txt
 RUN pip3 install -r /opt/requirements.txt
