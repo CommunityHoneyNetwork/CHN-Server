@@ -38,8 +38,8 @@ services:
       - "27017:27017"
 EOF
 echo 'Done!'
-echo 'Creating dionaea.sysconfig...'
-cat << EOF > dionaea.sysconfig
+echo 'Creating dionaea.env...'
+cat << EOF > dionaea.env
 #
 # This can be modified to change the default setup of the dionaea unattended installation
 
