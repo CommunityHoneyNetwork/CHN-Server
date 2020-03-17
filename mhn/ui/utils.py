@@ -79,7 +79,7 @@ def _get_flag_ip(ipaddr):
         # Using threatstream's geospray API to get
         # the country code for this IP address.
         r = requests.get(geo_api.format(ipaddr))
-        ccode = r.json()['un_locode']
+        ccode = r.json().decode('utf-8')['un_locode']
         app.logger.warning(r.json().decode('utf-8'))
     except Exception:
         app.logger.warning(
@@ -103,7 +103,7 @@ def _get_country_ip(ipaddr):
         # Using threatstream's geospray API to get
         # the country name for this IP address.
         r = requests.get(geo_api.format(ipaddr))
-        name = r.json()['un_locode']
+        name = r.json().decode('utf-8')['un_locode']
         return name
     except Exception:
         app.logger.warning("Could not determine country name for ip: {}".format(ipaddr))
