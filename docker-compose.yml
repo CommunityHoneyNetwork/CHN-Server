@@ -1,13 +1,13 @@
 version: '2'
 services:
   mongodb:
-    image: stingar/mongodb:1.8
+    image: mongo:3.4.24-xenial
     volumes:
-      - ./storage/mongodb:/var/lib/mongo:z
+      - ./storage/mongodb:/data/db:z
   redis:
-    image: stingar/redis:1.8
+    image: redis:alpine
     volumes:
-      - ./storage/redis:/var/lib/redis:z
+      - ./storage/redis:/data:z
   hpfeeds:
     image: stingar/hpfeeds:1.8
     links:
