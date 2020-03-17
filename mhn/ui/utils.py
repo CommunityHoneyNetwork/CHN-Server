@@ -54,7 +54,7 @@ def get_country_ip(ipaddr):
         country_cache.set(ipaddr, name)
     return name
 
-  
+
 def get_sensor_name(sensor_id):
     sensor_name = sensor_cache.get(sensor_id)
     if not sensor_name:
@@ -80,7 +80,7 @@ def _get_flag_ip(ipaddr):
         # the country code for this IP address.
         r = requests.get(geo_api.format(ipaddr))
         ccode = r.json()['un_locode']
-        app.logger.warning(r.json())
+        app.logger.warning(r.json().decode('utf-8'))
     except Exception:
         app.logger.warning(
             "Could not determine flag for ip: {}".format(ipaddr))
@@ -96,7 +96,7 @@ def _get_flag_ip(ipaddr):
         else:
             return url_for('static', filename=constants.DEFAULT_FLAG_URL)
 
-          
+
 def _get_country_ip(ipaddr):
     geo_api = 'https://api.ipgeolocationapi.com/geolocate/{}'
     try:
