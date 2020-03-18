@@ -1,7 +1,6 @@
 import pytest
 import subprocess
 import testinfra
-import os
 import time
 import sys
 
