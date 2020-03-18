@@ -80,7 +80,7 @@ def _get_flag_ip(ipaddr):
         # the country code for this IP address.
         r = requests.get(geo_api.format(ipaddr))
         ccode = r.json()['un_locode']
-        app.logger.warning('Found CC code: {}'.format(ccode))
+        app.logger.debug('Found CC code: {}'.format(ccode))
     except Exception:
         app.logger.warning(
             "Could not determine flag for ip: {}".format(ipaddr))
