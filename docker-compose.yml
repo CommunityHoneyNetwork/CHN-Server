@@ -8,17 +8,17 @@ services:
     image: redis:alpine
     volumes:
       - ./storage/redis:/data:z
-  hpfeeds:
-    image: stingar/hpfeeds:1.8
+  hpfeeds3:
+    image: stingar/hpfeeds3:1.9
     links:
       - mongodb:mongodb
     ports:
       - "10000:10000"
   mnemosyne:
-    image: stingar/mnemosyne:1.8
+    image: stingar/mnemosyne:1.9
     links:
       - mongodb:mongodb
-      - hpfeeds:hpfeeds
+      - hpfeeds3:hpfeeds3
   chnserver:
     build:
       context: .
