@@ -13,6 +13,10 @@ import string
 from flask_wtf.csrf import CsrfProtect
 import os
 import re
+import sys
+
+# Ensure encodings are set to utf-8 across the standard streams
+sys.stderr.encoding = 'utf-8'
 
 csrf = CsrfProtect()
 
@@ -75,7 +79,7 @@ handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 mhn.logger.addHandler(handler)
 if mhn.config['DEBUG']:
-    console = logging.StreamHandler()
+    console = logging.StreamHandler(stream=sys.stderr)
     console.setLevel(logging.INFO)
     console.setFormatter(formatter)
     mhn.logger.addHandler(console)
