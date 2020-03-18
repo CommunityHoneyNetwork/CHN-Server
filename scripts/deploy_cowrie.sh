@@ -4,7 +4,7 @@ URL=$1
 DEPLOY=$2
 ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.8
+VERSION=1.9
 TAGS=""
 
 echo 'Creating docker-compose.yml...'
@@ -15,17 +15,16 @@ services:
     image: stingar/cowrie${ARCH}:${VERSION}
     restart: always
     volumes:
-      - ./cowrie.sysconfig:/etc/default/cowrie:z
       - ./cowrie:/etc/cowrie:z
     ports:
       - "2222:2222"
       - "23:2223"
+    env_file:
+      - cowrie.env
 EOF
 echo 'Done!'
-echo 'Creating cowrie.sysconfig...'
-cat << EOF > cowrie.sysconfig
-# This file is read from /etc/default/cowrie
-#
+echo 'Creating cowrie.env...'
+cat << EOF > cowrie.env
 # This can be modified to change the default setup of the unattended installation
 
 DEBUG=false
@@ -35,10 +34,10 @@ DEBUG=false
 IP_ADDRESS=
 
 # CHN Server api to register to
-CHN_SERVER="${URL}"
+CHN_SERVER=${URL}
 
 # Server to stream data to
-FEEDS_SERVER="${SERVER}"
+FEEDS_SERVER=${SERVER}
 FEEDS_SERVER_PORT=10000
 
 # Deploy key from the FEEDS_SERVER administrator
@@ -47,7 +46,7 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-COWRIE_JSON="/etc/cowrie/cowrie.json"
+COWRIE_JSON=/etc/cowrie/cowrie.json
 
 # SSH Listen Port
 # Can be set to 22 for deployments on real servers
@@ -64,7 +63,7 @@ TELNET_LISTEN_PORT=2223
 # double quotes, comma delimited tags may be specified, which will be included
 # as a field in the hpfeeds output. Use cases include tagging provider
 # infrastructure the sensor lives in, geographic location for the sensor, etc.
-TAGS="${TAGS}"
+TAGS=${TAGS}
 
 # A specific "personality" directory for the Cowrie honeypot may be specified
 # here. These directories can include custom fs.pickle, cowrie.cfg, txtcmds and

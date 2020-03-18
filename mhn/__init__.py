@@ -141,9 +141,6 @@ def create_clean_db():
             'Ubuntu - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
             'Ubuntu - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
             'Ubuntu - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
-            'Ubuntu - Amun': os.path.abspath('./scripts/deploy_amun.sh'),
-            'Ubuntu - Glastopf': os.path.abspath('./scripts/deploy_glastopf.sh'),
-            'Ubuntu - Wordpot': os.path.abspath('./scripts/deploy_wordpot.sh'),
             'Ubuntu - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
             'Ubuntu - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
         }
@@ -179,14 +176,11 @@ def reload_scripts():
     custom_path = './custom_scripts/'
 
     deployscripts = {
-        'Ubuntu - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
-        'Ubuntu - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
-        'Ubuntu - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
-        'Ubuntu - Amun': os.path.abspath('./scripts/deploy_amun.sh'),
-        'Ubuntu - Glastopf': os.path.abspath('./scripts/deploy_glastopf.sh'),
-        'Ubuntu - Wordpot': os.path.abspath('./scripts/deploy_wordpot.sh'),
-        'Ubuntu - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
-        'Ubuntu - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
+        'Default - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
+        'Default - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
+        'Default - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
+        'Default - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
+        'Default - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
     }
 
     f = []
