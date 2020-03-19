@@ -103,6 +103,7 @@ deploy_dockerhub:
   only:
     - /(^v\d+(.\d+){1,2}(-pre)?$|^latest$)/
   script:
+    - sudo ntpdate pool.ntp.org
     - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
     - sudo docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
     - sudo docker logout
