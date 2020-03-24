@@ -5,8 +5,6 @@ trap "exit 137" SIGKILL
 trap "exit 143" SIGTERM
 
 generate_config () {
-  source /etc/default/chnserver
-
   cd /opt
 
   if [[ ! -f ./config.py ]]
@@ -218,14 +216,13 @@ main () {
   generate_config
   make_logdir
   generate_nginx_config
-  
+
   local custom_url_path=$(python3 -c "from urlparse import urlparse; import os; result=urlparse(os.environ['server_base_url']); print(result.path.rstrip('/'))")
-    
+
   cd /opt
 
-  # Start a background rule refresh here, rather than in initdatabase.py
   # if custom_url_path isn't null, there's a custom path in SERVER_BASE_URL, so use it as a mount point
-  # otherwise, mount at default root route as normal 
+  # otherwise, mount at default root route as normal
   if [[ -z ${custom_url_path} ]]
     then
         custom_url_path="/"
