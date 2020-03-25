@@ -54,10 +54,10 @@ sast:
     reports:
       sast: gl-sast-report.json
 
-infra_testing:
+.infra_testing:
   image: docker:stable
   stage: integration_testing
-# allow_failure: true
+  # allow_failure: true
   services:
     - docker:stable-dind
   tags:
