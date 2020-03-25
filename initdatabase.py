@@ -10,7 +10,6 @@ def init_database():
         inspector = inspect(db.engine)
         if 'user' in inspector.get_table_names():
             print("Database already initialized")
-            create_superuser_entry()
             reload_scripts()
             sys.exit()
         else:
