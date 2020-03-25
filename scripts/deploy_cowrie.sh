@@ -9,7 +9,7 @@ TAGS=""
 
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
-version: '2'
+version: '3'
 services:
   cowrie:
     image: stingar/cowrie${ARCH}:${VERSION}
