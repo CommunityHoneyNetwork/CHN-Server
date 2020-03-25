@@ -122,18 +122,7 @@ def create_clean_db():
     """
     with mhn.test_request_context():
         db.create_all()
-        # Creating superuser entry.
-        superuser = user_datastore.create_user(
-            email=mhn.config.get('SUPERUSER_EMAIL'),
-            password=hash(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
-        adminrole = user_datastore.create_role(name='admin', description='')
-        user_datastore.add_role_to_user(superuser, adminrole)
-        user_datastore.create_role(name='user', description='')
-        db.session.flush()
-
-        apikey = ApiKey(user_id=superuser.id, api_key=str(uuid.uuid4()).replace("-", ""))
-        db.session.add(apikey)
-        db.session.flush()
+        superuser = create_superuser_entry()
 
         from mhn.api.models import DeployScript
         # Creating a initial deploy scripts.
@@ -154,6 +143,23 @@ def create_clean_db():
                 db.session.add(initdeploy)
 
         db.session.commit()
+
+
+def create_superuser_entry():
+    # Creating superuser entry.
+    superuser = user_datastore.create_user(
+        email=mhn.config.get('SUPERUSER_EMAIL'),
+        password=hash(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
+    adminrole = user_datastore.create_role(name='admin', description='')
+    user_datastore.add_role_to_user(superuser, adminrole)
+    user_datastore.create_role(name='user', description='')
+    db.session.flush()
+
+    apikey = ApiKey(user_id=superuser.id, api_key=str(uuid.uuid4()).replace("-", ""))
+    db.session.add(apikey)
+    db.session.flush()
+
+    return superuser
 
 
 def pretty_name(name):
