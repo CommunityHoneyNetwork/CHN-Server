@@ -15,11 +15,13 @@ services:
         image: stingar/rdphoney${ARCH}:${VERSION}
         restart: always
         volumes:
-            - ./rdphoney:/etc/rdphoney:z
+            - configs:/etc/rdphoney
         ports:
             - "3389:3389"
         env_file:
             - rdphoney.env
+volumes:
+    configs:
 EOF
 echo 'Done!'
 echo 'Creating rdphoney.env...'

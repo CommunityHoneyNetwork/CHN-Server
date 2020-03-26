@@ -15,13 +15,15 @@ services:
         image: stingar/conpot${ARCH}:${VERSION}
         restart: always
         volumes:
-            - ./conpot:/etc/conpot:z
+            - configs:/etc/conpot
         ports:
             - 80:80
             - 102:102
             - 502:502
         env_file:
             - conpot.env
+volumes:
+    configs:
 EOF
 echo 'Done!'
 echo 'Creating conpot.env...'

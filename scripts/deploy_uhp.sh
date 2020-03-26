@@ -15,11 +15,13 @@ services:
         image: stingar/uhp${ARCH}:${VERSION}
         restart: always
         volumes:
-            - ./uhp:/etc/uhp:z
+            - configs:/etc/uhp
         ports:
             - "25:2525"
         env_file:
             - uhp.env
+volumes:
+    configs:
 EOF
 echo 'Done!'
 echo 'Creating uhp.env...'

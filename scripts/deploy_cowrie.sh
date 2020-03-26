@@ -15,12 +15,14 @@ services:
     image: stingar/cowrie${ARCH}:${VERSION}
     restart: always
     volumes:
-      - ./cowrie:/etc/cowrie:z
+      - configs:/etc/cowrie
     ports:
       - "2222:2222"
       - "23:2223"
     env_file:
       - cowrie.env
+volumes:
+    configs:
 EOF
 echo 'Done!'
 echo 'Creating cowrie.env...'

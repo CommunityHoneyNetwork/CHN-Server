@@ -15,7 +15,7 @@ services:
     image: stingar/dionaea${ARCH}:${VERSION}
     restart: always
     volumes:
-      - ./dionaea/dionaea:/etc/dionaea/:z
+      - configs:/etc/dionaea/
     ports:
       - "21:21"
       - "23:23"
@@ -37,6 +37,8 @@ services:
       - "27017:27017"
     env_file:
       - dionaea.env
+volumes:
+    configs:
 EOF
 echo 'Done!'
 echo 'Creating dionaea.env...'
