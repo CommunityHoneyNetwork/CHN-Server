@@ -17,9 +17,11 @@ services:
         volumes:
             - configs:/etc/conpot
         ports:
-            - 80:80
-            - 102:102
-            - 502:502
+            - "80:8800"
+            - "102:10201"
+            - "502:5020"
+            - "21:2121"
+            - "44818:44818"
         env_file:
             - conpot.env
 volumes:
