@@ -217,8 +217,8 @@ main () {
   make_logdir
   generate_nginx_config
 
-  local custom_url_path=$(python3 -c "from urlparse import urlparse; import os; result=urlparse(os.environ['server_base_url']); print(result.path.rstrip('/'))")
-
+  local custom_url_path=$(python3 -c "from urllib.parse import urlparse; import os; result=urlparse(os.environ['SERVER_BASE_URL']); print(result.path.rstrip('/'))")
+  echo "Found custom_url_path=${custom_url_path}"
   cd /opt
 
   # if custom_url_path isn't null, there's a custom path in SERVER_BASE_URL, so use it as a mount point
