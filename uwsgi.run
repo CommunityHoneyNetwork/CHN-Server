@@ -208,8 +208,8 @@ make_logdir () {
 
 generate_nginx_config () {
   cd /opt
-  export server_base_url=$(awk '/SERVER_BASE_URL/ {print $3}' /opt/config.py | sed "s/'//g")
-  python3 generate_nginx_standalone.py --server-base-url ${server_base_url} --output-file-nginx /etc/nginx/sites-available/default -f
+  export custom_url_from_generate_nginx_func=$(awk '/SERVER_BASE_URL/ {print $3}' /opt/config.py | sed "s/'//g")
+  python3 generate_nginx_standalone.py --server-base-url ${custom_url_from_generate_nginx_func} --output-file-nginx /etc/nginx/sites-available/default -f
 }
 
 main () {
@@ -217,7 +217,8 @@ main () {
   make_logdir
   generate_nginx_config
 
-  local custom_url_path=$(python3 -c "from urllib.parse import urlparse; import os; result=urlparse(os.environ['SERVER_BASE_URL']); print(result.path.rstrip('/'))")
+  local custom_url_path=$(python3 -c "from urllib.parse import urlparse; import os; result=urlparse(os.environ['custom_url_from_generate_nginx_func']); print(result.path.rstrip('/'))")
+  echo "Found custom_url_path=${custom_url_path}"
   echo "Found custom_url_path=${custom_url_path}"
   cd /opt
 
