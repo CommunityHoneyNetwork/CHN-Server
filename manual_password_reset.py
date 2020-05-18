@@ -19,11 +19,6 @@ def main():
 
     args = parse_args()
 
-    try:
-        input = raw_input
-    except NameError:
-        pass
-
     with mhn.test_request_context():
 
         if not args.username:

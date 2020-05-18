@@ -1,4 +1,4 @@
-from urlparse import urljoin
+from urllib.parse import urljoin
 
 from flask import Flask, request, jsonify, abort, url_for, session
 from flask_sqlalchemy import SQLAlchemy
@@ -70,7 +70,7 @@ mhn.logger.setLevel(logging.INFO)
 formatter = logging.Formatter(
     '%(asctime)s -  %(pathname)s - %(message)s')
 handler = RotatingFileHandler(
-    mhn.config['LOG_FILE_PATH'], maxBytes=10240, backupCount=5)
+    mhn.config['LOG_FILE_PATH'], maxBytes=10240, backupCount=5, encoding='utf8')
 handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 mhn.logger.addHandler(handler)
@@ -122,29 +122,14 @@ def create_clean_db():
     """
     with mhn.test_request_context():
         db.create_all()
-        # Creating superuser entry.
-        superuser = user_datastore.create_user(
-            email=mhn.config.get('SUPERUSER_EMAIL'),
-            password=hash(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
-        adminrole = user_datastore.create_role(name='admin', description='')
-        user_datastore.add_role_to_user(superuser, adminrole)
-        user_datastore.create_role(name='user', description='')
-        db.session.flush()
+        superuser = create_superuser_entry()
 
-        apikey = ApiKey(user_id=superuser.id, api_key=str(uuid.uuid4()).replace("-", ""))
-        db.session.add(apikey)
-        db.session.flush()
-
-        from mhn.api.models import DeployScript, RuleSource
-        from mhn.tasks.rules import fetch_sources
+        from mhn.api.models import DeployScript
         # Creating a initial deploy scripts.
         deployscripts = {
             'Ubuntu - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
             'Ubuntu - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
             'Ubuntu - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
-            'Ubuntu - Amun': os.path.abspath('./scripts/deploy_amun.sh'),
-            'Ubuntu - Glastopf': os.path.abspath('./scripts/deploy_glastopf.sh'),
-            'Ubuntu - Wordpot': os.path.abspath('./scripts/deploy_wordpot.sh'),
             'Ubuntu - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
             'Ubuntu - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
         }
@@ -157,17 +142,24 @@ def create_clean_db():
                 initdeploy.name = honeypot
                 db.session.add(initdeploy)
 
-        # Creating an initial rule source.
-        rules_source = mhn.config.get('SNORT_RULES_SOURCE')
-        if not mhn.config.get('TESTING'):
-            rulesrc = RuleSource()
-            rulesrc.name = rules_source['name']
-            rulesrc.uri = rules_source['uri']
-            rulesrc.name = 'Default rules source'
-            db.session.add(rulesrc)
-            db.session.commit()
-            # skip fetching sources on initial database population
-            # fetch_sources()
+        db.session.commit()
+
+
+def create_superuser_entry():
+    # Creating superuser entry.
+    superuser = user_datastore.create_user(
+        email=mhn.config.get('SUPERUSER_EMAIL'),
+        password=hash(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
+    adminrole = user_datastore.create_role(name='admin', description='')
+    user_datastore.add_role_to_user(superuser, adminrole)
+    user_datastore.create_role(name='user', description='')
+    db.session.flush()
+
+    apikey = ApiKey(user_id=superuser.id, api_key=str(uuid.uuid4()).replace("-", ""))
+    db.session.add(apikey)
+    db.session.flush()
+
+    return superuser
 
 
 def pretty_name(name):
@@ -190,14 +182,11 @@ def reload_scripts():
     custom_path = './custom_scripts/'
 
     deployscripts = {
-        'Ubuntu - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
-        'Ubuntu - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
-        'Ubuntu - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
-        'Ubuntu - Amun': os.path.abspath('./scripts/deploy_amun.sh'),
-        'Ubuntu - Glastopf': os.path.abspath('./scripts/deploy_glastopf.sh'),
-        'Ubuntu - Wordpot': os.path.abspath('./scripts/deploy_wordpot.sh'),
-        'Ubuntu - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
-        'Ubuntu - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
+        'Default - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
+        'Default - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
+        'Default - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
+        'Default - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
+        'Default - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
     }
 
     f = []

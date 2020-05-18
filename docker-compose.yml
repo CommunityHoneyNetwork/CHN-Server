@@ -1,24 +1,24 @@
 version: '2'
 services:
   mongodb:
-    image: stingar/mongodb:1.7
+    image: mongo:3.4.24-xenial
     volumes:
-      - ./storage/mongodb:/var/lib/mongo:z
+      - ./storage/mongodb:/data/db:z
   redis:
-    image: stingar/redis:1.7
+    image: redis:alpine
     volumes:
-      - ./storage/redis:/var/lib/redis:z
-  hpfeeds:
-    image: stingar/hpfeeds:1.7
+      - ./storage/redis:/data:z
+  hpfeeds3:
+    image: stingar/hpfeeds3:1.9
     links:
       - mongodb:mongodb
     ports:
       - "10000:10000"
   mnemosyne:
-    image: stingar/mnemosyne:1.7
+    image: stingar/mnemosyne:1.9
     links:
       - mongodb:mongodb
-      - hpfeeds:hpfeeds
+      - hpfeeds3:hpfeeds3
   chnserver:
     build:
       context: .
@@ -27,13 +27,11 @@ services:
     volumes:
       - ./config/collector:/etc/collector:z
       - ./storage/chnserver/sqlite:/opt/sqlite:z
-      - ./chnserver.sysconfig:/etc/default/chnserver:z
-      - ./certs:/etc/letsencrypt:z
-      - ./mhn:/opt/mhn:z
+      - ./certs:/tls:z
     links:
       - mongodb:mongodb
       - redis:redis
-      - hpfeeds:hpfeeds
+      - hpfeeds3:hpfeeds3
     ports:
       - "80:80"
       - "443:443"

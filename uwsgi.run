@@ -5,9 +5,7 @@ trap "exit 137" SIGKILL
 trap "exit 143" SIGTERM
 
 generate_config () {
-  source {{ sysconfig_dir }}/chnserver
-
-  cd {{ server_dir }}
+  cd /opt
 
   if [[ ! -f ./config.py ]]
   then
@@ -32,13 +30,6 @@ generate_config () {
       HONEYMAP_URL="--honeymap_url ${HONEYMAP_URL}"
     else
       HONEYMAP_URL=""
-    fi
-
-    if [[ ! -z "${REDIS_URL}" ]]
-    then
-      REDIS_URL="--redis_url ${REDIS_URL}"
-    else
-      REDIS_URL=""
     fi
 
     if [[ -z ${MAIL_SERVER} ]]
@@ -165,10 +156,9 @@ generate_config () {
     fi
 
 
-    python generateconfig.py unattended ${EMAIL} \
+    python3 generateconfig.py unattended ${EMAIL} \
                                         ${SERVER_BASE_URL} \
                                         ${HONEYMAP_URL} \
-                                        ${REDIS_URL} \
                                         ${MAIL_SERVER} \
                                         ${MAIL_PORT} \
                                         ${MAIL_SSL} \
@@ -188,16 +178,16 @@ generate_config () {
 
     # Generate config file for hpfeeds broker
     cd {{ hpfeeds_dir }}/hpfeeds/broker
-    python generateconfig.py unattended ${MONGODB_HOST} ${MONGODB_PORT}
+    python3 generateconfig.py unattended ${MONGODB_HOST} ${MONGODB_PORT}
   fi
 
-  cd {{ server_dir }}
+  cd /opt
   if [[ "${1}" == "--no-db-init" ]]
   then
     echo 'null'
     return
   else
-    python initdatabase.py
+    python3 initdatabase.py
     echo $!
     return $?
   fi
@@ -205,7 +195,7 @@ generate_config () {
 
 make_logdir () {
 
-  cd {{ server_dir }}
+  cd /opt
 
   local log_file_path=$(awk '/LOG_FILE_PATH/ {print $3}' /opt/config.py |sed "s/'//g")
   local logdir=$(awk -F/ 'BEGIN{FS=OFS="/"}{NF--; print}' <<< ${log_file_path})
@@ -213,33 +203,31 @@ make_logdir () {
   mkdir -p ${logdir}
   touch ${log_file_path}
 
-  chown -R {{ nginx_user}}.root ${log_file_path}
+  chown -R www-data.root ${log_file_path}
 }
 
 generate_nginx_config () {
   cd /opt
-  export server_base_url=$(awk '/SERVER_BASE_URL/ {print $3}' /opt/config.py | sed "s/'//g")
-  python generate_nginx_standalone.py --server-base-url ${server_base_url} --output-file-nginx /etc/nginx/sites-available/default -f
+  export custom_url_from_generate_nginx_func=$(awk '/SERVER_BASE_URL/ {print $3}' /opt/config.py | sed "s/'//g")
+  python3 generate_nginx_standalone.py --server-base-url ${custom_url_from_generate_nginx_func} --output-file-nginx /etc/nginx/sites-available/default -f
 }
 
 main () {
   generate_config
   make_logdir
   generate_nginx_config
-  
-  local custom_url_path=$(python -c "from urlparse import urlparse; import os; result=urlparse(os.environ['server_base_url']); print(result.path.rstrip('/'))")
-    
-  cd {{ server_dir }}
 
-  # Start a background rule refresh here, rather than in initdatabase.py
+  local custom_url_path=$(python3 -c "from urllib.parse import urlparse; import os; result=urlparse(os.environ['custom_url_from_generate_nginx_func']); print(result.path.rstrip('/'))")
+  echo "Found custom_url_path=${custom_url_path}"
+  echo "Found custom_url_path=${custom_url_path}"
+  cd /opt
+
   # if custom_url_path isn't null, there's a custom path in SERVER_BASE_URL, so use it as a mount point
-  # otherwise, mount at default root route as normal 
+  # otherwise, mount at default root route as normal
   if [[ -z ${custom_url_path} ]]
     then
         custom_url_path="/"
   fi
-  
-  python manage.py fetch_rules &
 
   exec uwsgi --socket /tmp/uwsgi.sock \
              --module mhn:mhn \

@@ -3,7 +3,7 @@ import sys
 import os
 import argparse
 import validators
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 
 def generate_nginx_defaults(args):

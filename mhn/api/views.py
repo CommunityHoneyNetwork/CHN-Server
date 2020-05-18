@@ -1,6 +1,6 @@
 import json
 import datetime
-from StringIO import StringIO
+from io import StringIO
 import csv
 
 from uuid import uuid4
@@ -13,8 +13,7 @@ from bson.errors import InvalidId
 from mhn import db, csrf
 from mhn.api import errors
 from mhn.api.models import (
-        Sensor, Rule, DeployScript as Script,
-        DeployScript, RuleSource)
+        Sensor, DeployScript as Script, DeployScript)
 from mhn.api.decorators import deploy_auth, sensor_auth, token_auth
 from mhn.common.utils import error_response
 from mhn.common.clio import Clio
@@ -416,71 +415,6 @@ def get_intel_feed():
             'options': options
         }
     }
-
-
-@api.route('/rule/<rule_id>/', methods=['PUT'])
-@token_auth
-def update_rule(rule_id):
-    rule = Rule.query.filter_by(id=rule_id).first_or_404()
-    for field in request.json.keys():
-        if field in Rule.editable_fields():
-            setattr(rule, field, request.json[field])
-        elif field in Rule.fields():
-            return error_response(
-                    errors.API_FIELD_NOT_EDITABLE.format(field), 400)
-        else:
-            return error_response(
-                    errors.API_FIELD_INVALID.format(field), 400)
-    else:
-        db.session.commit()
-        return jsonify(rule.to_dict())
-
-
-@api.route('/rule/', methods=['GET'])
-@sensor_auth
-def get_rules():
-    # Getting active rules.
-    if request.args.get('plaintext') in ['1', 'true']:
-        # Requested rendered rules in plaintext.
-        resp = make_response(Rule.renderall())
-        resp.headers['Content-Disposition'] = "attachment; filename=mhn.rules"
-        return resp
-    else:
-        # Responding with active rules.
-        rules = Rule.query.filter_by(is_active=True).\
-                    group_by(Rule.sid).\
-                    having(func.max(Rule.rev))
-        resp = make_response(json.dumps([ru.to_dict() for ru in rules]))
-        resp.headers['Content-Type'] = "application/json"
-        return resp
-
-
-@api.route('/rulesources/', methods=['POST'])
-@login_required
-def create_rule_source():
-    missing = RuleSource.check_required(request.json)
-    if missing:
-        return error_response(
-                errors.API_FIELDS_MISSING.format(missing), 400)
-    else:
-        rsource = RuleSource(**request.json)
-        try:
-            db.session.add(rsource)
-            db.session.commit()
-        except IntegrityError:
-            return error_response(
-                    errors.API_SOURCE_EXISTS.format(request.json['uri']), 400)
-        else:
-            return jsonify(rsource.to_dict())
-
-
-@api.route('/rulesources/<rs_id>/', methods=['DELETE'])
-@login_required
-def delete_rule_source(rs_id):
-    source = RuleSource.query.filter_by(id=rs_id).first_or_404()
-    db.session.delete(source)
-    db.session.commit()
-    return jsonify({})
 
 
 @api.route('/script/', methods=['POST'])

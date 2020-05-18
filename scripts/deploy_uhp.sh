@@ -4,28 +4,29 @@ URL=$1
 DEPLOY=$2
 ARCH=$3
 SERVER=$(echo ${URL} | awk -F/ '{print $3}')
-VERSION=1.8
+VERSION=1.9
 TAGS=""
 
 echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
-version: '2'
+version: '3'
 services:
     uhp:
         image: stingar/uhp${ARCH}:${VERSION}
         restart: always
         volumes:
-            - ./uhp.sysconfig:/etc/default/uhp:z
-            - ./uhp:/etc/uhp:z
+            - configs:/etc/uhp
         ports:
             - "25:2525"
+        env_file:
+            - uhp.env
+volumes:
+    configs:
 EOF
 echo 'Done!'
-echo 'Creating uhp.sysconfig...'
-cat << EOF > uhp.sysconfig
-# This file is read from /etc/default/uhp
-#
-# This can be modified to change the default setup of the uhp unattended installation
+echo 'Creating uhp.env...'
+cat << EOF > uhp.env
+# This can be modified to change the default setup of the unattended installation
 
 DEBUG=false
 
@@ -34,10 +35,10 @@ DEBUG=false
 IP_ADDRESS=
 
 # CHN Server api to register to
-CHN_SERVER="${URL}"
+CHN_SERVER=${URL}
 
 # Server to stream data to
-FEEDS_SERVER="${SERVER}"
+FEEDS_SERVER=${SERVER}
 FEEDS_SERVER_PORT=10000
 
 # Deploy key from the FEEDS_SERVER administrator
@@ -46,16 +47,16 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-UHP_JSON="/etc/uhp/uhp.json"
+UHP_JSON=/etc/uhp/uhp.json
 
 # Defaults include auto-config-gen.json, avtech-devices.json, generic-listener.json,
 # hajime.json, http-log-headers.json, http.json, pop3.json, and smtp.json
-UHP_CONFIG="smtp.json"
+UHP_CONFIG=smtp.json
 
 UHP_LISTEN_PORT=2525
 
 # Comma separated tags for honeypot
-TAGS="${TAGS}"
+TAGS=${TAGS}
 EOF
 echo 'Done!'
 echo ''

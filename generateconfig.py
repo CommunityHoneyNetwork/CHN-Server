@@ -4,12 +4,10 @@ working config.py file from the config template.
 """
 
 from getpass import getpass
-import json
 import os.path
 from random import choice
 import string
 import sys
-from urllib2 import urlopen
 
 import argparse
 
@@ -24,10 +22,8 @@ def generate_config():
         print('config.py already exists')
         sys.exit()
 
-    pub_ip = json.load(urlopen('http://httpbin.org/ip'))['origin']
-    default_base_url = 'http://{}'.format(pub_ip)
+    default_base_url = 'https://localhost'
     default_honeymap_url = '{}:3000'.format(default_base_url)
-    default_redis_url = 'redis://localhost:6379'
     default_log_path = '/var/log/mhn/mhn.log'
     default_superuser_password = rand_str(32)
     default_secret_key = rand_str(32)
@@ -55,8 +51,6 @@ def generate_config():
                               help='Server base url')
     parser_unatt.add_argument('-y', '--honeymap_url', type=str, default=default_honeymap_url,
                               help='Honeymap url')
-    parser_unatt.add_argument('-r', '--redis_url', type=str, default=default_redis_url,
-                              help='Redis url')
     parser_unatt.add_argument('-m', '--mail_server', type=str, default='localhost',
                               help='Mail server address')
     parser_unatt.add_argument('-s', '--mail_port', type=int, default=25,
@@ -104,7 +98,6 @@ def generate_config():
         password = args.password
         server_base_url = args.base_url
         honeymap_url = args.honeymap_url
-        redis_url = args.redis_url
         mail_server = args.mail_server
         mail_port = args.mail_port
         mail_tls = args.mail_tls
@@ -121,14 +114,14 @@ def generate_config():
         deploy_key = args.deploy_key
     else:
         # Collect values from user
-        debug = raw_input('Do you wish to run in Debug mode?: y/n ')
+        debug = input('Do you wish to run in Debug mode?: y/n ')
         while debug not in ['y', 'n']:
-            debug = raw_input('Please y or n ')
+            debug = input('Please y or n ')
         debug = True if debug == 'y' else False
 
-        email = raw_input('Superuser email: ')
+        email = input('Superuser email: ')
         while '@' not in email:
-            email = raw_input('Superuser email (must be valid): ')
+            email = input('Superuser email (must be valid): ')
 
         while True:
             password = getpass('Superuser password: ')
@@ -142,51 +135,45 @@ def generate_config():
             if password == password2:
                 break
             else:
-                print "Passwords did not match. Try again"
+                print("Passwords did not match. Try again")
 
-        secret_key = raw_input('CHN Server secret key [""]: ')
-        deploy_key = raw_input('CHN Server honeypot deployment key [""]: ')
+        secret_key = input('CHN Server secret key [""]: ')
+        deploy_key = input('CHN Server honeypot deployment key [""]: ')
 
-        server_base_url = raw_input('Server base url ["{}"]: '.format(default_base_url))
+        server_base_url = input('Server base url ["{}"]: '.format(default_base_url))
         if server_base_url.endswith('/'):
             server_base_url = server_base_url[:-1]
 
         default_honeymap_url = '{}:3000'.format(server_base_url)
-        honeymap_url = raw_input('Honeymap url ["{}"]: '.format(default_honeymap_url))
+        honeymap_url = input('Honeymap url ["{}"]: '.format(default_honeymap_url))
         if honeymap_url.endswith('/'):
             honeymap_url = honeymap_url[:-1]
 
-        default_redis_url = 'redis://localhost:6379'
-        redis_url = raw_input('Redis url ["{}"]: '.format(default_redis_url))
-        if redis_url.endswith('/'):
-            redis_url = redis_url[:-1]
+        mail_server = input('Mail server address ["localhost"]: ')
+        mail_port = input('Mail server port [25]: ')
 
-        mail_server = raw_input('Mail server address ["localhost"]: ')
-        mail_port = raw_input('Mail server port [25]: ')
-
-        mail_tls = raw_input('Use TLS for email?: y/n ')
+        mail_tls = input('Use TLS for email?: y/n ')
         while mail_tls not in ['y', 'n']:
-            mail_tls = raw_input('Please y or n ')
+            mail_tls = input('Please y or n ')
 
-        mail_ssl = raw_input('Use SSL for email?: y/n ')
+        mail_ssl = input('Use SSL for email?: y/n ')
         while mail_ssl not in ['y', 'n']:
-            mail_ssl = raw_input('Please y or n ')
+            mail_ssl = input('Please y or n ')
 
-        mail_username = raw_input('Mail server username [""]: ')
+        mail_username = input('Mail server username [""]: ')
         mail_password = getpass('Mail server password [""]: ')
 
-        default_mail_sender = raw_input('Mail default sender [""]: ')
+        default_mail_sender = input('Mail default sender [""]: ')
 
-        log_file_path = raw_input('Path for log file ["{}"]: '.format(default_log_path))
+        log_file_path = input('Path for log file ["{}"]: '.format(default_log_path))
 
-        mongo_host = raw_input('MongoDB hostname ["localhost"]: ')
-        mongo_port = raw_input('MongoDB port[27017]: ')
-        hpfeeds_host = raw_input('HPFeeds hostname ["localhost"]: ')
-        hpfeeds_port = raw_input('HPFeeds port[10000]: ')
+        mongo_host = input('MongoDB hostname ["localhost"]: ')
+        mongo_port = input('MongoDB port[27017]: ')
+        hpfeeds_host = input('HPFeeds hostname ["localhost"]: ')
+        hpfeeds_port = input('HPFeeds port[10000]: ')
 
     server_base_url = server_base_url if server_base_url.strip() else default_base_url
     honeymap_url = honeymap_url if honeymap_url.strip() else default_honeymap_url
-    redis_url = redis_url if redis_url.strip() else default_redis_url
     log_file_path = log_file_path if log_file_path else default_log_path
     password = password if password else default_superuser_password
     secret_key = secret_key if secret_key else default_secret_key
@@ -199,7 +186,6 @@ def generate_config():
     localconfig['DEPLOY_KEY'] = deploy_key
     localconfig['SERVER_BASE_URL'] = server_base_url
     localconfig['HONEYMAP_URL'] = honeymap_url
-    localconfig['REDIS_URL'] = redis_url
     localconfig['MAIL_SERVER'] = mail_server if mail_server else "localhost"
     localconfig['MAIL_PORT'] = mail_port if mail_port else 25
     localconfig['MAIL_USE_TLS'] = 'y' == mail_tls
@@ -215,7 +201,7 @@ def generate_config():
 
     with open('config.py.template', 'r') as templfile, open('config.py', 'w') as confile:
         templ = templfile.read()
-        for key, setting in localconfig.iteritems():
+        for key, setting in localconfig.items():
             templ = templ.replace('{{' + key + '}}', str(setting))
         confile.write(templ)
 

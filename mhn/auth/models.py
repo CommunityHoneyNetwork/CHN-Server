@@ -55,6 +55,7 @@ class PasswdReset(db.Model):
                  server_url=mhn.config['SERVER_BASE_URL'],
                  email=self.user.email)
 
+
 class ApiKey(db.Model):
     all_fields = {
         'api_key': {'required': True, 'editable': False},

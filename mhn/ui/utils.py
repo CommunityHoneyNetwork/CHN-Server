@@ -28,7 +28,7 @@ def is_RFC1918_addr(ip):
             if ip_masked == net:
                 return True
     except Exception as e:
-        print 'Error ({}) on is_RFC1918_addr: {}'.format(e, ip)
+        print('Error (%s) on is_RFC1918_addr: %s' % (e, ip))
 
     return False
 
@@ -54,7 +54,7 @@ def get_country_ip(ipaddr):
         country_cache.set(ipaddr, name)
     return name
 
-  
+
 def get_sensor_name(sensor_id):
     sensor_name = sensor_cache.get(sensor_id)
     if not sensor_name:
@@ -63,7 +63,7 @@ def get_sensor_name(sensor_id):
                 sensor_name = s.hostname
                 sensor_cache.set(sensor_id, sensor_name)
                 break
-    print 'Name: %s' % sensor_name
+    print('Name: %s' % sensor_name)
     return sensor_name
 
 
@@ -80,7 +80,7 @@ def _get_flag_ip(ipaddr):
         # the country code for this IP address.
         r = requests.get(geo_api.format(ipaddr))
         ccode = r.json()['un_locode']
-	app.logger.warning(r.json())
+        app.logger.debug('Found CC code: {}'.format(ccode))
     except Exception:
         app.logger.warning(
             "Could not determine flag for ip: {}".format(ipaddr))
@@ -96,7 +96,7 @@ def _get_flag_ip(ipaddr):
         else:
             return url_for('static', filename=constants.DEFAULT_FLAG_URL)
 
-          
+
 def _get_country_ip(ipaddr):
     geo_api = 'https://api.ipgeolocationapi.com/geolocate/{}'
     try:

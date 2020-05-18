@@ -1,4 +1,4 @@
-from mhn import create_clean_db, reload_scripts
+from mhn import create_clean_db, reload_scripts, create_superuser_entry
 from mhn import mhn, db
 from sqlalchemy import create_engine
 from sqlalchemy import inspect
