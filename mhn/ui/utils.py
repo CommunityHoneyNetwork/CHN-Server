@@ -4,7 +4,7 @@ from mhn.ui import constants
 from config import MHN_SERVER_HOME
 import os
 from werkzeug.contrib.cache import SimpleCache
-import socket
+from ipaddress import ip_address
 import struct
 from mhn.api.models import Sensor
 
@@ -13,28 +13,29 @@ country_cache = SimpleCache(threshold=1000, default_timeout=300)
 sensor_cache = SimpleCache(threshold=1000, default_timeout=300)
 
 
-def is_RFC1918_addr(ip):
-    # 10.0.0.0 = 167772160
-    # 172.16.0.0 = 2886729728
-    # 192.168.0.0 = 3232235520
-    RFC1918_net_bits = ((167772160, 8), (2886729728, 12), (3232235520, 16))
+def is_private_addr(ip):
+    # 10.0.0.0/8
+    # 127.0.0.0/8
+    # 172.16.0.0/12
+    # 192.168.0.0/16
+    # fc00::/7 (unique local addresses)
+    # ::1/128 (localhost)
 
     try:
-        # ip to decimal
-        ip = struct.unpack("!L", socket.inet_aton(ip))[0]
-
-        for net, mask_bits in RFC1918_net_bits:
-            ip_masked = ip & (2 ** 32 - 1 << (32 - mask_bits))
-            if ip_masked == net:
-                return True
+        ip_obj = ip_address(ip)
+        # Make exception for ::ffff/96 (ipv4-mapped)
+        if ip_obj.version == 6 and ip_obj.ipv4_mapped:
+            return False
+        if ip_obj.is_private:
+            return True
     except Exception as e:
-        print('Error (%s) on is_RFC1918_addr: %s' % (e, ip))
+        print('Error (%s) on is_private_addr: %s' % (e, ip))
 
     return False
 
 
 def get_flag_ip(ipaddr):
-    if is_RFC1918_addr(ipaddr):
+    if is_private_addr(ipaddr):
         return url_for('static', filename=constants.DEFAULT_FLAG_URL)
 
     flag = flag_cache.get(ipaddr)
@@ -45,7 +46,7 @@ def get_flag_ip(ipaddr):
 
 
 def get_country_ip(ipaddr):
-    if is_RFC1918_addr(ipaddr):
+    if is_private_addr(ipaddr):
         return constants.DEFAULT_COUNTRY_NAME
 
     name = country_cache.get(ipaddr)
