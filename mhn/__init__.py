@@ -132,6 +132,7 @@ def create_clean_db():
             'Ubuntu - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
             'Ubuntu - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
             'Ubuntu - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
+            'Ubuntu - Elasticpot': os.path.abspath('./scripts/deploy_elasticpot.sh')
         }
         for honeypot, deploypath in sorted(deployscripts.items()):
             with open(deploypath, 'r') as deployfile:
@@ -187,6 +188,7 @@ def reload_scripts():
         'Default - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
         'Default - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
         'Default - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
+        'Default - Elasticpot': os.path.abspath('./scripts/deploy_elasticpot.sh')
     }
 
     f = []
