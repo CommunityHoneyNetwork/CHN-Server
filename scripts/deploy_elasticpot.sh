@@ -17,8 +17,7 @@ services:
     volumes:
       - configs:/etc/elasticpot
     ports:
-      - "2222:2222"
-      - "23:2223"
+      - "9200:9200"
     env_file:
       - elasticpot.env
 volumes:
