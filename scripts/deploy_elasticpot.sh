@@ -12,7 +12,7 @@ cat << EOF > ./docker-compose.yml
 version: '3'
 services:
   elasticpot:
-    image: stingar/elasticpot{ARCH}:${VERSION}
+    image: stingar/elasticpot${ARCH}:${VERSION}
     restart: always
     volumes:
       - configs:/etc/elasticpot
