@@ -76,7 +76,6 @@ container_scanning:
     - container_scanning
   script:
     - sudo ntpdate pool.ntp.org
-    - env
     - sudo docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
     - sudo docker run -d --name db arminc/clair-db:latest
     - sudo docker run -p 6060:6060 --link db:postgres -d --name clair --restart on-failure arminc/clair-local-scan:v2.0.5
@@ -109,7 +108,6 @@ deploy_dockerhub:
     - sudo docker logout
     - export DOCKER_TAG=$(echo $CI_BUILD_REF_NAME | sed -E 's/^v?([[:digit:]]+(.[[:digit:]]+){1,2}(-pre)?|latest)$/\1/g')
     - export PROJECT_PATH=$(echo ${CI_PROJECT_PATH} | tr '[:upper:]' '[:lower:]')
-    - env
     - echo docker tag ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG} ${PROJECT_PATH}:$DOCKER_TAG
     - sudo docker tag ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG} ${PROJECT_PATH}:$DOCKER_TAG
     - export VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id=${VAULT_ROLE_ID} secret_id=${VAULT_SECRET_ID})
