@@ -64,5 +64,7 @@ HONEYPOT_CHANNELS = {
     'elastichoney': ['elastichoney.events'],
     'rdphoney': ['rdphoney.sessions'],
     'uhp': ['uhp.events'],
-    'elasticpot': ['elasticpot.events']
+    'elasticpot': ['elasticpot.events'],
+    'spylex': ['spylex.events'],
+    'big-hp': ['big-hp.events']
 }
