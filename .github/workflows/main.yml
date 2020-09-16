@@ -33,7 +33,7 @@ jobs:
       - name: Prepare
         id: prepare
         run: |
-          DOCKER_IMAGE=stingar/chn-server-archs
+          DOCKER_IMAGE=stingar/chn-server
           DOCKER_PLATFORMS=linux/amd64,linux/arm/v7,linux/386,linux/ppc64le,linux/s390x
           VERSION=${GITHUB_REF##*/}
 
