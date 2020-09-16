@@ -47,7 +47,7 @@ DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-ELASTICPOT_JSON="/etc/elasticpot/elasticpot.json"
+ELASTICPOT_JSON=/etc/elasticpot/elasticpot.json
 
 # double quotes, comma delimited tags may be specified, which will be included
 # as a field in the hpfeeds output. Use cases include tagging provider
