@@ -6,6 +6,4 @@ CHN-Server
 
 Find the documentation here: [https://communityhoneynetwork.readthedocs.io](https://communityhoneynetwork.readthedocs.io)
 
-| branch | build status |
-| ---    | ---          |
-| master | [![master status](https://gitlab.oit.duke.edu/stingar/CHN-Server/badges/master/pipeline.svg)](https://gitlab.oit.duke.edu/stingar/CHN-Server/commits/master)|
+![CI](https://github.com/CommunityHoneyNetwork/CHN-Server/workflows/CI/badge.svg)
