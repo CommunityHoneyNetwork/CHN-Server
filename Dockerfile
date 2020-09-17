@@ -1,4 +1,5 @@
 FROM ubuntu:18.04
+# hadolint ignore=DL3008,DL3005
 
 LABEL maintainer Team STINGAR <team-stingar@duke.edu>
 LABEL name "chn-server"
