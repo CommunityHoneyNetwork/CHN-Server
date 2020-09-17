@@ -15,12 +15,16 @@ VOLUME /tls
 ENV TZ "America/New_York"
 ENV DEBIAN_FRONTEND "noninteractive"
 
-RUN apt-get update && \
-	apt-get install -y gcc git nginx python3-pip python3-dev redis-server \
-        libgeoip-dev libsqlite3-dev runit python3-certbot-nginx net-tools jq curl libffi-dev
+# hadolint ignore=DL3008,DL3005
+RUN apt-get update \
+	&& apt-get install --no-install-recommends -y gcc git nginx python3-pip python3-dev redis-server \
+        libgeoip-dev libsqlite3-dev runit python3-certbot-nginx net-tools jq curl libffi-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /opt/requirements.txt
-RUN pip3 install -r /opt/requirements.txt
+RUN python3 -m pip install --upgrade pip setuptools wheel \
+ && python3 -m pip install -r /opt/requirements.txt
 
 # Make Nginx directories
 RUN mkdir -p /opt/www /etc/nginx /etc/nginx/sites-available /etc/nginx/sites-enabled /etc/pki/tls/certs /etc/pki/tls/private
@@ -54,11 +58,11 @@ RUN mkdir -p /var/log/mhn \
 RUN mkdir -p /opt/sqlite
 
 # Link to hpfeeds in chnserver
-RUN pip3 install git+https://github.com/CommunityHoneyNetwork/hpfeeds3.git
+RUN python3 -m pip install git+https://github.com/CommunityHoneyNetwork/hpfeeds3.git
 
 # Link chnctl.py to bindir
 RUN ln -s /opt/chnctl.py /usr/local/bin/chnctl
 
-ADD . /opt/
+COPY . /opt/
 
 ENTRYPOINT ["/usr/bin/runsvdir", "-P", "/etc/service"]
