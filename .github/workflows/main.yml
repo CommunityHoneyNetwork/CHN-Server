@@ -34,7 +34,7 @@ jobs:
         id: prepare
         run: |
           DOCKER_IMAGE=stingar/chn-server
-          DOCKER_PLATFORMS=linux/amd64,linux/arm/v7,linux/386
+          DOCKER_PLATFORMS=linux/amd64linux/amd64,linux/arm/v7,linux/386
           VERSION=${GITHUB_REF##*/}
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
