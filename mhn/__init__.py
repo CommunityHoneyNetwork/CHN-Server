@@ -127,12 +127,13 @@ def create_clean_db():
         from mhn.api.models import DeployScript
         # Creating a initial deploy scripts.
         deployscripts = {
-            'Ubuntu - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
-            'Ubuntu - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
-            'Ubuntu - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
-            'Ubuntu - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
-            'Ubuntu - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
-            'Ubuntu - Elasticpot': os.path.abspath('./scripts/deploy_elasticpot.sh')
+            'Default - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
+            'Default - Dionaea': os.path.abspath('./scripts/deploy_dionaea.sh'),
+            'Default - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
+            'Default - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
+            'Default - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
+            'Default - Elasticpot': os.path.abspath('./scripts/deploy_elasticpot.sh'),
+            'Default - BigHP': os.path.abspath('./scripts/deploy_big-hp.sh')
         }
         for honeypot, deploypath in sorted(deployscripts.items()):
             with open(deploypath, 'r') as deployfile:
@@ -188,7 +189,8 @@ def reload_scripts():
         'Default - Cowrie': os.path.abspath('./scripts/deploy_cowrie.sh'),
         'Default - RDPHoney': os.path.abspath('./scripts/deploy_rdphoney.sh'),
         'Default - UHP': os.path.abspath('./scripts/deploy_uhp.sh'),
-        'Default - Elasticpot': os.path.abspath('./scripts/deploy_elasticpot.sh')
+        'Default - Elasticpot': os.path.abspath('./scripts/deploy_elasticpot.sh'),
+        'Default - BigHP': os.path.abspath('./scripts/deploy_big-hp.sh')
     }
 
     f = []
@@ -206,7 +208,7 @@ def reload_scripts():
         with open(deploypath, 'r') as deployfile:
             initdeploy = DeployScript()
             initdeploy.script = deployfile.read()
-            initdeploy.notes = 'Initial deploy script for {}'.format(honeypot)
+            initdeploy.notes = 'Vanilla deploy script for {}'.format(honeypot)
             initdeploy.user = superuser
             initdeploy.name = honeypot
             db.session.add(initdeploy)
