@@ -11,26 +11,22 @@ echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '3'
 services:
-    conpot:
-        image: stingar/conpot${ARCH}:${VERSION}
-        restart: always
-        volumes:
-            - configs:/etc/conpot
-        ports:
-            - "80:8800"
-            - "102:10201"
-            - "502:5020"
-            - "21:2121"
-            - "44818:44818"
-        env_file:
-            - conpot.env
+  elasticpot:
+    image: stingar/big-hp{ARCH}:${VERSION}
+    restart: always
+    volumes:
+      - configs:/etc/big-hp
+    ports:
+      - "443:8000"
+    env_file:
+      - big-hp.env
 volumes:
     configs:
 EOF
 echo 'Done!'
-echo 'Creating conpot.env...'
-cat << EOF > conpot.env
-# This can be modified to change the default setup of the unattended installation
+echo 'Creating big-hp.env...'
+cat << EOF > big-hp.env
+# This can be modified to change the default setup of the elasticpot unattended installation
 
 DEBUG=false
 
@@ -45,18 +41,22 @@ CHN_SERVER=${URL}
 FEEDS_SERVER=${SERVER}
 FEEDS_SERVER_PORT=10000
 
+# Variables to set to pass to the honeypot web server for reporting and visibility
+REPORTED_IP=
+REPORTED_PORT=443
+HOSTNAME=
+
 # Deploy key from the FEEDS_SERVER administrator
 # This is a REQUIRED value
 DEPLOY_KEY=${DEPLOY}
 
 # Registration information file
 # If running in a container, this needs to persist
-CONPOT_JSON=/etc/conpot/conpot.json
+BIGHP_JSON=/etc/big-hp/big-hp.json
 
-# Conpot specific configuration options
-CONPOT_TEMPLATE=default
-
-# Comma separated tags for honeypot
+# double quotes, comma delimited tags may be specified, which will be included
+# as a field in the hpfeeds output. Use cases include tagging provider
+# infrastructure the sensor lives in, geographic location for the sensor, etc.
 TAGS=${TAGS}
 EOF
 echo 'Done!'
