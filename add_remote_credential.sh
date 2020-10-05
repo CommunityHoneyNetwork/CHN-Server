@@ -13,7 +13,7 @@ SECRET=$(tr -dc _A-Z-a-z-0-9 < /dev/urandom | head -c 20)
 
 echo "Command to run on remote server:"
 echo "********************************"
-echo docker-compose exec hpfeeds3 python3 /src/hpfeeds/add_user.py --owner chn --ident \"${IDENT}\" --secret \"${SECRET}\" --publish \"\" --subscribe \"amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,dionaea.connections,thug.files,beeswarm.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,snort.alerts,wordpot.events,p0f.events,suricata.events,shockpot.events,elastichoney.events,rdphoney.sessions,uhp.events,elasticpot.events,spylex.events,big-hp.events\" --mongodb-host mongodb --mongodb-port 27017
+echo docker-compose exec hpfeeds3 /app/bin/python3 /src/hpfeeds/add_user.py --owner chn --ident \"${IDENT}\" --secret \"${SECRET}\" --publish \"\" --subscribe \"amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,dionaea.connections,thug.files,beeswarm.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,snort.alerts,wordpot.events,p0f.events,suricata.events,shockpot.events,elastichoney.events,rdphoney.sessions,uhp.events,elasticpot.events,spylex.events,big-hp.events\" --mongodb-host mongodb --mongodb-port 27017
 echo "********************************"
 echo ""
 echo "Config for a new hpfeeds-logger.env to listen on local server:"
