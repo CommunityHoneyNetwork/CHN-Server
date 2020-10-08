@@ -35,6 +35,8 @@ services:
       - "27017:27017"
     env_file:
       - dionaea.env
+    cap_add:
+      - NET_ADMIN
 volumes:
     configs:
 EOF
