@@ -11,8 +11,8 @@ echo 'Creating docker-compose.yml...'
 cat << EOF > ./docker-compose.yml
 version: '3'
 services:
-  elasticpot:
-    image: stingar/big-hp{ARCH}:${VERSION}
+  big-hp:
+    image: stingar/big-hp:${VERSION}
     restart: always
     volumes:
       - configs:/etc/big-hp
@@ -26,7 +26,7 @@ EOF
 echo 'Done!'
 echo 'Creating big-hp.env...'
 cat << EOF > big-hp.env
-# This can be modified to change the default setup of the elasticpot unattended installation
+# This can be modified to change the default setup of the big-hp unattended installation
 
 DEBUG=false
 
