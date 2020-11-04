@@ -17,7 +17,7 @@ services:
     volumes:
       - configs:/etc/ssh-auth-logger
     ports:
-      - "2222:2222"
+      - "2222:22222"
     env_file:
       - ssh-auth-logger.env
 volumes:
@@ -33,6 +33,9 @@ DEBUG=false
 # IP Address of the honeypot
 # Leaving this blank will default to the docker container IP
 IP_ADDRESS=
+
+# Internal Docker port ssh-auth-logger should bind to. Don't adjust generally.
+SSHD_BIND=:22222
 
 # CHN Server api to register to
 CHN_SERVER=${URL}
