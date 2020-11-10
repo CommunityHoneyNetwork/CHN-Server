@@ -26,7 +26,7 @@ EOF
 echo 'Done!'
 echo 'Creating ssh-auth-logger.env...'
 cat << EOF > ssh-auth-logger.env
-# This can be modified to change the default setup of the big-hp unattended installation
+# This can be modified to change the default setup of the ssh-auth-logger unattended installation
 
 DEBUG=false
 
