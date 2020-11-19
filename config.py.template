@@ -67,5 +67,6 @@ HONEYPOT_CHANNELS = {
     'elasticpot': ['elasticpot.events'],
     'spylex': ['spylex.events'],
     'big-hp': ['big-hp.events'],
-    'ssh-auth-logger': ['ssh-auth-logger.events']
+    'ssh-auth-logger': ['ssh-auth-logger.events'],
+    'honeydb': ['honeydb.events']
 }
