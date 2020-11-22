@@ -68,5 +68,5 @@ HONEYPOT_CHANNELS = {
     'spylex': ['spylex.events'],
     'big-hp': ['big-hp.events'],
     'ssh-auth-logger': ['ssh-auth-logger.events'],
-    'honeydb': ['honeydb.events']
+    'honeydb-agent': ['honeydb-agent.events']
 }
