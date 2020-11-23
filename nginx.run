@@ -1,8 +1,6 @@
 #!/bin/bash
 set -x
 
-source /etc/default/chnserver
-
 set -o errexit
 set -o nounset
 
