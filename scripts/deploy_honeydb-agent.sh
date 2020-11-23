@@ -12,7 +12,7 @@ cat << EOF > ./docker-compose.yml
 version: '3'
 services:
   honeydb:
-    image: stingar/honeydb-agent:1.9.1
+    image: stingar/honeydb-agent:${VERSION}
     volumes:
     - configs:/etc/honeydb/
     env_file:
@@ -45,8 +45,8 @@ volumes:
     configs:
 EOF
 echo 'Done!'
-echo 'Creating ssh-auth-logger.env...'
-cat << EOF > ssh-auth-logger.env
+echo 'Creating honeydb-agent.env...'
+cat << EOF > honeydb-agent.env
 DEBUG=false
 
 # IP Address of the honeypot
