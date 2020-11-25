@@ -1,14 +1,14 @@
 FROM ubuntu:18.04
 # hadolint ignore=DL3008,DL3005
 
-LABEL maintainer Team STINGAR <team-stingar@duke.edu>
-LABEL name "chn-server"
-LABEL version "0.1"
-LABEL release "1"
-LABEL summary "Community Honey Network Server"
-LABEL description "Multi-honeypot sensor management, uses a network of VMs and a centralized server for management."
-LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/CHN-Server"
-LABEL changelog-url "https://github.com/CommunityHoneyNetwork/CHN-Server/commits/master"
+LABEL maintainer="Team STINGAR <team-stingar@duke.edu>"
+LABEL name="chnserver"
+LABEL version="1.9.1"
+LABEL release="1"
+LABEL summary="Community Honey Network Server"
+LABEL description="Multi-honeypot sensor management, uses a network of VMs and a centralized server for management."
+LABEL authoritative-source-url="https://github.com/CommunityHoneyNetwork/CHN-Server"
+LABEL changelog-url="https://github.com/CommunityHoneyNetwork/CHN-Server/commits/master"
 
 VOLUME /tls
 
