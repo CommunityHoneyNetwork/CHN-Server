@@ -32,21 +32,8 @@ generate_config () {
       HONEYMAP_URL=""
     fi
 
-    if [[ -z ${MAIL_SERVER} ]]
-    then
-      echo "Mail server is required"
-      exit 1
-    else
-      MAIL_SERVER="--mail_server ${MAIL_SERVER}"
-    fi
-
-    if [[ -z ${MAIL_PORT} ]]
-    then
-      echo "Mail port is required"
-      exit 1
-    else
-      MAIL_PORT="--mail_port ${MAIL_PORT}"
-    fi
+    MAIL_SERVER="--mail_server ${MAIL_SERVER:-127.0.0.1}"
+    MAIL_PORT="--mail_port ${MAIL_PORT:-25}"
 
     if [[ "${MAIL_TLS}" == "y" ]]
     then
@@ -119,13 +106,7 @@ generate_config () {
       HPFEEDS_HOST=""
     fi
 
-    if [[ -z ${HPFEEDS_PORT} ]]
-    then
-      echo "HPFeeds port is required"
-      exit 1
-    else
-      HPFEEDS_PORT="--hpfeeds_port ${HPFEEDS_PORT}"
-    fi
+    HPFEEDS_PORT="--hpfeeds_port ${HPFEEDS_PORT:-10000}"
 
     if [[ ! -z ${SUPERUSER_EMAIL} ]]
     then
@@ -218,7 +199,6 @@ main () {
   generate_nginx_config
 
   local custom_url_path=$(python3 -c "from urllib.parse import urlparse; import os; result=urlparse(os.environ['custom_url_from_generate_nginx_func']); print(result.path.rstrip('/'))")
-  echo "Found custom_url_path=${custom_url_path}"
   echo "Found custom_url_path=${custom_url_path}"
   cd /opt
 
