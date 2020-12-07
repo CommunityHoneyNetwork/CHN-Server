@@ -73,6 +73,13 @@ TAGS=${TAGS}
 # here. These directories can include custom dionaea.cfg and service configurations
 # files which can influence the attractiveness of the honeypot.
 PERSONALITY=""
+
+# Configure your dionaea honeypot to upload any files downloaded from attackers to an S3-compatible object store
+S3_OUTPUT_ENABLED=false
+S3_ACCESS_KEY=access_key
+S3_SECRET_KEY=secret_key
+S3_ENDPOINT=https://s3_server/bucket
+S3_VERIFY=True
 EOF
 echo 'Done!'
 echo ''
