@@ -234,7 +234,7 @@ def top_attackers():
         if name in extra:
             del extra[name]
 
-    for name in options.keys():
+    for name in list(options.keys()):
         if name not in ('hours_ago', 'limit',):
             del options[name]
     results = Clio().session._tops(['source_ip', 'honeypot'], top=limit,
@@ -318,7 +318,7 @@ def attacker_stats(ip):
     options = request.args.to_dict()
     hours_ago = int(options.get('hours_ago', '720'))  # 30 days
 
-    for name in options.keys():
+    for name in list(options.keys()):
         if name not in ('hours_ago', 'limit',):
             del options[name]
     results = Clio().session.attacker_stats(ip, hours_ago=hours_ago)
@@ -388,7 +388,7 @@ def get_intel_feed():
         if name in extra:
             del extra[name]
 
-    for name in options.keys():
+    for name in list(options.keys()):
         if name not in ('hours_ago', 'limit',):
             del options[name]
 
