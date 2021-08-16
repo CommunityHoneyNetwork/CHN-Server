@@ -16,6 +16,13 @@ $(document).ready(function() {
         });
     };
 
+    $('#attacks-table').click(function() {
+        var href = $(this).find('a').attr('href');
+ 	    if(href) {
+ 	        window.location = href;
+ 	    }
+    });
+
     if ($('#sensor-fields').length >= 1) {
         $('#create-btn').click(function() {
             var sensorObj = {
