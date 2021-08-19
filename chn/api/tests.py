@@ -3,16 +3,16 @@ from uuid import uuid1
 
 from flask import url_for
 
-from mhn import db
-from mhn.common.testcommon import MHNTestCase
-from mhn.api.models import Sensor
+from chn import db
+from chn.common.testcommon import CHNTestCase
+from chn.api.models import Sensor
 
 
-class SensorTestCase(MHNTestCase):
+class SensorTestCase(CHNTestCase):
 
     def setUp(self):
         super(SensorTestCase, self).setUp()
-        self.sensordata = dict(hostname='mhn.test.sensor', name='Test Sensor')
+        self.sensordata = dict(hostname='chn.test.sensor', name='Test Sensor')
         self.deploykey = self.app.config['DEPLOY_KEY']
         self.publish_dict = self.app.config['HONEYPOT_CHANNELS']
 

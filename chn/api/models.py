@@ -4,10 +4,10 @@ from datetime import datetime
 
 from sqlalchemy import UniqueConstraint, func
 
-from mhn import db
-from mhn.api import APIModel
-from mhn.auth.models import User
-from mhn.common.clio import Clio
+from chn import db
+from chn.api import APIModel
+from chn.auth.models import User
+from chn.common.clio import Clio
 
 
 class Sensor(db.Model, APIModel):
@@ -76,8 +76,8 @@ class Sensor(db.Model, APIModel):
 
     @staticmethod
     def get_channels(honeypot):
-        from mhn import mhn
-        return mhn.config.get('HONEYPOT_CHANNELS', {}).get(honeypot, [])
+        from chn import chn
+        return chn.config.get('HONEYPOT_CHANNELS', {}).get(honeypot, [])
 
 
 class DeployScript(db.Model, APIModel):

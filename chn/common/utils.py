@@ -2,7 +2,7 @@ from math import ceil
 
 from flask import jsonify, g
 
-from mhn.constants import PAGE_SIZE
+from chn.constants import PAGE_SIZE
 
 
 def error_response(message, status_code=400):

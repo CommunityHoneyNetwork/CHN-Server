@@ -8,14 +8,14 @@ from flask_security.utils import (
         login_user as login, verify_and_update_password,
         encrypt_password, logout_user as logout)
 
-from mhn import db, mail
-from mhn import user_datastore
-from mhn.common.utils import error_response
-from mhn.auth.models import User, PasswdReset, ApiKey
-from mhn.auth import errors
-from mhn.auth import (
+from chn import db, mail
+from chn import user_datastore
+from chn.common.utils import error_response
+from chn.auth.models import User, PasswdReset, ApiKey
+from chn.auth import errors
+from chn.auth import (
     get_datastore, login_required, roles_accepted, current_user)
-from mhn.api import errors as apierrors
+from chn.api import errors as apierrors
 import uuid
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
@@ -102,10 +102,10 @@ def reset_passwd_request():
     db.session.add(reset)
     db.session.commit()
     # Send password reset email to user.
-    from mhn import mhn
+    from chn import chn
     msg = Message(
-            html=reset.email_body, subject='MHN Password reset',
-            recipients=[user.email], sender=mhn.config['DEFAULT_MAIL_SENDER'])
+            html=reset.email_body, subject='CHN Password reset',
+            recipients=[user.email], sender=chn.config['DEFAULT_MAIL_SENDER'])
     try:
         mail.send(msg)
     except:

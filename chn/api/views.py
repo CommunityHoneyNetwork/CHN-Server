@@ -10,14 +10,14 @@ from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, request, jsonify, make_response
 from bson.errors import InvalidId
 
-from mhn import db, csrf
-from mhn.api import errors
-from mhn.api.models import (
+from chn import db, csrf
+from chn.api import errors
+from chn.api.models import (
         Sensor, DeployScript as Script, DeployScript)
-from mhn.api.decorators import deploy_auth, sensor_auth, token_auth
-from mhn.common.utils import error_response
-from mhn.common.clio import Clio
-from mhn.auth import current_user, login_required
+from chn.api.decorators import deploy_auth, sensor_auth, token_auth
+from chn.common.utils import error_response
+from chn.common.clio import Clio
+from chn.auth import current_user, login_required
 
 
 api = Blueprint('api', __name__, url_prefix='/api')

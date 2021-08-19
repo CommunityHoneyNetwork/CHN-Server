@@ -1,12 +1,12 @@
 import requests
 from flask import current_app as app, url_for
-from mhn.ui import constants
-from config import MHN_SERVER_HOME
+from chn.ui import constants
+from config import CHN_SERVER_HOME
 import os
 from werkzeug.contrib.cache import SimpleCache
 from ipaddress import ip_address
 import struct
-from mhn.api.models import Sensor
+from chn.api.models import Sensor
 
 flag_cache = SimpleCache(threshold=1000, default_timeout=300)
 country_cache = SimpleCache(threshold=1000, default_timeout=300)
@@ -75,12 +75,12 @@ def _get_flag_ip(ipaddr):
     """
     flag_path = url_for(
         'static', filename='img/flags-iso/shiny/64') + '/{}.png'
-    geo_api = 'https://api.ipgeolocationapi.com/geolocate/{}'
+    geo_api = 'https://freegeoip.app/json/{}'
     try:
         # Using threatstream's geospray API to get
         # the country code for this IP address.
         r = requests.get(geo_api.format(ipaddr))
-        ccode = r.json()['un_locode']
+        ccode = r.json()['country_code']
         app.logger.debug('Found CC code: {}'.format(ccode))
     except Exception:
         app.logger.warning(
@@ -92,19 +92,19 @@ def _get_flag_ip(ipaddr):
         local_flag_path = '/static/img/flags-iso/shiny/64/{}.png'.format(
             ccode.upper())
 
-        if os.path.exists(MHN_SERVER_HOME + "/mhn"+local_flag_path):
+        if os.path.exists(CHN_SERVER_HOME + "/chn"+local_flag_path):
             return flag
         else:
             return url_for('static', filename=constants.DEFAULT_FLAG_URL)
 
 
 def _get_country_ip(ipaddr):
-    geo_api = 'https://api.ipgeolocationapi.com/geolocate/{}'
+    geo_api = 'https://freegeoip.app/json/{}'
     try:
         # Using threatstream's geospray API to get
         # the country name for this IP address.
         r = requests.get(geo_api.format(ipaddr))
-        name = r.json()['un_locode']
+        name = r.json()['country_code']
         return name
     except Exception:
         app.logger.warning("Could not determine country name for ip: {}".format(ipaddr))

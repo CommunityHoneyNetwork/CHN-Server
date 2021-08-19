@@ -8,18 +8,18 @@ from flask_security import logout_user as logout
 import unicodedata
 from sqlalchemy import desc, func
 
-from mhn.ui.utils import get_flag_ip, get_country_ip, get_sensor_name
-from mhn.api.models import (
+from chn.ui.utils import get_flag_ip, get_country_ip, get_sensor_name
+from chn.api.models import (
         Sensor, DeployScript as Script)
-from mhn.auth import login_required, current_user
-from mhn.auth.models import User, PasswdReset, ApiKey
-from mhn import db, mhn
-from mhn.common.utils import (
+from chn.auth import login_required, current_user
+from chn.auth.models import User, PasswdReset, ApiKey
+from chn import db, chn
+from chn.common.utils import (
         paginate_options, alchemy_pages, mongo_pages)
-from mhn.common.clio import Clio
+from chn.common.clio import Clio
 
 ui = Blueprint('ui', __name__, url_prefix='/ui')
-from mhn import mhn as app
+from chn import chn as app
 
 PYGAL_CONFIG = pygal.config.Config()
 PYGAL_CONFIG.js = (
@@ -55,7 +55,7 @@ def login_user():
     return render_template('security/login_user.html')
 
 
-@mhn.route('/')
+@chn.route('/')
 @ui.route('/dashboard/', methods=['GET'])
 @login_required
 def dashboard():

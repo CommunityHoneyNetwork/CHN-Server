@@ -24,7 +24,7 @@ def generate_config():
 
     default_base_url = 'https://localhost'
     default_honeymap_url = '{}:3000'.format(default_base_url)
-    default_log_path = '/var/log/mhn/mhn.log'
+    default_log_path = '/var/log/chn/chn.log'
     default_superuser_password = rand_str(32)
     default_secret_key = rand_str(32)
     default_deploy_key = rand_str(8)

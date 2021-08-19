@@ -19,91 +19,91 @@ csrf = CsrfProtect()
 db = SQLAlchemy()
 # After defining `db`, import auth models due to
 # circular dependency.
-from mhn.auth.models import User, Role, ApiKey
+from chn.auth.models import User, Role, ApiKey
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 
-mhn = Flask(__name__)
-mhn.config.from_object('config')
-csrf.init_app(mhn)
+chn = Flask(__name__)
+chn.config.from_object('config')
+csrf.init_app(chn)
 
 # Email app setup.
 mail = Mail()
-mail.init_app(mhn)
+mail.init_app(chn)
 
 # Registering app on db instance.
-db.init_app(mhn)
+db.init_app(chn)
 
 # Setup flask-security for auth.
-Security(mhn, user_datastore)
+Security(chn, user_datastore)
 
 # Registering blueprints.
-from mhn.api.views import api
+from chn.api.views import api
 
-mhn.register_blueprint(api)
+chn.register_blueprint(api)
 
-from mhn.ui.views import ui
+from chn.ui.views import ui
 
-mhn.register_blueprint(ui)
+chn.register_blueprint(ui)
 
-from mhn.auth.views import auth
+from chn.auth.views import auth
 
-mhn.register_blueprint(auth)
+chn.register_blueprint(auth)
 
 # Trigger templatetag register.
-from mhn.common.templatetags import format_date
+from chn.common.templatetags import format_date
 
-mhn.jinja_env.filters['fdate'] = format_date
+chn.jinja_env.filters['fdate'] = format_date
 
-from mhn.auth.contextprocessors import user_ctx
+from chn.auth.contextprocessors import user_ctx
 
-mhn.context_processor(user_ctx)
+chn.context_processor(user_ctx)
 
-from mhn.common.contextprocessors import config_ctx
+from chn.common.contextprocessors import config_ctx
 
-mhn.context_processor(config_ctx)
+chn.context_processor(config_ctx)
 
 import logging
 from logging.handlers import RotatingFileHandler
 
-mhn.logger.setLevel(logging.INFO)
+chn.logger.setLevel(logging.INFO)
 formatter = logging.Formatter(
     '%(asctime)s -  %(pathname)s - %(message)s')
 handler = RotatingFileHandler(
-    mhn.config['LOG_FILE_PATH'], maxBytes=10240, backupCount=5, encoding='utf8')
+    chn.config['LOG_FILE_PATH'], maxBytes=10240, backupCount=5, encoding='utf8')
 handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
-mhn.logger.addHandler(handler)
-if mhn.config['DEBUG']:
+chn.logger.addHandler(handler)
+if chn.config['DEBUG']:
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     console.setFormatter(formatter)
-    mhn.logger.addHandler(console)
+    chn.logger.addHandler(console)
 
 
-@mhn.route('/feed.json')
+@chn.route('/feed.json')
 def json_feed():
     feed_content = get_feed().to_string()
     return jsonify(xmltodict.parse(feed_content))
 
 
-@mhn.route('/feed.xml')
+@chn.route('/feed.xml')
 def xml_feed():
     return get_feed().get_response()
 
 
 def makeurl(uri):
-    baseurl = mhn.config['SERVER_BASE_URL']
+    baseurl = chn.config['SERVER_BASE_URL']
     return urljoin(baseurl, uri)
 
 
 def get_feed():
-    from mhn.common.clio import Clio
-    from mhn.auth import current_user
-    authfeed = mhn.config['FEED_AUTH_REQUIRED']
+    from chn.common.clio import Clio
+    from chn.auth import current_user
+    authfeed = chn.config['FEED_AUTH_REQUIRED']
     if authfeed and not current_user.is_authenticated():
         abort(404)
-    feed = AtomFeed('MHN HpFeeds Report', feed_url=request.url,
+    feed = AtomFeed('CHN HpFeeds Report', feed_url=request.url,
                     url=request.url_root)
     sessions = Clio().session.get(options={'limit': 1000})
     for s in sessions:
@@ -120,11 +120,11 @@ def create_clean_db():
     """
     Use from a python shell to create a fresh database.
     """
-    with mhn.test_request_context():
+    with chn.test_request_context():
         db.create_all()
         superuser = create_superuser_entry()
 
-        from mhn.api.models import DeployScript
+        from chn.api.models import DeployScript
         # Creating a initial deploy scripts.
         deployscripts = {
             'Default - Conpot': os.path.abspath('./scripts/deploy_conpot.sh'),
@@ -153,8 +153,8 @@ def create_clean_db():
 def create_superuser_entry():
     # Creating superuser entry.
     superuser = user_datastore.create_user(
-        email=mhn.config.get('SUPERUSER_EMAIL'),
-        password=hash(mhn.config.get('SUPERUSER_ONETIME_PASSWORD')))
+        email=chn.config.get('SUPERUSER_EMAIL'),
+        password=hash(chn.config.get('SUPERUSER_ONETIME_PASSWORD')))
     adminrole = user_datastore.create_role(name='admin', description='')
     user_datastore.add_role_to_user(superuser, adminrole)
     user_datastore.create_role(name='user', description='')
@@ -181,9 +181,9 @@ def pretty_name(name):
 
 
 def reload_scripts():
-    from mhn.api.models import DeployScript
+    from chn.api.models import DeployScript
 
-    superuser = user_datastore.get_user(mhn.config.get('SUPERUSER_EMAIL'))
+    superuser = user_datastore.get_user(chn.config.get('SUPERUSER_EMAIL'))
     custom_path = './custom_scripts/'
 
     deployscripts = {

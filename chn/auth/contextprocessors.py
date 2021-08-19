@@ -1,4 +1,4 @@
-from mhn.auth import current_user
+from chn.auth import current_user
 
 
 def user_ctx():

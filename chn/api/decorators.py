@@ -2,11 +2,11 @@ from functools import wraps
 
 from flask import request, current_app
 
-from mhn.api import errors
-from mhn.api.models import Sensor
-from mhn.common.utils import error_response
-from mhn.auth import current_user
-from mhn.auth.models import ApiKey
+from chn.api import errors
+from chn.api.models import Sensor
+from chn.common.utils import error_response
+from chn.auth import current_user
+from chn.auth.models import ApiKey
 
 
 def deploy_auth(view):
