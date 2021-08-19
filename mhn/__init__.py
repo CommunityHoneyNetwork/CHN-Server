@@ -135,7 +135,8 @@ def create_clean_db():
             'Default - Elasticpot': os.path.abspath('./scripts/deploy_elasticpot.sh'),
             'Default - BigHP': os.path.abspath('./scripts/deploy_big-hp.sh'),
             'Default - ssh-auth-logger': os.path.abspath('./scripts/deploy_ssh-auth-logger.sh'),
-            'Default - Honeydb-Agent': os.path.abspath('./scripts/deploy_honeydb-agent.sh')
+            'Default - Honeydb-Agent': os.path.abspath('./scripts/deploy_honeydb-agent.sh'),
+            'Default - sticky-elephant': os.path.abspath('./scripts/deploy_sticky_elephant.sh')
         }
         for honeypot, deploypath in sorted(deployscripts.items()):
             with open(deploypath, 'r') as deployfile:
