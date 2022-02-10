@@ -210,10 +210,10 @@ main () {
   fi
 
   exec uwsgi --socket /tmp/uwsgi.sock \
-             --module mhn:mhn \
+             --module chn:chn \
              --chmod-socket=666 \
              --buffer-size 04960 \
-             --manage-script-name --mount ${custom_url_path}=mhn:mhn
+             --manage-script-name --mount ${custom_url_path}=chn:chn
 }
 
 main "${@}"

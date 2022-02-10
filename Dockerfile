@@ -50,9 +50,9 @@ COPY uwsgi.run /etc/service/uwsgi/run
 RUN chmod 755 /etc/service/uwsgi/run
 
 # Create log file for uwsgi
-RUN mkdir -p /var/log/mhn \
-    && chown www-data /var/log/mhn \
-    && chmod 0755 /var/log/mhn
+RUN mkdir -p /var/log/chn \
+    && chown www-data /var/log/chn \
+    && chmod 0755 /var/log/chn
 
 # Create sqlite directory
 RUN mkdir -p /opt/sqlite

@@ -8,7 +8,7 @@ import os
 
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
-MHN_SERVER_HOME = _basedir
+CHN_SERVER_HOME = _basedir
 
 # Local settings.
 DEBUG = {{DEBUG}}
@@ -38,7 +38,7 @@ HPFEEDS_PORT = {{HPFEEDS_PORT}}
 # Other settings.
 FEED_AUTH_REQUIRED = False
 SQLALCHEMY_TRACK_MODIFICATIONS = True
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'sqlite/mhn.db')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, 'sqlite/chn.db')
 SECURITY_PASSWORD_HASH = 'sha512_crypt'
 SECURITY_PASSWORD_SINGLE_HASH = True
 SECURITY_LOGIN_URL = '/ui/login/'

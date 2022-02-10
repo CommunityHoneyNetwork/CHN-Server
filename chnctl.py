@@ -6,8 +6,8 @@
 # and add support for add_user, change_password, etc etc
 
 from flask_security.utils import encrypt_password
-from mhn.auth.models import User
-from mhn import mhn, db
+from chn.auth.models import User
+from chn import chn, db
 import argparse
 import sys
 
@@ -25,7 +25,7 @@ if len(sys.argv)==1:
     sys.exit(1)
 args=parser.parse_args()
 
-with mhn.test_request_context():
+with chn.test_request_context():
     try:
         user = User.query.filter_by(email=args.email).first()
     except:

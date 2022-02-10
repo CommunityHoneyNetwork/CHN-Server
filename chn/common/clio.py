@@ -13,8 +13,6 @@ import datetime
 
 import config
 
-import logging
-
 
 class Clio:
     """
@@ -308,7 +306,6 @@ class Session(ResourceMixin):
         ]
 
         res = self.collection.aggregate(query)
-        logging.error("AGGREGATE: %s" % res)
 
         def format_result(r):
             result = dict(r['_id'])

@@ -3,8 +3,8 @@ from datetime import datetime
 from flask_security import UserMixin, RoleMixin
 from flask import render_template
 
-from mhn import db
-from mhn.api import APIModel
+from chn import db
+from chn.api import APIModel
 
 
 roles_users = db.Table(
@@ -49,10 +49,10 @@ class PasswdReset(db.Model):
 
     @property
     def email_body(self):
-        from mhn import mhn
+        from chn import chn
         return render_template(
                 'auth/reset-email.html', hashstr=self.hashstr,
-                 server_url=mhn.config['SERVER_BASE_URL'],
+                 server_url=chn.config['SERVER_BASE_URL'],
                  email=self.user.email)
 
 

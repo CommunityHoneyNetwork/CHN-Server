@@ -2,5 +2,5 @@ TODO
 *.swp
 .pytest_cache/
 *.pyc
-mhn/static/mhn.rules
+chn/static/mhn.rules
 storage/

@@ -5,8 +5,8 @@ from flask import url_for
 from flask.ext.testing import TestCase
 import pymongo
 
-import mhn.common.clio as clio
-from mhn import create_clean_db, mhn, db
+import chn.common.clio as clio
+from chn import create_clean_db, chn, db
 
 import config
 
@@ -17,18 +17,18 @@ for res in clio_res:
 # End patching.
 
 
-class MHNTestCase(TestCase):
+class CHNTestCase(TestCase):
 
     def __init__(self, *args, **kwargs):
-        super(MHNTestCase, self).__init__(*args, **kwargs)
+        super(CHNTestCase, self).__init__(*args, **kwargs)
         self.clio = clio.Clio()
 
     def create_app(self):
         _basedir = os.path.abspath(os.path.dirname(__file__))
-        db_uri = 'sqlite:///' + os.path.join(_basedir, 'test-mhn.db')
-        mhn.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-        mhn.config['TESTING'] = True
-        return mhn
+        db_uri = 'sqlite:///' + os.path.join(_basedir, 'test-chn.db')
+        chn.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+        chn.config['TESTING'] = True
+        return chn
 
     def setUp(self):
         create_clean_db()

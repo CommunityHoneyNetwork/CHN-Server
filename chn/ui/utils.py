@@ -1,12 +1,12 @@
 import requests
 from flask import current_app as app, url_for
-from mhn.ui import constants
-from config import MHN_SERVER_HOME
+from chn.ui import constants
+from config import CHN_SERVER_HOME
 import os
 from werkzeug.contrib.cache import SimpleCache
 from ipaddress import ip_address
 import struct
-from mhn.api.models import Sensor
+from chn.api.models import Sensor
 
 flag_cache = SimpleCache(threshold=1000, default_timeout=300)
 country_cache = SimpleCache(threshold=1000, default_timeout=300)
@@ -64,7 +64,6 @@ def get_sensor_name(sensor_id):
                 sensor_name = s.hostname
                 sensor_cache.set(sensor_id, sensor_name)
                 break
-    print('Name: %s' % sensor_name)
     return sensor_name
 
 
@@ -92,7 +91,7 @@ def _get_flag_ip(ipaddr):
         local_flag_path = '/static/img/flags-iso/shiny/64/{}.png'.format(
             ccode.upper())
 
-        if os.path.exists(MHN_SERVER_HOME + "/mhn"+local_flag_path):
+        if os.path.exists(CHN_SERVER_HOME + "/chn"+local_flag_path):
             return flag
         else:
             return url_for('static', filename=constants.DEFAULT_FLAG_URL)

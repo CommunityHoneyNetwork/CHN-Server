@@ -26,24 +26,24 @@ except ImportError:
         finally:
             raise SystemExit('Exiting now.')
 
-from mhn import mhn, db
+from chn import chn, db
 
 if __name__ == '__main__':
-    migrate = Migrate(mhn, db)
-    manager = Manager(mhn)
+    migrate = Migrate(chn, db)
+    manager = Manager(chn)
     manager.add_command('db', MigrateCommand)
 
     @manager.command
     def run():
         # Takes run parameters from configuration.
         serverurl = urlparse(config.SERVER_BASE_URL)
-        mhn.run(debug=config.DEBUG, host='0.0.0.0',
+        chn.run(debug=config.DEBUG, host='0.0.0.0',
                 port=serverurl.port)
 
     @manager.command
     def runlocal():
         serverurl = urlparse(config.SERVER_BASE_URL)
-        mhn.run(debug=config.DEBUG, host='0.0.0.0',
+        chn.run(debug=config.DEBUG, host='0.0.0.0',
                 port=serverurl.port)
 
     manager.run()

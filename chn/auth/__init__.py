@@ -4,5 +4,5 @@ from flask_security.decorators import roles_accepted
 
 
 def get_datastore():
-    from mhn import user_datastore
+    from chn import user_datastore
     return user_datastore

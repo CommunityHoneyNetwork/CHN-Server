@@ -1,6 +1,6 @@
 from flask_security.utils import hash_password
-from mhn.auth.models import User
-from mhn import mhn, db
+from chn.auth.models import User
+from chn import chn, db
 import sys
 from getpass import getpass
 import argparse
@@ -19,7 +19,7 @@ def main():
 
     args = parse_args()
 
-    with mhn.test_request_context():
+    with chn.test_request_context():
 
         if not args.username:
             email = input("Enter email address: ").strip()

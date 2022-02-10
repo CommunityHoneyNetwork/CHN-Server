@@ -16,7 +16,7 @@ def generate_nginx_defaults(args):
         https_proxy_location = ''
         static_block = """
 location /static {
-      alias /opt/mhn/static;
+      alias /opt/chn/static;
     }
 """
     # if .path property not empty, it means some path defined after tld (e.g.: sub.domain.tld/custom/stuff/here/)
@@ -48,7 +48,7 @@ location /static {
 """.format(custom_route=custom_route)
         static_block = """
     location /{custom_route}/static {{
-        alias /opt/mhn/static;
+        alias /opt/chn/static;
     }}
 
     location = /static {{
@@ -63,11 +63,11 @@ server {{
     server_name  _;
     
     location /{custom_route} {{
-        try_files \\$uri @mhnserver;
+        try_files \\$uri @chnserver;
     }}
 
     root /opt/www;
-    location @mhnserver {{
+    location @chnserver {{
       include uwsgi_params;
       uwsgi_pass unix:/tmp/uwsgi.sock;
     }}
@@ -110,11 +110,11 @@ server {{
 #   resolver <IP DNS resolver>;
 
     location /{custom_route} {{
-        try_files \\$uri @mhnserver;
+        try_files \\$uri @chnserver;
     }}
 
     root /opt/www;
-    location @mhnserver {{
+    location @chnserver {{
       include uwsgi_params;
       uwsgi_pass unix:/tmp/uwsgi.sock;
     }}
