@@ -13,8 +13,10 @@ import datetime
 
 import config
 
+import logging
 
-class Clio():
+
+class Clio:
     """
     Main interface for Clio - Mnemosyne Client Library -
 
@@ -179,7 +181,7 @@ class ResourceMixin(object):
     def count(self, **kwargs):
         query = self.__class__._clean_query(kwargs)
         # Just counting the results.
-        return self.collection.find(query).count()
+        return self.collection.count_documents(query)
 
     @property
     def collection(self):
@@ -306,16 +308,16 @@ class Session(ResourceMixin):
         ]
 
         res = self.collection.aggregate(query)
+        logging.error("AGGREGATE: %s" % res)
 
         def format_result(r):
             result = dict(r['_id'])
             result['count'] = r['count']
             return result
 
-        if 'ok' in res:
-            return [
-                format_result(r) for r in res.get('result', [])[:top]
-            ]
+        return [
+            format_result(r) for r in res
+        ]
 
     def top_attackers(self, top=5, hours_ago=None):
         return self._tops('source_ip', top, hours_ago)
@@ -330,7 +332,7 @@ class Session(ResourceMixin):
         return self._tops('identifier', top, hours_ago)
     
     def attacker_stats(self, ip, hours_ago=None):
-        match_query = { 'source_ip': ip }
+        match_query = {'source_ip': ip}
 
         if hours_ago:
             match_query['timestamp'] = {
@@ -415,11 +417,11 @@ class HpFeed(ResourceMixin):
             req_args['payload'] = {'$regex': req_args['payload']}
 
         cnt_query = super(HpFeed, self)._clean_query(req_args)
-        count = self.collection.find(cnt_query).count()
+        count = self.collection.count_documents(cnt_query)
 
         columns = self.channel_map.get(req_args['channel'])
 
-        return count, columns,(self.json_payload(fr.payload) for fr in self.get(options=options, **req_args))
+        return count, columns, (self.json_payload(fr.payload) for fr in self.get(options=options, **req_args))
 
     def get_credentials(self, payloads):
         credentials = []
@@ -515,13 +517,13 @@ class AuthKey(ResourceMixin):
             return super(AuthKey, self).get(options, **kwargs)
 
     def post(self):
-        objectid = self.collection.insert(dict(
+        objectid = self.collection.insert_one(dict(
                 identifier=self.identifier, secret=self.secret, owner=self.owner,
                 publish=self.publish, subscribe=self.subscribe))
-        self.client.fsync()
+        self.client.admin.command('fsync', lock=False)
         return objectid
 
     def put(self, **kwargs):
-        updated = self.collection.update({"identifier": self.identifier},
-                                         {'$set': kwargs}, upsert=False)
+        updated = self.collection.update_one({"identifier": self.identifier},
+                                             {'$set': kwargs}, upsert=False)
         return updated

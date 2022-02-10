@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta
+
+import logging
+
 from pygal.style import *
 import pygal
 from flask import (
@@ -21,14 +24,17 @@ from mhn.common.clio import Clio
 ui = Blueprint('ui', __name__, url_prefix='/ui')
 from mhn import mhn as app
 
+
 PYGAL_CONFIG = pygal.config.Config()
 PYGAL_CONFIG.js = (
     'https://kozea.github.io/pygal.js/javascripts/svg.jquery.js',
     'https://kozea.github.io/pygal.js/javascripts/pygal-tooltips.js',
 )
 
+
 def remove_control_characters(s):
     return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
+
 
 @app.template_filter()
 def number_format(value):
