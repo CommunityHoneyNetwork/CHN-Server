@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+ {% block title %}Attack Info{% endblock %}
+ {% block content %}
+     <div class="row">
+         <div class="small-3 large-centered columns">
+             <h2>Attack Info</h2>
+         </div>
+     </div>
+     <div style="max-width: 90.5rem;" class="row">
+         <div class="large-12 columns">
+             <table id="attack-table" style="width:100%;">
+                 <tbody>
+                     {% for h in columns %}
+                     <tr>
+                         <th>{{ h }}</th>
+                         <td> {{ attack_info.items[h] }}</td>
+                     </tr>
+                     {% endfor %}
+                 </tbody>
+             </table>
+             {% from "pagination.html" import render_pagination %}
+             {{ render_pagination(attack_info, view, request.args.to_dict()) }}
+         </div>
+     </div>
+ {% endblock %}

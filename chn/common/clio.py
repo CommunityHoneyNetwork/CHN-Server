@@ -12,6 +12,7 @@ import json
 import datetime
 
 import config
+import logging
 
 
 class Clio:
@@ -89,7 +90,7 @@ class ResourceMixin(object):
 
         if 'hours_ago' in dirty:
             clean['timestamp'] = {
-                '$gte': datetime.datetime.utcnow() - datetime.timedelta(hours=int(dirty['hours_ago']))
+                '$gte': datetime.datetime.utcnow() - datetime.timedelta(hours=int(dirty.get('hours_ago')))
             }
 
         return clean
@@ -149,8 +150,13 @@ class ResourceMixin(object):
         else:
             if '_id' in kwargs:
                 kwargs['_id'] = ObjectId(kwargs['_id'])
-                return self.__class__.from_dict(
-                        self.collection.find_one(kwargs), self.client)
+                logging.debug("kwargs: %s" % kwargs)
+                output = self.__class__.from_dict(
+                    self.collection.find_one(kwargs), self.client)
+                logging.debug("output: %s" % output)
+                if isinstance(output, HpFeed):
+                    output = [output]
+                return output
 
             query = self.__class__._clean_query(kwargs)
             queryset = self.collection.find(query)
@@ -249,7 +255,7 @@ class Session(ResourceMixin):
             if field in clean.copy():
                 clean = clean_integer(field, clean)
 
-        if 'timestamp' in clean and isinstance(clean['timestamp'], str):
+        if 'timestamp' in clean and isinstance(clean.get('timestamp'), str):
             # Transforms timestamp queries into
             # timestamp_lte queries.
             try:
@@ -309,7 +315,7 @@ class Session(ResourceMixin):
 
         def format_result(r):
             result = dict(r['_id'])
-            result['count'] = r['count']
+            result['count'] = r.get('count')
             return result
 
         return [
@@ -408,47 +414,48 @@ class HpFeed(ResourceMixin):
         return o_data
         
     def get_payloads(self, options, req_args):
+        logging.debug("options: %s, req_args: %s" % (options, req_args))
         payloads = []
         columns = []
         if len(req_args.get('payload', '')) > 1:
-            req_args['payload'] = {'$regex': req_args['payload']}
+            req_args['payload'] = {'$regex': req_args.get('payload')}
 
         cnt_query = super(HpFeed, self)._clean_query(req_args)
         count = self.collection.count_documents(cnt_query)
 
-        columns = self.channel_map.get(req_args['channel'])
+        columns = self.channel_map.get(req_args.get('channel'))
 
         return count, columns, (self.json_payload(fr.payload) for fr in self.get(options=options, **req_args))
 
     def get_credentials(self, payloads):
         credentials = []
         for creds in payloads:
-            if creds['credentials']:
-                for cred in (creds['credentials']):
+            if creds.get('credentials'):
+                for cred in (creds.get('credentials')):
                     credentials.append(tuple(cred))
         return Counter(credentials).most_common()
 
     def count_passwords(self,payloads):
         passwords = []
         for creds in payloads:
-            if creds['credentials']:
-                for cred in (creds['credentials']):
+            if creds.get('credentials'):
+                for cred in (creds.get('credentials')):
                     passwords.append(cred[1])
         return Counter(passwords).most_common(10)
 
     def count_users(self, payloads):
         users = []
         for creds in payloads:
-            if creds['credentials']:
-                for cred in (creds['credentials']):
+            if creds.get('credentials'):
+                for cred in (creds.get('credentials')):
                     users.append(cred[0])
         return Counter(users).most_common(10)
 
     def count_combos(self, payloads):
         combos_count = []
         for combos in payloads:
-            if combos['credentials']:
-                for combo in combos['credentials']:
+            if combos.get('credentials'):
+                for combo in combos.get('credentials'):
                     combos_count.append(combo[0] + ": " + combo[1])
         return Counter(combos_count).most_common(10)
 
